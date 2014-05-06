@@ -1,4 +1,5 @@
 'use strict';
+//this is the start to the rest server.
 
 require('./bootstrap'); //just loads globals, not catching return
 
@@ -10,8 +11,9 @@ var config  = appConfig();
 //are we in development or not?
 if (GLOBAL.bootstrapped && GLOBAL.getAppMode() == 'development') {
 
-	var didWeStartWithoutError = require(GLOBAL.CONTROLLERS + 'MainController'); 
-	if(didWeStartWithoutError){
+	var didWeStartWithoutError = require(GLOBAL.CONTROLLERS + 'MainController');
+
+	if(didWeStartWithoutError.didLoadWithoutError()){
 		appLogger().info('starting rest server in development mode');
 	}else{
 		appLogger().info('Error starting rest server in development');

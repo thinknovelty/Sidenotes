@@ -1,8 +1,11 @@
 'use strict';
 
 var addTestResponds = function(app){
-	app.get('/testCall', function(req, res) {
-	    res.send([{respondBack: 'Yes, the server is alive and kicking'}, {}]);
+	app.get('/sidenotes/test', function(req, res) {
+		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		appLogger().info(ip + ' is testing the server.');
+	    res.send([{respondBack: 'Yes, the server is alive and kicking', Error: 'No error yet!...'}]);
+	    appLogger().info('Testing the completed.');
 	});
 };
 
@@ -16,19 +19,12 @@ var checkAPI = function(apikey) {
 var startExrepss = function() {
 	var express = require('express');
 	var app = express();
-	 
-	// app.get('/test', function(req, res) {
-	//     res.send([{respondBack: 'Yes, the server is alive and kicking'}]);
-	// });
-	// app.get('/wines/:id', function(req, res) {
-	//     res.send({id:req.params.id, name: "The Name", description: "description"});
-	// });
-	app.listen(3000);
+	app.listen(appConfig().restPort);
 
 	if(app){
-	addTestResponds(app);
-	appLogger().info('Listening on port 3000...');
-	return app;
+		addTestResponds(app);
+		appLogger().info('Listening on port ' + appConfig().restPort);
+		return app;
 	}else{
 		return false;
 	}
@@ -40,12 +36,17 @@ if(app){
 
 // the call well have the controller we want to invoke. 
 	app.get('/sidenotes', function(req, res) {
-		var apikey = null;
-		var modular = null;
 
-		if(req.query.modular){
-	   		modular = req.query.modular;
-	   		appLogger().info('Get call for ' + modular + ' requested');
+		//required parameters
+		var apikey = null; 
+		var module = null;
+		var gModular = null;
+		var finalObj = null;
+		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+		if(req.query.module){
+	   		module = req.query.module;
+	   		appLogger().info('Get call from ' + ip + ' for ' + module + ' request');
 	   	}else{
 	   		throw new Error("BAD MODULAR, MODULAR is a required parameter.");
 	   		return;
@@ -60,14 +61,19 @@ if(app){
 	   		return;
 	   	}
 
-	   	var gModular  = require(GLOBAL.CONTROLLERS  + modular + 'Controller');
+	   	gModular  = require(GLOBAL.CONTROLLERS  + module + 'Controller');
 	   	gModular.init(req, res);
 
-	   	var finalObj = gModular.results();
-	   	if(finalObj){
-	   		appLogger().info('Get call ' + modular + ' completed');
-	   		res.send(finalObj);	
+	   	finalObj = gModular.results();
+	   	if(finalObj && Array.isArray(finalObj)){
+	   		appLogger().info('Get call ' + module + ' complete..');
+	   		res.send(finalObj);
+	   	}else{
+	   		throw new Error("Issue with returned data.");
 	   	}
+
+// 		note: objects seem to stay behind after a call so a cleanup function is needed.
+	   	gModular.cleanUp();
 	});
 
 	app.post('/sidenotes', function(req, res){
@@ -78,11 +84,15 @@ if(app){
 	   res.send(500, err.toString());
 	  appLogger().error(err.stack);
 	});
+};
 
-return true;
-
-}else{
-	//we must have a error!
-	return false;
-}
+module.exports = {
+	didLoadWithoutError: function(){
+		if (app){
+			return true;
+		}else{
+			return false;
+		}
+	},
+};
 

@@ -1,14 +1,49 @@
 'use strict';
 
 //registerController.js
+var moduleName = 'Register';
 
-//this is the controll is used to manage the registration of a new patron.
+// Example Call 
+// /sidenotes?apikey=00000000&module=Register&email=hubbertj@gmail.com&pw=encrptyed&firstname=jerum&lastname=hubbert&dob=01/09/1982
+
+//this is the controller used to manage the registration process.
+
+
+//defaults
 var apikey 		= null;
 var email 		= null;
-var password 	= null;
+var pw 			= null;
 var firstname 	= null; 
 var lastname 	= null;
-var birthday 	= null;
+var dob 		= null;
+
+
+var validate = function(){
+		if(apikey == null){
+			return 'apikey'
+		}
+		else if (email == null){
+			return 'email'
+		}
+		else if (pw == null){
+			return 'pw'
+		} 
+		else if (firstname == null){
+			return 'firstname'
+		} 
+		else if (lastname == null){
+			return 'lastname'
+		} 
+		else if (dob == null){
+			return 'dob'
+		}else{
+				return true;
+		}
+};
+
+var writeToDB = function(){
+		//call my model and the model should do CRUD 
+};
 
 
 module.exports = {
@@ -19,8 +54,8 @@ module.exports = {
 		if(req.query.email){
 			email = req.query.email;
 		}
-		if(req.query.password){
-			password = req.query.password;
+		if(req.query.pw){
+			pw = req.query.pw;
 		}
 		if(req.query.firstname){
 			firstname = req.query.firstname;
@@ -29,72 +64,73 @@ module.exports = {
 			lastname = req.query.lastname;
 		}
 		if(req.query.dob){
-			birthday = req.query.dob;
+			dob = req.query.dob;
 		}
 
 	},
 
 	setApikey : function(apikey){
-		this.apikey = apikey;
+		apikey = apikey;
 	},
 
 	getApikey : function(){
-		return this.apikey;
+		return apikey;
 	},
-	setEmail :function(){
-
+	setEmail :function(par){
+		email = par;
 	},
 	getEmail : function(){
-		return this.email;
+		return email;
 
 	},
-	setPassword : function(){
+	setPw : function(par){
+		pw = par;
+	},
+	getPw : function(){
+		return pw;
 
 	},
-	getPassword : function(){
-		return this.password;
-
-	},
-	setFirstname : function(){
-
+	setFirstname : function(par){
+		firstname = par;
 	},
 	getFirsname : function(){
-		return this,firstname;
+		return firstname;
 
 	},
-	setLastname : function(){
-
-
+	setLastname : function(par){
+		lastname = par;
 	},
 	getLastname : function(){
-		return this.lastname;
+		return lastname;
 
 	},
-	getBirthday : function(){
-		return this.birthday;
+	getDob : function(){
+		return dob;
 
 	},
-	setBirthday : function(){
-
+	setDob : function(par){
+		dob = par;
 	},
 
 	results : function(){
-		if(!this.validate()){
-			return false;
+
+		if(validate() == true){
+			writeToDB();
+			// cleanup();
+			return [{results: 'Success'}];
 		}
 
-		this.writeToDB();
-
-		//retrun my Array of objects.
-
-		return [{results: 'Success'}];
+		var err = 'missing parameter' + ' ' +  validate();
+		// cleanup();
+		return  [{results: 'Failed', Error: err}];
 	},
 
-	validate : function(){
-		return true;
-	},
-
-	writeToDB : function(){
-		//make model and save to datebase.
-	},
+	cleanUp : function(){
+		apikey 		= null;
+		email 		= null;
+		pw 			= null;
+		firstname 	= null; 
+		lastname 	= null;
+		dob 		= null;
+	}
 };

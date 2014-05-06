@@ -1,9 +1,9 @@
 {
-	"name": "Mobile_UI_Architect",
+	"name": "Side_Note_Web_Server",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"start": "node app"
+		"start": "node RestServer"
 	},
 	"dependencies": {
 		"lodash"      : "*",
