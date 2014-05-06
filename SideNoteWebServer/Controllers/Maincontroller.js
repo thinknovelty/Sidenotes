@@ -1,11 +1,11 @@
 'use strict';
 
 var addTestResponds = function(app){
-	app.get('/sidenotes/test', function(req, res) {
+	app.get('/test', function(req, res) {
 		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 		appLogger().info(ip + ' is testing the server.');
 	    res.send([{respondBack: 'Yes, the server is alive and kicking', Error: 'No error yet!...'}]);
-	    appLogger().info('Testing the completed.');
+	    appLogger().info('Testing completed.');
 	});
 };
 
@@ -35,7 +35,7 @@ var app = startExrepss();
 if(app){
 
 // the call well have the controller we want to invoke. 
-	app.get('/sidenotes', function(req, res) {
+	app.get('/api/:id', function(req, res) {
 
 		//required parameters
 		var apikey = null; 
@@ -44,11 +44,11 @@ if(app){
 		var finalObj = null;
 		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-		if(req.query.module){
-	   		module = req.query.module;
+		if(req.params.id){
+	   		module = req.params.id;
 	   		appLogger().info('Get call from ' + ip + ' for ' + module + ' request');
 	   	}else{
-	   		throw new Error("BAD MODULAR, MODULAR is a required parameter.");
+	   		throw new Error("BAD MODULAR, MODULAR is a required.");
 	   		return;
 	   	}
 
@@ -57,7 +57,7 @@ if(app){
 	    	appLogger().info('API Key = ' + apikey);
 	    }
 	   	if(!checkAPI(apikey)){
-	   		throw new Error("BAD API KEY, APIKEY is required.");
+	   		throw new Error("BAD API KEY, APIKEY is required parameter.");
 	   		return;
 	   	}
 
@@ -76,7 +76,7 @@ if(app){
 	   	gModular.cleanUp();
 	});
 
-	app.post('/sidenotes', function(req, res){
+	app.post('/api/:id', function(req, res){
 	});
 
 //error handling...
