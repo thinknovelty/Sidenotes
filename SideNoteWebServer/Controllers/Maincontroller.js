@@ -6,9 +6,9 @@ var addTestResponds = function(app){
 	});
 };
 
-var checkAPI = function(api) {
-	 var modelAPI = require(GLOBAL.MODELS + 'ValidateAPI');
-	 modelAPI.init(api);
+var checkAPI = function(apikey) {
+	 var modelAPI = require(GLOBAL.MODELS + 'ValidateAPIKEY');
+	 modelAPI.init(apikey);
 	 return modelAPI.validate();
 }; 
 
@@ -40,20 +40,50 @@ if(app){
 
 // the call well have the controller we want to invoke. 
 	app.get('/sidenotes', function(req, res) {
-		var api = null;
-	    if(req.query.api){
-	    	api = req.query.api;
-	    }
+		var apikey = null;
+		var modular = null;
 
-	   	if(!checkAPI(api)){
+	    if(req.query.apikey){
+	    	apikey = req.query.apikey;
+	    	console.log(apikey);
+	    }
+	   	if(!checkAPI(apikey)){
 	   		throw new Error("BAD API KEY!");
 	   		return;
 	   	}
 
-	   	console.log('continue the call!');
-	   	//we are free to retrun what the call requires.
-	   	// res.send([{req:req.query('name')},{res:res.stringify}]);
+	   	if(req.query.modular){
+
+	   		modular = req.query.modular;
+	   		console.log(modular);
+	   	}else{
+	   		throw new Error("BAD MODULAR, MODULAR is a required parameter.");
+	   		return;
+	   	}
+
+	   	var gModular  = require(GLOBAL.CONTROLLERS  + modular + 'Controller');
+	   	gModular.init(req, res);
+
+	   	var finalObj = gModular.results();
+	   	res.send(finalObj);
+	   	// console.log('continue the call!');
+	   	// //we are free to retrun what the call requires.
+	   	// // res.send([{req:req.query('name')},{res:res.stringify}]);
 	});
+
+	app.post('/sidenotes', function(req, res){
+
+	});
+
+
+
+
+
+
+
+
+
+
 
 //error handling...
 	app.use(function(err, req, res, next){

@@ -10,7 +10,7 @@ var config  = appConfig();
 //are we in development or not?
 if (GLOBAL.bootstrapped && GLOBAL.getAppMode() == 'development') {
 
-	var didWeStartWithoutError = require(GLOBAL.CONTROLLERS + 'Maincontroller'); 
+	var didWeStartWithoutError = require(GLOBAL.CONTROLLERS + 'MainController'); 
 	if(didWeStartWithoutError){
 		appLogger().info('starting rest server in development mode');
 	}else{
