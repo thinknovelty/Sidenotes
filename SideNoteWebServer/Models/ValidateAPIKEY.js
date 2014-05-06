@@ -17,7 +17,7 @@ module.exports = {
 
 	//getting date and find the person who wons the API
 	//set whoAmI to the person who owns this api key. db call
-	appLogger().info('Checking who owns api key = ' + apikey);
+	// appLogger().info('Checking who owns api key = ' + apikey);
 
 	},
 

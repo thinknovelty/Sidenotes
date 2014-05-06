@@ -1,5 +1,7 @@
 'use strict';
 
+//registerController.js
+
 //this is the controll is used to manage the registration of a new patron.
 var apikey 		= null;
 var email 		= null;
@@ -76,22 +78,23 @@ module.exports = {
 
 	},
 
-	result : function(){
-		if(!validate()){
+	results : function(){
+		if(!this.validate()){
 			return false;
 		}
-		writeToDB();
+
+		this.writeToDB();
 
 		//retrun my Array of objects.
 
-
+		return [{results: 'Success'}];
 	},
 
 	validate : function(){
-
-	}
+		return true;
+	},
 
 	writeToDB : function(){
 		//make model and save to datebase.
-	}
+	},
 };

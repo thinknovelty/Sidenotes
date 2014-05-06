@@ -23,11 +23,11 @@ var startExrepss = function() {
 	// app.get('/wines/:id', function(req, res) {
 	//     res.send({id:req.params.id, name: "The Name", description: "description"});
 	// });
-	app.listen(1000);
+	app.listen(3000);
 
 	if(app){
 	addTestResponds(app);
-	appLogger().info('Listening on port 1000...');
+	appLogger().info('Listening on port 3000...');
 	return app;
 	}else{
 		return false;
@@ -43,21 +43,20 @@ if(app){
 		var apikey = null;
 		var modular = null;
 
-	    if(req.query.apikey){
-	    	apikey = req.query.apikey;
-	    	console.log(apikey);
-	    }
-	   	if(!checkAPI(apikey)){
-	   		throw new Error("BAD API KEY!");
+		if(req.query.modular){
+	   		modular = req.query.modular;
+	   		appLogger().info('Get call for ' + modular + ' requested');
+	   	}else{
+	   		throw new Error("BAD MODULAR, MODULAR is a required parameter.");
 	   		return;
 	   	}
 
-	   	if(req.query.modular){
-
-	   		modular = req.query.modular;
-	   		console.log(modular);
-	   	}else{
-	   		throw new Error("BAD MODULAR, MODULAR is a required parameter.");
+	    if(req.query.apikey){
+	    	apikey = req.query.apikey;
+	    	appLogger().info('API Key = ' + apikey);
+	    }
+	   	if(!checkAPI(apikey)){
+	   		throw new Error("BAD API KEY, APIKEY is required.");
 	   		return;
 	   	}
 
@@ -65,50 +64,20 @@ if(app){
 	   	gModular.init(req, res);
 
 	   	var finalObj = gModular.results();
-	   	res.send(finalObj);
-	   	// console.log('continue the call!');
-	   	// //we are free to retrun what the call requires.
-	   	// // res.send([{req:req.query('name')},{res:res.stringify}]);
+	   	if(finalObj){
+	   		appLogger().info('Get call ' + modular + ' completed');
+	   		res.send(finalObj);	
+	   	}
 	});
 
 	app.post('/sidenotes', function(req, res){
-
 	});
-
-
-
-
-
-
-
-
-
-
 
 //error handling...
 	app.use(function(err, req, res, next){
 	   res.send(500, err.toString());
-	  console.error(err.stack);
+	  appLogger().error(err.stack);
 	});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 return true;
 

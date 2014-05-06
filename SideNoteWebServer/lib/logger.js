@@ -6,13 +6,13 @@
 var winston = require('winston');
 var Logger = {};
 
-// winston.addColors({
-// 	info    : "green",
-// 	warning : "orange",
-// 	debug   : "blue",
-// 	error   : "red"
-// });
-// winston.cli();
+winston.addColors({
+	info    : "green",
+	warning : "orange",
+	debug   : "blue",
+	error   : "red"
+});
+winston.cli();
 
 //
 // Configure CLI on an instance of winston.Logger
