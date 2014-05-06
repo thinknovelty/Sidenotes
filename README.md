@@ -4,10 +4,10 @@ Running the rest Server:
 1. Install node.js from http://nodejs.org/
 2. Add to your path variables, it may already do this for you.
 3. start a command prompt or terminal and run the command:
-node <path_to_SideNoteWebServer_dir>/RestServer.js
+node path_to_SideNoteWebServer_dir/RestServer.js
 4. To test the server, open your broswer and do the test call which is build into the rest server.
 
-<your_ip>:3000/sidenotes/test 
+your_ip:3000/sidenotes/test 
 
 the server should respond back with your ip and a chessy message.
 
