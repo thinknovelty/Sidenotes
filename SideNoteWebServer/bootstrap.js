@@ -12,11 +12,12 @@ if ( !GLOBAL.bootstrapped ) {
 	GLOBAL.APP_ROOT      = appRoot;
 	GLOBAL.VIEW_ROOT     = appRoot + '/Views/';
 	GLOBAL.CONTROLLERS   = appRoot + '/Controllers/';
-	GLOBAL.MODELS      = appRoot + '/Models/';
+	GLOBAL.MODELS      	 = appRoot + '/Models/';
+	GLOBAL.LIB      	 = appRoot + '/Lib/';
 
 
 	GLOBAL.appConfig = function() {
-		return require(root + '/config/'+getAppMode()+'.js');
+		return require(root + '/Config/'+getAppMode()+'.js');
 	};
 
 	GLOBAL.getAppMode = function(property) {
@@ -24,12 +25,12 @@ if ( !GLOBAL.bootstrapped ) {
 	};
 
 	GLOBAL.appLogger = function() {
-		return require(root + '/lib/logger.js');
+		return require(GLOBAL.LIB + 'Logger.js');
 	};
 
 	GLOBAL.appRequire = function(module) {
 		return require(root + module);
-	}
+	};
 
 	GLOBAL.loadView = function(view) {
 		return fs.readFileSync(VIEW_ROOT + view, 'utf-8');
@@ -40,7 +41,7 @@ if ( !GLOBAL.bootstrapped ) {
 	};
 
 	GLOBAL.requireController = function(route) {
-		return require(root + '/controllers' + route);
+		return require(root + '/Controllers' + route);
 	};
 
 	appConfig();
