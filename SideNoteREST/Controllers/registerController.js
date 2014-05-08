@@ -60,13 +60,16 @@ var writeToDB = function(){
 		dob : dob,
 		username : username};
 
-	appLogger().info('Writing  to DB ' + JSON.stringify(writeInto));
+	console.log('Writing  to DB ' + JSON.stringify(writeInto));
 		//call my model and the model should do CRUD 
 };
 
 
 module.exports = {
+	callType : 'POST',
+
 	init: function (req, res, call){
+
 		if(call.apikey){
 			apikey = call.apikey;
 		}

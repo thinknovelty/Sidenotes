@@ -7,6 +7,7 @@ var moduleName = 'Login';
 //this is the controller for the login process.
 
 module.exports = {
+	callType : 'POST',
 	init: function (){
 
 	},

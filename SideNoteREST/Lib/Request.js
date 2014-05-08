@@ -142,7 +142,7 @@ module.exports = {
 		var apikey = null; 
 		var call = {
 							module: req.params.mod,
-							callType: 'post' };
+							callType: 'POST' };
 
 		call = extend(true, req.body, call);
 
@@ -155,22 +155,35 @@ module.exports = {
 		//this should be here if not we have a issue.
 		if(!call.module){
 	   		throw new Error("BAD MODULAR, MODULAR is a required.");
-	   		return;
 	   	}
 
 	   	//check for API KEY.
-		if(call.apikey == null || !GLOBAL.getValidator().checkAPIKEY(apikey)){
-			appLogger().error('apikey = ' + apikey);
+		if(!GLOBAL.getValidator().checkAPIKEY(apikey)){
 			throw new Error("BAD API KEY, APIKEY is required parameter.");
-			return;
 		}
 
 	   	appLogger().info(JSON.stringify(call));
-	
 	   	gModular  = require(GLOBAL.CONTROLLERS  + call.module + 'Controller');
-	   	gModular.init(req, res, call);
 
-	   	finalObj = gModular.results();
+	   	if(!gModular){
+	   		throw new Error("Cannot find " +  call.module + 'Controller.js');
+	   	}
+
+	   	if(gModular.callType !== call.callType){
+	   		throw new Error("A POST call is required for " +  call.module + 'Controller.js');
+	   	}
+
+	   	try{
+	   		gModular.init(req, res, call);
+	   		finalObj = gModular.results();
+	   		
+	   	}catch(err){
+	   		gModular.cleanUp();
+	   		throw new Error(err);
+	   	}
+
+	   	gModular.cleanUp();
+
 	   	if(finalObj && Array.isArray(finalObj)){
 	   		appLogger().info('Post ' + call.module + ' complete..');
 	   		finalObj.push({timeStamp: timeStamp()});
@@ -178,6 +191,5 @@ module.exports = {
 	   	}else{
 	   		throw new Error("Issue with returned data.");
 	   	}
-	   	gModular.cleanUp();
 	},
 }
