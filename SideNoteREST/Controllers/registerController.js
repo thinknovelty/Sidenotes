@@ -16,6 +16,7 @@ var pw 			= null;
 var firstname 	= null; 
 var lastname 	= null;
 var dob 		= null;
+var username 	= null;
 
 
 var validate = function(){
@@ -24,6 +25,9 @@ var validate = function(){
 		}
 		else if (email == null){
 			return 'email'
+		}
+		else if (username == null){
+			return 'username'
 		}
 		else if (pw == null){
 			return 'pw'
@@ -42,31 +46,44 @@ var validate = function(){
 };
 
 var writeToDB = function(){
+
+	var writeInto ={
+		apikey : apikey,
+		email : email,
+		pw : pw,
+		firstname : firstname,
+		lastname : lastname,
+		dob : dob,
+		username : username};
+
+	appLogger().info('Writing  to DB ' + JSON.stringify(writeInto));
 		//call my model and the model should do CRUD 
 };
 
 
 module.exports = {
-	init: function (req, res){
-		if(req.query.apikey){
-			apikey = req.query.apikey;
+	init: function (req, res, call){
+		if(call.apikey){
+			apikey = call.apikey;
 		}
-		if(req.query.email){
-			email = req.query.email;
+		if(call.email){
+			email = call.email;
 		}
-		if(req.query.pw){
-			pw = req.query.pw;
+		if(call.pw){
+			pw = call.pw;
 		}
-		if(req.query.firstname){
-			firstname = req.query.firstname;
+		if(call.firstname){
+			firstname = call.firstname;
 		}
-		if(req.query.lastname){
-			lastname = req.query.lastname;
+		if(call.lastname){
+			lastname = call.lastname;
 		}
-		if(req.query.dob){
-			dob = req.query.dob;
+		if(call.dob){
+			dob = call.dob;
 		}
-
+		if(call.username){
+			username = call.username;
+		}
 	},
 
 	setApikey : function(apikey){
@@ -116,12 +133,9 @@ module.exports = {
 
 		if(validate() == true){
 			writeToDB();
-			// cleanup();
 			return [{results: 'Success'}];
 		}
-
 		var err = 'missing parameter' + ' ' +  validate();
-		// cleanup();
 		return  [{results: 'Failed', Error: err}];
 	},
 

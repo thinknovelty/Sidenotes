@@ -153,19 +153,13 @@ module.exports = {
 		appLogger().info('Post from ' + ip);
 
 		//this should be here if not we have a issue.
-		if(req.params.mod){
-	   		call.module = req.params.mod;
-	   	}else{
+		if(!call.module){
 	   		throw new Error("BAD MODULAR, MODULAR is a required.");
 	   		return;
 	   	}
 
 	   	//check for API KEY.
-		if(req.query.apikey){
-			apikey = req.query.apikey;
-		}
-
-		if(!GLOBAL.getValidator().checkAPIKEY(apikey)){
+		if(call.apikey == null || !GLOBAL.getValidator().checkAPIKEY(apikey)){
 			appLogger().error('apikey = ' + apikey);
 			throw new Error("BAD API KEY, APIKEY is required parameter.");
 			return;
@@ -174,11 +168,11 @@ module.exports = {
 	   	appLogger().info(JSON.stringify(call));
 	
 	   	gModular  = require(GLOBAL.CONTROLLERS  + call.module + 'Controller');
-	   	gModular.init(req, res);
+	   	gModular.init(req, res, call);
 
 	   	finalObj = gModular.results();
 	   	if(finalObj && Array.isArray(finalObj)){
-	   		appLogger().info('Get call ' + call.module + ' complete..');
+	   		appLogger().info('Post ' + call.module + ' complete..');
 	   		finalObj.push({timeStamp: timeStamp()});
 	   		res.send(finalObj);
 	   	}else{
