@@ -18,31 +18,35 @@ var lastname 	= null;
 var dob 		= null;
 var username 	= null;
 
-
+//if fails should tell us why.
 var validate = function(){
-		if(apikey == null){
-			return 'apikey'
-		}
-		else if (email == null){
-			return 'email'
-		}
-		else if (username == null){
-			return 'username'
-		}
-		else if (pw == null){
-			return 'pw'
-		} 
-		else if (firstname == null){
-			return 'firstname'
-		} 
-		else if (lastname == null){
-			return 'lastname'
-		} 
-		else if (dob == null){
-			return 'dob'
-		}else{
-				return true;
-		}
+
+	var validator = getValidator();
+
+	if (validator.checkAPIKEY(apikey) !== true){
+		return 'BAD apikey';
+	}
+	else if (validator.isEmail(email) !== true){
+		return validator.isEmail(email);
+	}
+	else if (validator.isUsername(username) !== true){
+		return validator.isUsername(username);
+	}
+	else if (validator.isPassword(pw) !== true){
+		return validator.isPassword(pw);
+	} 
+	else if (validator.isFirstname(firstname) !== true){
+		return validator.isFirstname(firstname);
+	} 
+	else if (validator.isLastname(lastname) !== true){
+		return validator.isLastname(lastname);
+	} 
+	else if (validator.isDateofbirth(dob) !== true){
+		return validator.isDateofbirth(dob);
+	}
+
+	//TODO: check if email,username, are not used in DB
+	return true;
 };
 
 var writeToDB = function(){
@@ -133,10 +137,9 @@ module.exports = {
 
 		if(validate() == true){
 			writeToDB();
-			return [{results: 'Success'}];
+			return [{Message : 'Successfully registered' }];
 		}
-		var err = 'missing parameter' + ' ' +  validate();
-		return  [{results: 'Failed', Error: err}];
+		return  [{Error:  validate()}];
 	},
 
 	cleanUp : function(){
