@@ -1,7 +1,9 @@
 'use strict';
 //adds GLOBAL.settings if needed.
 
-var appMode = 'development'; //change to production when ready
+//change to production when ready
+var appMode = 'development'; 
+// var appMode = 'production';
 
 var fs = require('fs'); //node method call to get file system
 var appRoot = __dirname; //The name of the directory that the currently executing script resides in.

@@ -4,6 +4,7 @@ var moduleName = 'Request';
 var validator = require(GLOBAL.LIB + 'Validator');
 var decrypter = require(GLOBAL.LIB + 'Decrypter');
 
+
 var timeStamp = function(){
 	var currentdate = new Date(); 
 	var timeStamped = currentdate.getDate() + "/"
@@ -48,17 +49,16 @@ module.exports = {
 	   		return;
 	   	}
 
-	   	if(GLOBAL.getAppMode() !== 'development'){
-	   		   	//check for API KEY.
-			    if(req.query.apikey){
-			    	apikey = req.query.apikey;
-			    	appLogger().info('API Key = ' + apikey);
-			    }
-			   	if(!checkAPI(apikey)){
-			   		throw new Error("BAD API KEY, APIKEY is required parameter.");
-			   		return;
-			   	}
-	   	}
+	  	//check for API KEY.
+		if(req.query.apikey){
+			apikey = req.query.apikey;
+		}
+
+		if(!validator.checkAPIKEY(apikey)){
+			appLogger().error('apikey = ' + apikey);
+			throw new Error("BAD API KEY, APIKEY is required parameter.");
+			return;
+		}
 
 	   	appLogger().info(JSON.stringify(call));
 	
@@ -97,17 +97,16 @@ module.exports = {
 	   		return;
 	   	}
 
-	   	if(GLOBAL.getAppMode() !== 'development'){
-	   		   	//check for API KEY.
-			    if(req.query.apikey){
-			    	apikey = req.query.apikey;
-			    	appLogger().info('API Key = ' + apikey);
-			    }
-			   	if(!checkAPI(apikey)){
-			   		throw new Error("BAD API KEY, APIKEY is required parameter.");
-			   		return;
-			   	}
-	   	}
+	   	//check for API KEY.
+		if(req.query.apikey){
+			apikey = req.query.apikey;
+		}
+
+		if(!validator.checkAPIKEY(apikey)){
+			appLogger().error('apikey = ' + apikey);
+			throw new Error("BAD API KEY, APIKEY is required parameter.");
+			return;
+		}
 
 	   	appLogger().info(JSON.stringify(call));
 	
@@ -164,17 +163,16 @@ module.exports = {
 	   		return;
 	   	}
 
-	   	if(GLOBAL.getAppMode() !== 'development'){
-	   		   	//check for API KEY.
-			    if(req.query.apikey){
-			    	apikey = req.query.apikey;
-			    	appLogger().info('API Key = ' + apikey);
-			    }
-			   	if(!checkAPI(apikey)){
-			   		throw new Error("BAD API KEY, APIKEY is required parameter.");
-			   		return;
-			   	}
-	   	}
+	   	//check for API KEY.
+		if(req.query.apikey){
+			apikey = req.query.apikey;
+		}
+
+		if(!validator.checkAPIKEY(apikey)){
+			appLogger().error('apikey = ' + apikey);
+			throw new Error("BAD API KEY, APIKEY is required parameter.");
+			return;
+		}
 
 	   	appLogger().info(JSON.stringify(call));
 	
