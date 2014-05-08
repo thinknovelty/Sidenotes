@@ -1,0 +1,19 @@
+{
+	"name": "Side_Note_Web_Server",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node RestServer"
+	},
+	"dependencies": {
+		"lodash"      : "*",
+		"moment"      : "*",
+		"handlebars"  : "*",
+		"consolidate" : "*",
+		"express"     : "*",
+		"restler"     : "*",
+		"winston"     : "*",
+		"body-parser" : "*",
+		"compression" : "*"
+	}
+}
