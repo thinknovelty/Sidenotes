@@ -13,6 +13,12 @@ var timeStamp = function(){
 };
 
 module.exports = {
+
+	//get calls
+	getCallBack: function(req, res){
+
+	},
+
 	getCallBackTwo: function(req, res){
 		//required parameters
 		var apikey = null; 
@@ -137,6 +143,8 @@ module.exports = {
 	   	gModular.cleanUp();
 	},
 
+
+	//post calls
 	postCallBack: function(req, res) {
 
 		var apikey = null; 
@@ -192,4 +200,142 @@ module.exports = {
 	   		throw new Error("Issue with returned data.");
 	   	}
 	},
+
+	postCallBackTwo: function(req, res){
+
+	},
+
+	postCallBackThree: function(req, res){
+
+	},
+
+	//put calls
+	putCallBack: function(req, res) {
+
+		var apikey = null; 
+		var call = {
+							module: req.params.mod,
+							callType: 'POST' };
+
+		call = extend(true, req.body, call);
+
+		var gModular = null;
+		var finalObj = null;
+		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+		appLogger().info('Post from ' + ip);
+
+		//this should be here if not we have a issue.
+		if(!call.module){
+	   		throw new Error("BAD MODULAR, MODULAR is a required.");
+	   	}
+
+	   	//check for API KEY.
+		if(!GLOBAL.getValidator().checkAPIKEY(apikey)){
+			throw new Error("BAD API KEY, APIKEY is required parameter.");
+		}
+
+	   	appLogger().info(JSON.stringify(call));
+	   	gModular  = require(GLOBAL.CONTROLLERS  + call.module + 'Controller');
+
+	   	if(!gModular){
+	   		throw new Error("Cannot find " +  call.module + 'Controller.js');
+	   	}
+
+	   	if(gModular.callType !== call.callType){
+	   		throw new Error("A POST call is required for " +  call.module + 'Controller.js');
+	   	}
+
+	   	try{
+	   		gModular.init(req, res, call);
+	   		finalObj = gModular.results();
+	   		
+	   	}catch(err){
+	   		gModular.cleanUp();
+	   		throw new Error(err);
+	   	}
+
+	   	gModular.cleanUp();
+
+	   	if(finalObj && Array.isArray(finalObj)){
+	   		appLogger().info('Post ' + call.module + ' complete..');
+	   		finalObj.push({timeStamp: timeStamp()});
+	   		res.send(finalObj);
+	   	}else{
+	   		throw new Error("Issue with returned data.");
+	   	}
+	},
+
+	putCallBackTwo: function(req, res){
+
+	},
+
+	putCallBackThree: function(req, res){
+
+	},
+
+	//delete calls
+	deleteCallBack: function(req, res) {
+
+		var apikey = null; 
+		var call = {
+							module: req.params.mod,
+							callType: 'POST' };
+
+		call = extend(true, req.body, call);
+
+		var gModular = null;
+		var finalObj = null;
+		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+		appLogger().info('Post from ' + ip);
+
+		//this should be here if not we have a issue.
+		if(!call.module){
+	   		throw new Error("BAD MODULAR, MODULAR is a required.");
+	   	}
+
+	   	//check for API KEY.
+		if(!GLOBAL.getValidator().checkAPIKEY(apikey)){
+			throw new Error("BAD API KEY, APIKEY is required parameter.");
+		}
+
+	   	appLogger().info(JSON.stringify(call));
+	   	gModular  = require(GLOBAL.CONTROLLERS  + call.module + 'Controller');
+
+	   	if(!gModular){
+	   		throw new Error("Cannot find " +  call.module + 'Controller.js');
+	   	}
+
+	   	if(gModular.callType !== call.callType){
+	   		throw new Error("A POST call is required for " +  call.module + 'Controller.js');
+	   	}
+
+	   	try{
+	   		gModular.init(req, res, call);
+	   		finalObj = gModular.results();
+	   		
+	   	}catch(err){
+	   		gModular.cleanUp();
+	   		throw new Error(err);
+	   	}
+
+	   	gModular.cleanUp();
+
+	   	if(finalObj && Array.isArray(finalObj)){
+	   		appLogger().info('Post ' + call.module + ' complete..');
+	   		finalObj.push({timeStamp: timeStamp()});
+	   		res.send(finalObj);
+	   	}else{
+	   		throw new Error("Issue with returned data.");
+	   	}
+	},
+
+	deleteCallBackTwo: function(req, res){
+	},
+
+	deleteCallBackThree: function(req, res){
+
+	},
+
 }

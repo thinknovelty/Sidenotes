@@ -58,10 +58,15 @@ var startExpress = function() {
 var app = startExpress();
 
 if(app){
-	var request = GLOBAL.getRequest();
-	var router = express.Router();
 
-	// app.use(require('express').urlencoded());
+	var request = GLOBAL.getRequest();
+	
+	//router is not used yet TODO: do you need this?
+	var router = require('express').Router();
+
+	//app settings:
+	app.set('title', 'Side_Note_REST');
+	app.enable('strict routing');
 
 	//error handling...
 	app.use(function(err, req, res, next){
@@ -69,78 +74,61 @@ if(app){
 	  appLogger().error(err.stack);
 	});
 
-	//api defined.
+	//route defined.
 
-	//gets
-	app.get('/:mod/:type/:id', function(req, res){
-		request.getCallBackThree(req, res);
-	});
-	app.get('/:mod/:id', function(req, res){
-		request.getCallBackTwo(req, res);
-	});
-	app.get('/:mod', function(req, res){
-		request.getCallBack(req, res);
-	});
-
-	//posts
-	app.post('/:mod/:type/:id', function(req, res){
-		request.postCallBackThree(req, res);
-	});
-	app.post('/:mod/:id', function(req, res){
-		request.postCallBackTwo(req, res);
-	});
-	app.post('/:mod', function(req, res){
-		request.postCallBack(req, res);
+	//one call defined.
+	app.route('/:mod')
+	.all(function(req, res, next) {
+		//not needed at this time.
+	})
+	.get(function(req, res, next) {
+	  request.getCallBack(req, res);
+	})
+	.post(function(req, res, next) {
+	  request.postCallBack(req, res);
+	})
+	.put(function(req, res, next) {
+	  request.putCallBack(req, res);
+	})
+	.delete(function(req, res, next) {
+	  request.deleteCallBack(req, res);
 	});
 
-	//puts
-	app.put('/:mod/:type/:id', function(req, res){
-		request.putCallBackThree(req, res);
+	//two call defined.
+	app.route('/:mod/:id')
+	.all(function(req, res, next) {
+		//not needed at this time.
+	})
+	.get(function(req, res, next) {
+	  request.getCallBackTwo(req, res);
+	})
+	.post(function(req, res, next) {
+	  request.postCallBackTwo(req, res);
+	})
+	.put(function(req, res, next) {
+	  request.putCallBackTwo(req, res);
+	})
+	.delete(function(req, res, next) {
+	  request.deleteCallBackTwo(req, res);
 	});
-	app.put('/:mod/:id', function(req, res){
-		request.putCallBackTwo(req, res);
+
+	//three call defined.
+	app.route('/:mod/:type/:id')
+	.all(function(req, res, next) {
+		//not needed at this time.
+	})
+	.get(function(req, res, next) {
+	  request.getCallBackThree(req, res);
+	})
+	.post(function(req, res, next) {
+	  request.postCallBackThree(req, res);
+	})
+	.put(function(req, res, next) {
+	  request.putCallBackThree(req, res);
+	})
+	.delete(function(req, res, next) {
+	  request.deleteCallBackThree(req, res);
 	});
-	app.put('/:mod', function(req, res){
-		request.putCallBack(req, res);
-	});
-
-
-
-
-
-
-
-	//shortcut function to defining routs
-	// router.param('user_id', function(req, res, next, id) {
-	//   // sample user, would actually fetch from DB, etc...
-	//   req.user = {
-	//     id: id,
-	//     name: 'TJ'
-	//   };
-	//   next();
-	// });
-
-	// router.route('/users/:user_id')
-	// .all(function(req, res, next) {
-	//   // runs for all HTTP verbs first
-	//   // think of it as route specific middleware!
-	// })
-	// .get(function(req, res, next) {
-	//   res.json(req.user);
-	// })
-	// .put(function(req, res, next) {
-	//   // just an example of maybe updating the user
-	//   req.user.name = req.params.name;
-	//   // save user ... etc
-	//   res.json(req.user);
-	// })
-	// .post(function(req, res, next) {
-	//   next(new Error('not implemented'));
-	// })
-	// .delete(function(req, res, next) {
-	//   next(new Error('not implemented'));
-	// })
-
 };
 
 module.exports = {
