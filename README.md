@@ -7,7 +7,7 @@ Running the rest Server:
 node path_to_SideNoteWebServer_dir/RestServer.js
 4. To test the server, open your broswer and do the test call which is build into the rest server.
 
-your_ip:3000/sidenotes/test 
+your_ip:3000/test 
 
 the server should respond back with your ip and a chessy message.
 
@@ -31,3 +31,18 @@ Project Folder Structure:
 /Models - Holds all the model files which controllers can call on to perform work, example models will save,delete,create, and destroy date for the datbase.
 
 /node_modules - This dir is controlled by node.js it houses the node.js controlled libaries which are used throughout this server.
+
+
+Personal notes for project:
+----------------------------
+
+registration call example:
+
+get:
+post:
+put:
+delete:
+
+
+
+
