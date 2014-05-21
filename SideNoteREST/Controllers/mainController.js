@@ -1,92 +1,148 @@
 'use strict';
 //--------------------------------------------------------------------------
-	// Post - 	Create 
-	// Get - 	Read 
-	// Put - 	Update
-	// Delete - Delete
+// Post - 	Create 
+// Get - 	Read 
+// Put - 	Update
+// Delete - Delete
 
-	//Get call example.   /<mod>/variable
-	//					   /<mod>/<type>/variable
+//Get call example.			/<mod> 
+//							/<mod>/variable
+//							/<mod>/<type>/variable
 
-	//Post call example.   /<mod>
-	
+//Post call example.   		/<mod> 
+//							/<mod>/variable
+//							/<mod>/<type>/variable
+
+//Put call example.			/<mod> 
+//							/<mod>/variable
+//							/<mod>/<type>/variable
+
+//Delete call example.   	/<mod> 
+//							/<mod>/variable
+//							/<mod>/<type>/variable
 //--------------------------------------------------------------------------
 
-var addTestResponds = function(app){
-	app.get('/test', function(req, res) {
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		appLogger().info(ip + ' is testing the server.');
-	    res.send([{respondBack: 'Yes, the server is alive and kicking', Error: 'No error yet!...'}]);
-	    appLogger().info('Testing completed.');
-	});
+var addTestResponds = function(app) {
+
+    var tcall = function(req) {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        appLogger().info(ip + ' is testing the server.');
+        return {
+            respondBack: 'Yes, the server is alive and kicking',
+            Error: 'No error yet!...'
+        }
+    };
+
+    app.route('/test')
+        .all(function(req, res) {
+            res.send([tcall(req)]);
+            appLogger().info('Testing completed.');
+        });
+
+    app.route('/')
+        .all(function(req, res) {
+            res.send([tcall(req)]);
+            appLogger().info('Testing completed.');
+        });
 };
 
 var checkAPI = function(apikey) {
-	 var modelAPI = require(GLOBAL.MODELS + 'ValidateAPIKEY');
-	 modelAPI.init(apikey);
-	 return modelAPI.validate();
-}; 
+    var modelAPI = require(GLOBAL.MODELS + 'ValidateAPIKEY');
+    modelAPI.init(apikey);
+    return modelAPI.validate();
+};
 
 var startExpress = function() {
-	var express = require('express');
-	var compress = require('compression');
-	var bodyParser = require('body-parser');
-	
-	var app = express();
+    var express = require('express');
+    var compress = require('compression');
+    var bodyParser = require('body-parser');
 
-	app.use(compress());
-	app.use(bodyParser());
+    var app = express();
 
-	//error handling...
-	app.use(function(err, req, res, next){
-	   res.send(500, err.toString());
-	  appLogger().error(err.stack);
-	});
+    //express settings.
+    app.use(compress());
+    app.use(bodyParser());
+    app.set('title', 'SideNote_REST');
+    app.enable('trust proxy');
 
-	app.listen(appConfig().restPort);
+    //error handling...
+    app.use(function(err, req, res, next) {
+        res.send(500, err.toString());
+        appLogger().error(err.stack);
+    });
 
-	if(app){
-		addTestResponds(app);
-		appLogger().info('Listening on port ' + appConfig().restPort);
-		return app;
-	}else{
-		appLogger().info('Failed to start server on port ' + appConfig().restPort);
-		return false;
-	}
+    app.listen(appConfig().restPort);
+
+    if (app) {
+        addTestResponds(app);
+        appLogger().info('Listening on port ' + appConfig().restPort);
+        return app;
+    } else {
+        appLogger().info('Failed to start server on port ' + appConfig().restPort);
+        return false;
+    }
 };
 //starts express obj
 var app = startExpress();
 
-if(app){
-	var request = GLOBAL.getRequest();
+if (app) {
+    var request = GLOBAL.getRequest();
 
-	// app.use(require('express').urlencoded());
+    app.route('/:mod')
+        .all(function(req, res, next) {
+        })
+        .get(function(req, res, next) {
+            request.getCallBack(req, res);
+        })
+        .post(function(req, res, next) {
+            request.postCallBack(req, res);
+        })
+        .put(function(req, res, next) {
+            request.putCallBack(req, res);
+        })
+        .delete(function(req, res, next) {
+            request.deleteCallBack(req, res);
+        });
 
-	//error handling...
-	app.use(function(err, req, res, next){
-	   res.send(500, err.toString());
-	  appLogger().error(err.stack);
-	});
+    app.route('/:mod/:id')
+        .all(function(req, res, next) {
+        })
+        .get(function(req, res, next) {
+            request.getCallBackTwo(req, res);
+        })
+        .post(function(req, res, next) {
+            request.postCallBackTwo(req, res);
+        })
+        .put(function(req, res, next) {
+            request.putCallBackTwo(req, res);
+        })
+        .delete(function(req, res, next) {
+            request.deleteCallBackTwo(req, res);
+        });
 
-	//api defined.
-	app.get('/:mod/:type/:id', function(req, res){
-		request.getCallBackThree(req, res);
-	});
-	app.get('/:mod/:id', function(req, res){
-		request.getCallBackTwo(req, res);
-	});
-	app.post('/:mod', function(req, res){
-		request.postCallBack(req, res);
-	});
+    app.route('/:mod/:type/:id')
+        .all(function(req, res, next) {
+        })
+        .get(function(req, res, next) {
+            request.getCallBackThree(req, res);
+        })
+        .post(function(req, res, next) {
+            request.postCallBackThree(req, res);
+        })
+        .put(function(req, res, next) {
+            request.putCallBackThree(req, res);
+        })
+        .delete(function(req, res, next) {
+            request.deleteCallBackThree(req, res);
+        });
 };
 
 module.exports = {
-	didLoadWithoutError: function(){
-		if (app){
-			return true;
-		}else{
-			return false;
-		}
-	},
+    didLoadWithoutError: function() {
+        if (app) {
+            return true;
+        } else {
+            return false;
+        }
+    },
 };
-
