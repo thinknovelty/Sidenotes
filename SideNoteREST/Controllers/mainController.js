@@ -58,15 +58,9 @@ var startExpress = function() {
 var app = startExpress();
 
 if(app){
-
 	var request = GLOBAL.getRequest();
-	
-	//router is not used yet TODO: do you need this?
-	var router = require('express').Router();
 
-	//app settings:
-	app.set('title', 'Side_Note_REST');
-	app.enable('strict routing');
+	// app.use(require('express').urlencoded());
 
 	//error handling...
 	app.use(function(err, req, res, next){
@@ -74,60 +68,15 @@ if(app){
 	  appLogger().error(err.stack);
 	});
 
-	//route defined.
-
-	//one call defined.
-	app.route('/:mod')
-	.all(function(req, res, next) {
-		//not needed at this time.
-	})
-	.get(function(req, res, next) {
-	  request.getCallBack(req, res);
-	})
-	.post(function(req, res, next) {
-	  request.postCallBack(req, res);
-	})
-	.put(function(req, res, next) {
-	  request.putCallBack(req, res);
-	})
-	.delete(function(req, res, next) {
-	  request.deleteCallBack(req, res);
+	//api defined.
+	app.get('/:mod/:type/:id', function(req, res){
+		request.getCallBackThree(req, res);
 	});
-
-	//two call defined.
-	app.route('/:mod/:id')
-	.all(function(req, res, next) {
-		//not needed at this time.
-	})
-	.get(function(req, res, next) {
-	  request.getCallBackTwo(req, res);
-	})
-	.post(function(req, res, next) {
-	  request.postCallBackTwo(req, res);
-	})
-	.put(function(req, res, next) {
-	  request.putCallBackTwo(req, res);
-	})
-	.delete(function(req, res, next) {
-	  request.deleteCallBackTwo(req, res);
+	app.get('/:mod/:id', function(req, res){
+		request.getCallBackTwo(req, res);
 	});
-
-	//three call defined.
-	app.route('/:mod/:type/:id')
-	.all(function(req, res, next) {
-		//not needed at this time.
-	})
-	.get(function(req, res, next) {
-	  request.getCallBackThree(req, res);
-	})
-	.post(function(req, res, next) {
-	  request.postCallBackThree(req, res);
-	})
-	.put(function(req, res, next) {
-	  request.putCallBackThree(req, res);
-	})
-	.delete(function(req, res, next) {
-	  request.deleteCallBackThree(req, res);
+	app.post('/:mod', function(req, res){
+		request.postCallBack(req, res);
 	});
 };
 

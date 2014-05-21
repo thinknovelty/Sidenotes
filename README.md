@@ -40,7 +40,22 @@ registration call example:
 
 post: /register
 
-account call example:
+	notes:
+	------
+	- This is used to register a new user.
+	- All variables are passed via post.
+
+	DB Tables:
+	----------
+	AccountCredential
+	AccountInfo
+	Accounts
+
+
+
+
+Account call example:
+
 get:    /account/2893479284?params=firstname,lastname,birthday (Params = Return these user details)
 get:    /account/2893479284 (No params = Return all user details)
 put:    /account/2893479284 (post variables)
