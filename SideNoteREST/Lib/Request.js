@@ -8,7 +8,7 @@ var timeStamp = function() {
 };
 
 module.exports = {
-	
+
     getCallBack: function(req, res) {
         //required parameters
         var apikey = null;
@@ -201,12 +201,9 @@ module.exports = {
     postCallBack: function(req, res) {
 
         var apikey = null;
-        var call = {
-            module: req.params.mod,
-            callType: 'POST'
-        };
 
-        call = extend(true, req.body, call);
+        var call = extend(true, req.params , req.body);
+        call.callType = 'POST';
 
         var gModular = null;
         var finalObj = null;
@@ -215,7 +212,7 @@ module.exports = {
         appLogger().info('Post from ' + ip);
 
         //this should be here if not we have a issue.
-        if (!call.module) {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
         }
 
@@ -225,14 +222,14 @@ module.exports = {
         }
 
         appLogger().info(JSON.stringify(call));
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        gModular = require(GLOBAL.CONTROLLERS + call.mod + 'Controller');
 
         if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
+            throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.module + 'Controller.js');
+            throw new Error("A POST call is required for " + call.mod + 'Controller.js');
         }
 
         try {
@@ -247,7 +244,7 @@ module.exports = {
         gModular.cleanUp();
 
         if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Post ' + call.module + ' complete..');
+            appLogger().info('Post ' + call.mod + ' complete..');
             finalObj.push({
                 timeStamp: timeStamp()
             });

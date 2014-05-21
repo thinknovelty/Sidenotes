@@ -63,7 +63,6 @@ var startExpress = function() {
     app.use(compress());
     app.use(bodyParser());
     app.set('title', 'SideNote_REST');
-    app.enable('trust proxy');
 
     //error handling...
     app.use(function(err, req, res, next) {

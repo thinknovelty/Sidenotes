@@ -1,43 +1,58 @@
 // RegisterModel.js
+// ----------------------------------------
+// CRUD
 
-var moduleName = 'Register';
-// this is the model which we will use to register a patron.
 
 
-var api = null;
-var whoAmI = 'anonymous';
+
+
+
+
+
+// ----------------------------------------
+
+var moduleName = 'registerModel';
+
+//generates a random 10 digit key;
+var generateRegistrationKey = function() {
+
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 10; i++) {
+
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+};
 
 module.exports = {
-	init: function (api){
+   registrationKey : null,
 
-	if(api == null){
-			whoAmI = 'anonymous';
-			return;
-	}
+    init: function() {
+        if (!registrationKey) {
+            registrationKey = generateRegistrationKey();
+        }
+    },
 
-	if(GLOBAL.getAppMode() == 'development'){
-		whoAmI = '00000000';
-	}
+    getRegistrationKey: function() {
+        return registrationKey;
+    },
 
-	//getting date and find the person who wons the API
-	//set whoAmI to the person who owns this api key. db call
-	appLogger().info('Checking who owns api = ' + api);
+    create: function() {
 
-	},
+    },
 
-	setAPI : function(api){
-		this.api = api;
-	},
+    read: function() {
 
-	getAPI : function(){
-		return this.api;
-	},
+    },
 
-	validate : function(){
-		if (whoAmI == 'anonymous'){
-			return false;
-		}
+    update: function() {
 
-		return true;
-	},
+    },
+
+    delete: function() {
+
+    },
+
 };
