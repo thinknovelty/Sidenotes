@@ -3,14 +3,14 @@
 //registerController.js
 
 // -required variables
-	// firstname
-	// lastname
-	// username
-	// apikey
-	// email
-	// pw
-	// dob
-	
+// firstname
+// lastname
+// username
+// apikey
+// email
+// pw
+// dob
+
 
 
 
@@ -73,7 +73,7 @@ var writeToDB = function(model) {
 };
 
 
-module.exports = {
+module.exports = extend(getControllerBase(), {
     callType: 'POST',
 
     init: function(req, res, call) {
@@ -145,17 +145,19 @@ module.exports = {
     },
 
     results: function() {
-    	
-    	console.log(MODELS + moduleName + 'Model');
-
-    	var model = require(MODELS + moduleName + 'Model');
+        var model = require(MODELS + moduleName + 'Model');
+        model.init();
+        model.create();
 
         if (validate() == true) {
             writeToDB();
+            model.cleanUp();
             return [{
                 Message: 'Successfully registered'
             }];
         }
+
+        model.cleanUp();
         return [{
             Error: validate()
         }];
@@ -169,4 +171,4 @@ module.exports = {
         lastname = null;
         dob = null;
     }
-};
+});

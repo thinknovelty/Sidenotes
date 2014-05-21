@@ -14,6 +14,7 @@
 		"restler"     : "*",
 		"winston"     : "*",
 		"body-parser" : "*",
-		"compression" : "*"
+		"compression" : "*",
+		"express-mailer" : "*"
 	}
 }

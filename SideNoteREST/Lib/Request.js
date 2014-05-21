@@ -221,7 +221,6 @@ module.exports = {
             throw new Error("BAD API KEY, APIKEY is required parameter.");
         }
 
-        appLogger().info(JSON.stringify(call));
         gModular = require(GLOBAL.CONTROLLERS + call.mod + 'Controller');
 
         if (!gModular) {

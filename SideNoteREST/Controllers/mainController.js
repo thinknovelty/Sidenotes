@@ -46,6 +46,14 @@ var addTestResponds = function(app) {
         });
 };
 
+var addMailer = function(app) {
+    var mailer = require('express-mailer');
+    mailer.extend(app, appConfig().email);
+
+    app.set('views', GLOBAL.APP_ROOT  + '/views');
+	app.set('view engine', 'jade');
+};
+
 var checkAPI = function(apikey) {
     var modelAPI = require(GLOBAL.MODELS + 'ValidateAPIKEY');
     modelAPI.init(apikey);
@@ -74,6 +82,7 @@ var startExpress = function() {
 
     if (app) {
         addTestResponds(app);
+        addMailer(app);
         appLogger().info('Listening on port ' + appConfig().restPort);
         return app;
     } else {
@@ -128,6 +137,8 @@ if (app) {
         .delete(function(req, res, next) {
             request.deleteCallBackThree(req, res);
         });
+
+    GLOBAL.app = app;
 };
 
 module.exports = {

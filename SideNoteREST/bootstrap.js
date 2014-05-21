@@ -17,6 +17,10 @@ if ( !GLOBAL.bootstrapped ) {
 	GLOBAL.MODELS      	 = appRoot + '/Models/';
 	GLOBAL.LIB      	 = appRoot + '/Lib/';
 
+	// static objects
+	GLOBAL.mailer = null;
+	GLOBAL.app = null;
+
 
 	GLOBAL.extend = function() {
 		if(arguments.length == 2){
@@ -34,6 +38,14 @@ if ( !GLOBAL.bootstrapped ) {
 		return require(root + '/Config/'+getAppMode()+'.js');
 	};
 
+	GLOBAL.getModelBase = function(){
+		return require(GLOBAL.MODELS + 'modelBase');
+	},
+
+	GLOBAL.getControllerBase = function(){
+		return require(GLOBAL.CONTROLLERS + 'controllerBase');
+	},
+
 	GLOBAL.getAppMode = function(property) {
 		return appMode;
 	};
@@ -41,6 +53,14 @@ if ( !GLOBAL.bootstrapped ) {
 	//this lib offers a great deal of good features.
 	GLOBAL.getUtil = function(){
 		return require('util');
+	};
+
+	GLOBAL.getApp = function(){
+		return app;
+	};
+
+	GLOBAL.getMailer = function(){
+		return mailer;
 	};
 
 	GLOBAL.getRequest = function(){
