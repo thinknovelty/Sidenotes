@@ -89,8 +89,6 @@ if (app) {
     var request = GLOBAL.getRequest();
 
     app.route('/:mod')
-        .all(function(req, res, next) {
-        })
         .get(function(req, res, next) {
             request.getCallBack(req, res);
         })
@@ -105,8 +103,6 @@ if (app) {
         });
 
     app.route('/:mod/:id')
-        .all(function(req, res, next) {
-        })
         .get(function(req, res, next) {
             request.getCallBackTwo(req, res);
         })
@@ -121,8 +117,6 @@ if (app) {
         });
 
     app.route('/:mod/:type/:id')
-        .all(function(req, res, next) {
-        })
         .get(function(req, res, next) {
             request.getCallBackThree(req, res);
         })
