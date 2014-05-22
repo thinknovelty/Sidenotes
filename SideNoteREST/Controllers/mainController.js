@@ -50,8 +50,6 @@ var addMailer = function(app) {
     var mailer = require('express-mailer');
     mailer.extend(app, appConfig().email);
 
-    app.set('views', GLOBAL.APP_ROOT  + '/views');
-	app.set('view engine', 'jade');
 };
 
 var checkAPI = function(apikey) {
@@ -70,6 +68,8 @@ var startExpress = function() {
     //express settings.
     app.use(compress());
     app.use(bodyParser());
+    app.set('views', GLOBAL.APP_ROOT  + '/views');
+    app.set('view engine', 'jade');
     app.set('title', 'SideNote_REST');
 
     //error handling...

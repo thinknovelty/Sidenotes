@@ -59,14 +59,14 @@ var validate = function() {
 
 var writeToDB = function(model) {
 
-    var writeInto = {
-        firstname: firstname,
-        lastname: lastname,
-        username: username,
-        email: email,
-        pw: pw,
-        dob: dob,
-    };
+    // var writeInto = {
+    //     firstname: firstname,
+    //     lastname: lastname,
+    //     username: username,
+    //     email: email,
+    //     pw: pw,
+    //     dob: dob,
+    // };
 
     // console.log('Writing  to DB ' + JSON.stringify(writeInto));
     //call my model and the model should do CRUD 
@@ -147,10 +147,9 @@ module.exports = extend(getControllerBase(), {
     results: function() {
         var model = require(MODELS + moduleName + 'Model');
         model.init();
-        model.create();
 
         if (validate() == true) {
-            writeToDB();
+            model.create(email);
             model.cleanUp();
             return [{
                 Message: 'Successfully registered'

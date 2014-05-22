@@ -204,6 +204,9 @@ module.exports = {
 
         var call = extend(true, req.params , req.body);
         call.callType = 'POST';
+        
+        appLogger().info(JSON.stringify(call));
+
 
         var gModular = null;
         var finalObj = null;

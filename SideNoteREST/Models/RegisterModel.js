@@ -12,7 +12,7 @@
 
 // ----------------------------------------
 
-var moduleName = 'registerModel';
+var moduleName = 'register';
 
 //generates a random 30 digit key;
 var generateRegistrationKey = function() {
@@ -37,17 +37,22 @@ module.exports = extend(getModelBase(), {
 
     create: function(email) {
         //write it to database;
-        console.log(getMailer());
+
+        var registerLink = '127.0.0.1:3000/' + moduleName + '/activation?registerKey=' + this.registrationKey;
+
+        console.log(registerLink);
+
         getApp().mailer.send('email', {
-            to: email, // REQUIRED. This can be a comma delimited string just like a normal email to field. 
-            subject: 'Test Email', // REQUIRED.
-            otherProperty: 'Other Property' // All additional properties are also passed to the template as local variables.
+            to: email, // REQUIRED.
+            subject: 'Registration Side Notes', // REQUIRED.
+            mylink: registerLink,
         }, function(err) {
             if (err) {
                 // handle error
                 console.log(err);
                 return;
             }
+            appLogger().info('Email Sent');
         });
     },
 

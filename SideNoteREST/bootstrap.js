@@ -18,7 +18,6 @@ if ( !GLOBAL.bootstrapped ) {
 	GLOBAL.LIB      	 = appRoot + '/Lib/';
 
 	// static objects
-	GLOBAL.mailer = null;
 	GLOBAL.app = null;
 
 

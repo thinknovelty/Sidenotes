@@ -6,15 +6,15 @@
 		"start": "node RestServer"
 	},
 	"dependencies": {
-		"lodash"      : "*",
-		"moment"      : "*",
-		"handlebars"  : "*",
-		"consolidate" : "*",
-		"express"     : "*",
-		"restler"     : "*",
-		"winston"     : "*",
-		"body-parser" : "*",
-		"compression" : "*",
-		"express-mailer" : "*"
+		"lodash"      		: "*",
+		"moment"      		: "*",
+		"handlebars"  		: "*",
+		"consolidate" 		: "*",
+		"express"     		: "*",
+		"restler"     		: "*",
+		"winston"     		: "*",
+		"body-parser" 		: "*",
+		"compression" 		: "*",
+		"express-mailer" 	: "*"
 	}
 }
