@@ -7,16 +7,17 @@ var moduleName = 'Login';
 //this is the controller for the login process.
 
 module.exports = {
-	callType : 'POST',
-	init: function (){
+    callType: 'POST',
+    init: function() {
 
-	},
+    },
 
-	results : function(){
+    results: function() {
 
-		return [{results: 'Success'}];
-	},
+        return [{
+            results: 'Success'
+        }];
+    },
 
-	cleanUp : function(){
-	}
+    cleanUp: function() {}
 };

@@ -68,7 +68,7 @@ var startExpress = function() {
     //express settings.
     app.use(compress());
     app.use(bodyParser());
-    app.set('views', GLOBAL.APP_ROOT  + '/views');
+    app.set('views', GLOBAL.APP_ROOT + '/views');
     app.set('view engine', 'jade');
     app.set('title', 'SideNote_REST');
 

@@ -3,6 +3,7 @@ module.exports = {
     enableServer: true,
     serverRoot: null,
     restPort: 1000,
+    host: '10.0.3.149',
     email: {
         from: 'no-reply@example.com',
         host: 'smtp.gmail.com', // hostname

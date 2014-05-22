@@ -2,102 +2,101 @@
 //adds GLOBAL.settings if needed.
 
 //change to production when ready
-var appMode = 'development'; 
+var appMode = 'development';
 // var appMode = 'production';
 
 var fs = require('fs'); //node method call to get file system
 var appRoot = __dirname; //The name of the directory that the currently executing script resides in.
 var root = appRoot;
 
-if ( !GLOBAL.bootstrapped ) {
+if (!GLOBAL.bootstrapped) {
 
-	GLOBAL.APP_ROOT      = appRoot;
-	GLOBAL.VIEW_ROOT     = appRoot + '/Views/';
-	GLOBAL.CONTROLLERS   = appRoot + '/Controllers/';
-	GLOBAL.MODELS      	 = appRoot + '/Models/';
-	GLOBAL.LIB      	 = appRoot + '/Lib/';
+    GLOBAL.APP_ROOT = appRoot;
+    GLOBAL.VIEW_ROOT = appRoot + '/Views/';
+    GLOBAL.CONTROLLERS = appRoot + '/Controllers/';
+    GLOBAL.MODELS = appRoot + '/Models/';
+    GLOBAL.LIB = appRoot + '/Lib/';
 
-	// static objects
-	GLOBAL.app = null;
-
-
-	GLOBAL.extend = function() {
-		if(arguments.length == 2){
-			//not deep mix
-			return require('node.extend')(arguments[0], arguments[1]);
-
-		}else if(arguments.length == 3){
-			//deep mix
-			return require('node.extend')(arguments[0], arguments[1], arguments[2]);
-		}
-	};
+    // static objects
+    GLOBAL.app = null;
 
 
-	GLOBAL.appConfig = function() {
-		return require(root + '/Config/'+getAppMode()+'.js');
-	};
+    GLOBAL.extend = function() {
+        if (arguments.length == 2) {
+            //not deep mix
+            return require('node.extend')(arguments[0], arguments[1]);
 
-	GLOBAL.getModelBase = function(){
-		return require(GLOBAL.MODELS + 'modelBase');
-	},
+        } else if (arguments.length == 3) {
+            //deep mix
+            return require('node.extend')(arguments[0], arguments[1], arguments[2]);
+        }
+    };
 
-	GLOBAL.getControllerBase = function(){
-		return require(GLOBAL.CONTROLLERS + 'controllerBase');
-	},
 
-	GLOBAL.getAppMode = function(property) {
-		return appMode;
-	};
+    GLOBAL.appConfig = function() {
+        return require(root + '/Config/' + getAppMode() + '.js');
+    };
 
-	//this lib offers a great deal of good features.
-	GLOBAL.getUtil = function(){
-		return require('util');
-	};
+    GLOBAL.getModelBase = function() {
+        return require(GLOBAL.MODELS + 'modelBase');
+    },
 
-	GLOBAL.getApp = function(){
-		return app;
-	};
+    GLOBAL.getControllerBase = function() {
+        return require(GLOBAL.CONTROLLERS + 'controllerBase');
+    },
 
-	GLOBAL.getMailer = function(){
-		return mailer;
-	};
+    GLOBAL.getAppMode = function(property) {
+        return appMode;
+    };
 
-	GLOBAL.getRequest = function(){
-		return require(GLOBAL.LIB + 'Request');
-	};
+    //this lib offers a great deal of good features.
+    GLOBAL.getUtil = function() {
+        return require('util');
+    };
 
-	GLOBAL.getValidator = function(){
-		return require(GLOBAL.LIB + 'Validator');
-	};
+    GLOBAL.getApp = function() {
+        return app;
+    };
 
-	GLOBAL.getDecrypter = function(){
-		return require(GLOBAL.LIB + 'Decrypter');
-	};
+    GLOBAL.getMailer = function() {
+        return mailer;
+    };
 
-	GLOBAL.appLogger = function() {
-		return require(GLOBAL.LIB + 'Logger.js');
-	};
+    GLOBAL.getRequest = function() {
+        return require(GLOBAL.LIB + 'Request');
+    };
 
-	GLOBAL.appRequire = function(module) {
-		return require(root + module);
-	};
+    GLOBAL.getValidator = function() {
+        return require(GLOBAL.LIB + 'Validator');
+    };
 
-	GLOBAL.loadView = function(view) {
-		return fs.readFileSync(VIEW_ROOT + view, 'utf-8');
-	};
+    GLOBAL.getDecrypter = function() {
+        return require(GLOBAL.LIB + 'Decrypter');
+    };
 
-	GLOBAL.loadTemplate = function(template) {
-		return fs.readFileSync(TEMPLATE_ROOT + template, 'utf-8');
-	};
+    GLOBAL.appLogger = function() {
+        return require(GLOBAL.LIB + 'Logger.js');
+    };
 
-	GLOBAL.requireController = function(route) {
-		return require(root + '/Controllers' + route);
-	};
+    GLOBAL.appRequire = function(module) {
+        return require(root + module);
+    };
 
-	appConfig();
-	appLogger().info('config mode ' + getAppMode());
-	appLogger().info('bootstrap complete');
+    GLOBAL.loadView = function(view) {
+        return fs.readFileSync(VIEW_ROOT + view, 'utf-8');
+    };
+
+    GLOBAL.loadTemplate = function(template) {
+        return fs.readFileSync(TEMPLATE_ROOT + template, 'utf-8');
+    };
+
+    GLOBAL.requireController = function(route) {
+        return require(root + '/Controllers' + route);
+    };
+
+    appConfig();
+    appLogger().info('config mode ' + getAppMode());
+    appLogger().info('bootstrap complete');
 }
 
 GLOBAL.bootstrapped = true;
-

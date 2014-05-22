@@ -1,29 +1,28 @@
 /**
- * Logging. Right now this is just a wrapper for 
+ * Logging. Right now this is just a wrapper for
  * the winston lib. The wrapping is so logging can
  * be swapped easily.
  */
 var winston = require('winston');
-var Logger = {
-};
+var Logger = {};
 
 winston.addColors({
-	info    : "green",
-	warning : "orange",
-	debug   : "blue",
-	error   : "red"
+    info: "green",
+    warning: "orange",
+    debug: "blue",
+    error: "red"
 });
 
-var logger = new (winston.Logger)({
+var logger = new(winston.Logger)({
     transports: [
-      new (winston.transports.Console)({
-      	'timestamp':true,
-      	level     : 'info',
-		silent    : false,
-		colorize  : true})
+        new(winston.transports.Console)({
+            'timestamp': true,
+            level: 'info',
+            silent: false,
+            colorize: true
+        })
     ]
 });
 
 logger.extend(Logger);
 module.exports = Logger;
-

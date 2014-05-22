@@ -202,9 +202,9 @@ module.exports = {
 
         var apikey = null;
 
-        var call = extend(true, req.params , req.body);
+        var call = extend(true, req.params, req.body);
         call.callType = 'POST';
-        
+
         appLogger().info(JSON.stringify(call));
 
 

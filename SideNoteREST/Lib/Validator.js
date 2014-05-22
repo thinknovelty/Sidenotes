@@ -5,75 +5,75 @@ var moduleName = 'Validator';
 
 module.exports = {
 
-	sanitize : function(value) {
-		// Sanitize value and return it
-		return value;
-	},
-	// Validate e-mail string
-	isEmail : function(email) {
+    sanitize: function(value) {
+        // Sanitize value and return it
+        return value;
+    },
+    // Validate e-mail string
+    isEmail: function(email) {
 
-		if(email == null){
-			return 'BAD email address';
-		}
+        if (email == null) {
+            return 'BAD email address';
+        }
 
-		return true;
-	},
-	// Validate username string
-	isUsername: function(username){
+        return true;
+    },
+    // Validate username string
+    isUsername: function(username) {
 
-		if(username == null){
-			return 'BAD username';
-		}
+        if (username == null) {
+            return 'BAD username';
+        }
 
-		return true;
-	},
-	// Validate password string
-	isPassword : function(password){
+        return true;
+    },
+    // Validate password string
+    isPassword: function(password) {
 
-		if(password == null || password == ' '){
-			return 'BAD password';
-		}
-		
-		var decryptor = getDecrypter();
-		return true;
-	},
-	// Validate firstname string
-	isFirstname: function(firstname){
+        if (password == null || password == ' ') {
+            return 'BAD password';
+        }
 
-		if(firstname == null){
-			return 'BAD firstname';
-		}
+        var decryptor = getDecrypter();
+        return true;
+    },
+    // Validate firstname string
+    isFirstname: function(firstname) {
 
-		return true;
-	},
-	// Validate lastname string
-	isLastname: function(lastname){
+        if (firstname == null) {
+            return 'BAD firstname';
+        }
 
-		if(lastname == null){
-			return 'BAD lastname';
-		}
+        return true;
+    },
+    // Validate lastname string
+    isLastname: function(lastname) {
 
-		return true;	
-	},
-	// Validate dateofbirth string
-	isDateofbirth: function(dateofbirth){
+        if (lastname == null) {
+            return 'BAD lastname';
+        }
 
-		if(dateofbirth == null){
-			return 'BAD dateofbirth';
-		}
+        return true;
+    },
+    // Validate dateofbirth string
+    isDateofbirth: function(dateofbirth) {
 
-		return true;	
-	},
-	// we currently just check for a number.
-	checkAPIKEY : function(apikey){
+        if (dateofbirth == null) {
+            return 'BAD dateofbirth';
+        }
 
-		if(GLOBAL.getAppMode() == 'development'){
-			return true;
-		}
+        return true;
+    },
+    // we currently just check for a number.
+    checkAPIKEY: function(apikey) {
 
-		if (isNaN(apikey) || apikey == null){
-			return false;
-		}
-		return true;
-	}
+        if (GLOBAL.getAppMode() == 'development') {
+            return true;
+        }
+
+        if (isNaN(apikey) || apikey == null) {
+            return false;
+        }
+        return true;
+    }
 };
