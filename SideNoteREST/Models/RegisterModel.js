@@ -37,15 +37,13 @@ module.exports = extend(getModelBase(), {
 
     create: function(email) {
         //write it to database;
-
-        var registerLink = '127.0.0.1:3000/' + moduleName + '/activation?registerKey=' + this.registrationKey;
-
-        console.log(registerLink);
-
+        var mylink = appConfig().host + '/' + moduleName + '/activation?registerKey=' + this.registrationKey;
         getApp().mailer.send('email', {
             to: email, // REQUIRED.
             subject: 'Registration Side Notes', // REQUIRED.
-            mylink: registerLink,
+            mylink: mylink,
+            ip:  appConfig().host,
+            port:  appConfig().restPort
         }, function(err) {
             if (err) {
                 // handle error
