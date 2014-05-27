@@ -18,7 +18,7 @@ if (!GLOBAL.bootstrapped) {
     GLOBAL.LIB = appRoot + '/Lib/';
 
     // static objects
-    GLOBAL.app = null;
+    GLOBAL.App = null;
 
 
     GLOBAL.extend = function() {
@@ -55,11 +55,11 @@ if (!GLOBAL.bootstrapped) {
     };
 
     GLOBAL.getApp = function() {
-        return app;
+        return App;
     };
 
     GLOBAL.getMailer = function() {
-        return mailer;
+        return  App.mailer;
     };
 
     GLOBAL.getRequest = function() {

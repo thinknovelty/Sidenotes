@@ -22,6 +22,9 @@
 //							/<mod>/<type>/variable
 //--------------------------------------------------------------------------
 
+//mainController.js
+var moduleName = 'main';
+
 var addTestResponds = function(app) {
 
     var tcall = function(req) {
@@ -138,10 +141,11 @@ if (app) {
             request.deleteCallBackThree(req, res);
         });
 
-    GLOBAL.app = app;
+    //Makes the App obj static.
+    GLOBAL.App = app;
 };
 
-module.exports = {
+module.exports = extend(getControllerBase(),{
     didLoadWithoutError: function() {
         if (app) {
             return true;
@@ -149,4 +153,4 @@ module.exports = {
             return false;
         }
     },
-};
+});

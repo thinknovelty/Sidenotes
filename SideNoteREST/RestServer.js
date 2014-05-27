@@ -7,14 +7,13 @@ require('./bootstrap'); //just loads globals, not catching return
 //are we in development or not?
 if (GLOBAL.bootstrapped && GLOBAL.getAppMode() == 'development') {
 
-    var didWeStartWithoutError = require(GLOBAL.CONTROLLERS + 'mainController');
+    var mainController = require(GLOBAL.CONTROLLERS + 'mainController');
 
-    if (didWeStartWithoutError.didLoadWithoutError()) {
+    if (mainController.didLoadWithoutError()) {
         appLogger().info('starting rest server in development mode');
     } else {
-        appLogger().info('Error starting rest server in development');
+        appLogger().error('Error starting rest server in development');
     }
-
 }
 
 if (GLOBAL.bootstrapped && GLOBAL.getAppMode() == 'production') {

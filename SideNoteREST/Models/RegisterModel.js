@@ -38,7 +38,7 @@ module.exports = extend(getModelBase(), {
     create: function(email) {
         //write it to database;
         var mylink = appConfig().host + '/' + moduleName + '/activation?registerKey=' + this.registrationKey;
-        getApp().mailer.send('email', {
+        getMailer().send('register_email', {
             to: email, // REQUIRED.
             subject: 'Registration Side Notes', // REQUIRED.
             mylink: mylink,

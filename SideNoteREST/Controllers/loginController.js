@@ -1,4 +1,16 @@
 'use strict';
+
+// -----------------------------------------------------------
+//loginController.js
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------
 //LoginController.js
 var moduleName = 'Login';
 
@@ -6,7 +18,7 @@ var moduleName = 'Login';
 
 //this is the controller for the login process.
 
-module.exports = {
+module.exports = extend(getControllerBase(),{
     callType: 'POST',
     init: function() {
 
@@ -20,4 +32,4 @@ module.exports = {
     },
 
     cleanUp: function() {}
-};
+});
