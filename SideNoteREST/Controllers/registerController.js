@@ -149,7 +149,19 @@ module.exports = extend(getControllerBase(), {
         model.init();
 
         if (validate() == true) {
-            model.create(email);
+            
+            // bundle the obj
+            var userData = {
+                apikey : apikey,
+                email : email,
+                firstname : firstname,
+                lastname : lastname,
+                dob : dob,
+                username : username,
+                pw : pw,
+            };
+
+            model.create(userData);
             model.cleanUp();
             return [{
                 Message: 'Successfully registered'

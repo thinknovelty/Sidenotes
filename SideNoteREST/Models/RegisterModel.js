@@ -35,15 +35,17 @@ module.exports = extend(getModelBase(), {
         }
     },
 
-    create: function(email) {
+    create: function(userData) {
         //write it to database;
+        //userData
         var mylink = appConfig().host + '/' + moduleName + '/activation?registerKey=' + this.registrationKey;
-        getMailer().send('register_email', {
-            to: email, // REQUIRED.
-            subject: 'Registration Side Notes', // REQUIRED.
-            mylink: mylink,
-            ip:  appConfig().host,
-            port:  appConfig().restPort
+
+        var mailer = getMailer();
+
+        mailer.send('register_email', {
+            to: userData.email, // REQUIRED.
+            subject: 'no-reply - Registration Side Notes', // REQUIRED.
+            mylink: mylink
         }, function(err) {
             if (err) {
                 // handle error

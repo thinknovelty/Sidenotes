@@ -8,6 +8,12 @@ var appMode = 'development';
 var fs = require('fs'); //node method call to get file system
 var appRoot = __dirname; //The name of the directory that the currently executing script resides in.
 var root = appRoot;
+var db = new require('node-mysql');
+
+// var db = require('node-mysql');
+// var sndb = db.DB;
+// var BaseRow = db.Row;
+// var BaseTable = db.Table;
 
 if (!GLOBAL.bootstrapped) {
 
@@ -17,9 +23,9 @@ if (!GLOBAL.bootstrapped) {
     GLOBAL.MODELS = appRoot + '/Models/';
     GLOBAL.LIB = appRoot + '/Lib/';
 
+
     // static objects
     GLOBAL.App = null;
-
 
     GLOBAL.extend = function() {
         if (arguments.length == 2) {
@@ -32,10 +38,22 @@ if (!GLOBAL.bootstrapped) {
         }
     };
 
+    GLOBAL.getAppMode = function(property) {
+        return appMode;
+    };
 
     GLOBAL.appConfig = function() {
         return require(root + '/Config/' + getAppMode() + '.js');
     };
+
+    GLOBAL.dateBase = new require('node-mysql').DB({
+        host: 'localhost',
+        user: 'root',
+        password: '',
+        database: 'prod_clone'
+    });
+
+    // console.log(appConfig().datebase);
 
     GLOBAL.getModelBase = function() {
         return require(GLOBAL.MODELS + 'modelBase');
@@ -44,10 +62,6 @@ if (!GLOBAL.bootstrapped) {
     GLOBAL.getControllerBase = function() {
         return require(GLOBAL.CONTROLLERS + 'controllerBase');
     },
-
-    GLOBAL.getAppMode = function(property) {
-        return appMode;
-    };
 
     //this lib offers a great deal of good features.
     GLOBAL.getUtil = function() {
@@ -59,7 +73,7 @@ if (!GLOBAL.bootstrapped) {
     };
 
     GLOBAL.getMailer = function() {
-        return  App.mailer;
+        return App.mailer;
     };
 
     GLOBAL.getRequest = function() {
@@ -86,15 +100,6 @@ if (!GLOBAL.bootstrapped) {
         return fs.readFileSync(VIEW_ROOT + view, 'utf-8');
     };
 
-    GLOBAL.loadTemplate = function(template) {
-        return fs.readFileSync(TEMPLATE_ROOT + template, 'utf-8');
-    };
-
-    GLOBAL.requireController = function(route) {
-        return require(root + '/Controllers' + route);
-    };
-
-    appConfig();
     appLogger().info('config mode ' + getAppMode());
     appLogger().info('bootstrap complete');
 }

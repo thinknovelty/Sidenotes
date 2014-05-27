@@ -5,7 +5,7 @@ module.exports = {
     restPort: 80,
     host: '127.0.0.1',
     email: {
-        from: 'no-reply@example.com',
+        from: 'no-reply@gmail.com',
         host: 'smtp.gmail.com', // hostname
         secureConnection: true, // use SSL
         port: 465, // port for secure SMTP
@@ -14,5 +14,11 @@ module.exports = {
             user: 'SideNotesApp@gmail.com',
             pass: 'netpass1'
         }
+    },
+    datebase: {
+        host: '127.0.0.1',
+        user: 'root',
+        password: 'admin',
+        database: 'SideNotesApp_db_01'
     }
 };
