@@ -19,6 +19,6 @@ module.exports = {
         host: '127.0.0.1',
         user: 'root',
         password: 'admin',
-        database: 'SideNotesApp_db_01'
+        database: 'sidenotedb_01'
     }
 };

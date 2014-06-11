@@ -26,6 +26,7 @@ if (!GLOBAL.bootstrapped) {
 
     // static objects
     GLOBAL.App = null;
+    GLOBAL.dateBase = null;
 
     GLOBAL.extend = function() {
         if (arguments.length == 2) {

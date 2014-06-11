@@ -62,3 +62,18 @@ put:    /account/2893479284 (post variables)
 delete: /account/2893479284 (post variables)
 
 
+
+mySQL SQL:
+----------
+
+create database sidenotes_01;
+
+USE sidenotes_01;
+CREATE TABLE AccountCredential
+(
+Account_Number int(50),
+Account_Name int(16),
+isActive boolean
+);
+
+
