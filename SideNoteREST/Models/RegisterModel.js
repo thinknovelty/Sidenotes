@@ -39,8 +39,10 @@ module.exports = extend(getModelBase(), {
         //write it to database;
         //userData
         var mylink = appConfig().host + '/' + moduleName + '/activation?registerKey=' + this.registrationKey;
-
-        var mailer = getMailer();
+        
+        //set the template we would like to use
+        app.set('view engine', 'jade');
+        var mailer = getSNMailer();
 
         mailer.send('register_email', {
             to: userData.email, // REQUIRED.

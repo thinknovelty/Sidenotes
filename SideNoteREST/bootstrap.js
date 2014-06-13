@@ -26,7 +26,8 @@ if (!GLOBAL.bootstrapped) {
 
     // static objects
     GLOBAL.App = null;
-    GLOBAL.dateBase = null;
+    GLOBAL.SNdateBase = null;
+    GLOBAL.PIdateBase = null;
 
     GLOBAL.extend = function() {
         if (arguments.length == 2) {
@@ -47,12 +48,12 @@ if (!GLOBAL.bootstrapped) {
         return require(root + '/Config/' + getAppMode() + '.js');
     };
 
-    GLOBAL.dateBase = new require('node-mysql').DB({
-        host: 'localhost',
-        user: 'root',
-        password: '',
-        database: 'prod_clone'
-    });
+    // GLOBAL.dateBase = new require('node-mysql').DB({
+    //     host: 'localhost',
+    //     user: 'root',
+    //     password: '',
+    //     database: 'prod_clone'
+    // });
 
     // console.log(appConfig().datebase);
 
@@ -73,8 +74,16 @@ if (!GLOBAL.bootstrapped) {
         return App;
     };
 
-    GLOBAL.getMailer = function() {
-        return App.mailer;
+    GLOBAL.getSNMailer = function() {
+        var mailer = require('express-mailer');
+        mailer.extend(app, appConfig().side_notes.email);
+        return mailer;
+    };
+
+    GLOBAL.getPIMailer = function() {
+        var mailer = require('express-mailer');
+        mailer.extend(app, appConfig().picr.email);
+        return mailer;
     };
 
     GLOBAL.getRequest = function() {
