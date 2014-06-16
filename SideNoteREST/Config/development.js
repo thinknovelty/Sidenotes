@@ -17,9 +17,9 @@ module.exports = {
                 pass: 'netpass1'
             }
         },
-        datebase: {
-            host: '127.0.0.1',
-            user: 'root',
+        database: {
+            host: 'localhost:3306',
+            user: 'hubbertj',
             password: 'admin',
             database: 'sidenotedb_01'
         }
@@ -38,12 +38,11 @@ module.exports = {
                 pass: 'netpass1'
             }
         },
-        datebase: {
-            host: '127.0.0.1',
+        database: {
+            host: 'localhost',
+            port: 3306,
             user: 'root',
-            password: 'admin',
-            database: 'sidenotedb_01'
+            database: 'picr_01'
         }
-
     }
 };

@@ -10,20 +10,14 @@
 //  update()
 //  cleanUp()
 
+//tables:
+//USER, PICTURE
 
-
-// mailer.send('register_email', {
-//     to: userData.email, // REQUIRED.
-//     subject: 'no-reply - Registration Side Notes', // REQUIRED.
-//     mylink: mylink
-// }, function(err) {
-//     if (err) {
-//         // handle error
-//         console.log(err);
-//         return;
-//     }
-//     appLogger().info('Email Sent');
-// });
+//EXAMPLE testdata:
+//  INSERT INTO picture( name, timestamp) VALUES ('Female', NOW());
+//  INSERT INTO picture( name, timestamp) VALUES ('Male', NOW());
+//  INSERT INTO user(first_name, last_name, sex, birthday, avatar_id) VALUES ('John', 'Doe', '0', STR_TO_DATE('1-09-1982', '%d-%m-%Y'), 1);
+//  INSERT INTO user(first_name, last_name, sex, birthday, avatar_id) VALUES ('Mary', 'Doe', '0', STR_TO_DATE('20-01-1990', '%d-%m-%Y'), 2);
 
 // ----------------------------------------
 
@@ -65,37 +59,76 @@ var sendVerificationEmail = function(registrationKey, email) {
     });
 };
 
-module.exports = extend(getModelBase(), {
-    registrationKey: null,
+var writeToDB = function(data) {
 
-    init: function() {
-        if (!this.registrationKey) {
-            this.registrationKey = generateRegistrationKey();
+    if (PicrConnection) {
+        PicrConnection.connect();
+        console.log(data);
+
+        //Writes to User Table
+        PicrConnection.query("INSERT INTO user(first_name, last_name, sex, birthday, avatar_id) 
+            VALUES ('" + data.frist + "', '" + data.last + "', '" + date.gender + "', STR_TO_DATE('" + data.dob.toString("dd-MM-yyyy") + "',
+             '%d-%m-%Y'), 2)",
+            function(err, rows, fields) {
+                if (err) {
+                    throw err;
+                    return;
+                }
+                appLogger().info(rows);
+
+                if (rows.insertID) {
+                    PicrConnection.query("INSERT INTO user_credentials(_id, email, password, salt) VALUES(" + rows.insertID + ",'" + data.email + "', '" + data.password + "', '" + getSalt() + "')", function(err, rows, fields) {
+                            if (err) {
+                                throw err;
+                                return;
+                            }
+                            appLogger().info(rows);
+
+                        }
+                    }
+                });
+
+
+            PicrConnection.end();
         }
-    },
+    };
 
-    create: function(userData) {
+    var getSalt = function(){
+        return '1231dwedasd233324';
+    }
 
-        //sends the registration email we need.
-        sendVerificationEmail(this.registrationKey, userData.email);
+    module.exports = extend(getModelBase(), {
+        registrationKey: null,
 
+        init: function() {
+            if (!this.registrationKey) {
+                this.registrationKey = generateRegistrationKey();
+            }
+        },
 
-    },
+        create: function(userData) {
 
-    read: function() {
+            //sends the registration email we need.
+            sendVerificationEmail(this.registrationKey, userData.email);
 
-    },
+            //writes to DB
+            writeToDB(userData);
+        },
 
-    update: function() {
+        read: function() {
 
-    },
+        },
 
-    delete: function() {
+        update: function() {
 
-    },
+        },
 
-    cleanUp: function() {
-        this.registrationKey = null;
-    },
+        delete: function() {
 
-});
+        },
+
+        cleanUp: function() {
+            this.registrationKey = null;
+        },
+
+    });

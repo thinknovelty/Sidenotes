@@ -8,27 +8,13 @@ var appMode = 'development';
 var fs = require('fs'); //node method call to get file system
 var appRoot = __dirname; //The name of the directory that the currently executing script resides in.
 var root = appRoot;
-var db = new require('node-mysql');
-
-// var db = require('node-mysql');
-// var sndb = db.DB;
-// var BaseRow = db.Row;
-// var BaseTable = db.Table;
+var DBCreateConnection = function(config) {
+    var mysql = require('mysql');
+    var connection = mysql.createConnection(config);
+    return connection;
+};
 
 if (!GLOBAL.bootstrapped) {
-
-    GLOBAL.APP_ROOT = appRoot;
-    GLOBAL.VIEW_ROOT = appRoot + '/Views/';
-    GLOBAL.CONTROLLERS = appRoot + '/Controllers/';
-    GLOBAL.MODELS = appRoot + '/Models/';
-    GLOBAL.LIB = appRoot + '/Lib/';
-
-
-    // static objects
-    GLOBAL.App = null;
-
-    GLOBAL.SNdateBase = null;
-    GLOBAL.PIdateBase = null;
 
     GLOBAL.extend = function() {
         if (arguments.length == 2) {
@@ -49,18 +35,24 @@ if (!GLOBAL.bootstrapped) {
         return require(root + '/Config/' + getAppMode() + '.js');
     };
 
-    //these SMTP Connection should stay open 
-    GLOBAL.PicrsmtpTransport =  require("nodemailer").createTransport("SMTP", appConfig().picr.email);
-    GLOBAL.Side_notesTransport =  require("nodemailer").createTransport("SMTP", appConfig().side_notes.email);
 
-    // GLOBAL.dateBase = new require('node-mysql').DB({
-    //     host: 'localhost',
-    //     user: 'root',
-    //     password: '',
-    //     database: 'prod_clone'
-    // });
+    GLOBAL.APP_ROOT = appRoot;
+    GLOBAL.VIEW_ROOT = appRoot + '/Views/';
+    GLOBAL.CONTROLLERS = appRoot + '/Controllers/';
+    GLOBAL.MODELS = appRoot + '/Models/';
+    GLOBAL.LIB = appRoot + '/Lib/';
 
-    // console.log(appConfig().datebase);
+
+    // Static objects
+    GLOBAL.App = null;
+
+    //These SMTP Connection should stay open 
+    GLOBAL.PicrsmtpTransport = require("nodemailer").createTransport("SMTP", appConfig().picr.email);
+    GLOBAL.Side_notesTransport = require("nodemailer").createTransport("SMTP", appConfig().side_notes.email);
+
+    //Makes datebase connection for products.
+    GLOBAL.side_notesConnection = DBCreateConnection(appConfig().side_notes.database);
+    GLOBAL.PicrConnection = DBCreateConnection(appConfig().picr.database);
 
     GLOBAL.getModelBase = function() {
         return require(GLOBAL.MODELS + 'modelBase');

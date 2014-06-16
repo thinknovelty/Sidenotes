@@ -18,6 +18,7 @@
         "jade": "*",
         "node.extend": "*",
         "node-mysql": "*",
-        "nodemailer": "*"
+        "nodemailer": "*",
+        "mysql": "*"
     }
 }
