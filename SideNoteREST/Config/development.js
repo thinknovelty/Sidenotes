@@ -6,6 +6,7 @@ module.exports = {
     host: '127.0.0.1',
     side_notes: {
         email: {
+            service: "Gmail",
             from: 'no-reply@gmail.com',
             host: 'smtp.gmail.com', // hostname
             secureConnection: true, // use SSL
@@ -26,6 +27,7 @@ module.exports = {
     },
     picr: {
         email: {
+            service: "Gmail",
             from: 'no-reply@gmail.com',
             host: 'smtp.gmail.com', // hostname
             secureConnection: true, // use SSL

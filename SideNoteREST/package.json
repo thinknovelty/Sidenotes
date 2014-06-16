@@ -15,9 +15,9 @@
         "winston": "*",
         "body-parser": "*",
         "compression": "*",
-        "express-mailer": "*",
         "jade": "*",
         "node.extend": "*",
-        "node-mysql": "*"
+        "node-mysql": "*",
+        "nodemailer": "*"
     }
 }

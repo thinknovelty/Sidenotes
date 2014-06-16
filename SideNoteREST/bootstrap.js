@@ -26,6 +26,7 @@ if (!GLOBAL.bootstrapped) {
 
     // static objects
     GLOBAL.App = null;
+
     GLOBAL.SNdateBase = null;
     GLOBAL.PIdateBase = null;
 
@@ -47,6 +48,10 @@ if (!GLOBAL.bootstrapped) {
     GLOBAL.appConfig = function() {
         return require(root + '/Config/' + getAppMode() + '.js');
     };
+
+    //these SMTP Connection should stay open 
+    GLOBAL.PicrsmtpTransport =  require("nodemailer").createTransport("SMTP", appConfig().picr.email);
+    GLOBAL.Side_notesTransport =  require("nodemailer").createTransport("SMTP", appConfig().side_notes.email);
 
     // GLOBAL.dateBase = new require('node-mysql').DB({
     //     host: 'localhost',
@@ -74,16 +79,8 @@ if (!GLOBAL.bootstrapped) {
         return App;
     };
 
-    GLOBAL.getSNMailer = function() {
-        var mailer = require('express-mailer');
-        mailer.extend(app, appConfig().side_notes.email);
-        return mailer;
-    };
-
-    GLOBAL.getPIMailer = function() {
-        var mailer = require('express-mailer');
-        mailer.extend(app, appConfig().picr.email);
-        return mailer;
+    GLOBAL.getMailer = function() {
+        return require("nodemailer");
     };
 
     GLOBAL.getRequest = function() {

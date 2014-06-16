@@ -31,6 +31,7 @@ var firstname = null;
 var lastname = null;
 var dob = null;
 var username = null;
+var gender = null;
 
 //if fails should tell us why.
 var validate = function() {
@@ -38,38 +39,32 @@ var validate = function() {
     var validator = getValidator();
 
     if (validator.checkAPIKEY(apikey) !== true) {
-        return 'BAD apikey';
-    } else if (validator.isEmail(email) !== true) {
+        return validator.checkAPIKEY(apikey);
+    } 
+    else if (validator.isEmail(email) !== true) {
         return validator.isEmail(email);
-    } else if (validator.isUsername(username) !== true) {
+    } 
+    else if (validator.isUsername(username) !== true) {
         return validator.isUsername(username);
-    } else if (validator.isPassword(pw) !== true) {
+    } 
+    else if (validator.isPassword(pw) !== true) {
         return validator.isPassword(pw);
-    } else if (validator.isFirstname(firstname) !== true) {
+    }
+    else if (validator.isFirstname(firstname) !== true) {
         return validator.isFirstname(firstname);
-    } else if (validator.isLastname(lastname) !== true) {
+    } 
+    else if (validator.isLastname(lastname) !== true) {
         return validator.isLastname(lastname);
-    } else if (validator.isDateofbirth(dob) !== true) {
+    } 
+    else if (validator.isDateofbirth(dob) !== true) {
         return validator.isDateofbirth(dob);
+    }
+    else if (validator.isGender(gender) !== true) {
+        return validator.isGender(gender);
     }
 
     //TODO: check if email,username, are not used in DB
     return true;
-};
-
-var writeToDB = function(model) {
-
-    // var writeInto = {
-    //     firstname: firstname,
-    //     lastname: lastname,
-    //     username: username,
-    //     email: email,
-    //     pw: pw,
-    //     dob: dob,
-    // };
-
-    // console.log('Writing  to DB ' + JSON.stringify(writeInto));
-    //call my model and the model should do CRUD 
 };
 
 
@@ -93,11 +88,16 @@ module.exports = extend(getControllerBase(), {
         if (call.lastname) {
             lastname = call.lastname;
         }
+        //this get turned into a date obj 
         if (call.dob) {
-            dob = call.dob;
+            dob = new Date(call.dob);
         }
         if (call.username) {
             username = call.username;
+        }
+        //1 = male , 0 = female
+        if (call.gender) {
+            gender = Boolean(call.gender);
         }
     },
 
@@ -149,19 +149,22 @@ module.exports = extend(getControllerBase(), {
         model.init();
 
         if (validate() == true) {
-            
             // bundle the obj
             var userData = {
-                apikey : apikey,
-                email : email,
-                firstname : firstname,
-                lastname : lastname,
-                dob : dob,
-                username : username,
-                pw : pw,
+                apikey: apikey,
+                email: email,
+                firstname: firstname,
+                lastname: lastname,
+                dob: dob,
+                username: username,
+                pw: pw,
+                gender: gender,
             };
 
             model.create(userData);
+
+            
+
             model.cleanUp();
             return [{
                 Message: 'Successfully registered'

@@ -55,15 +55,26 @@ module.exports = {
 
         return true;
     },
-    // Validate dateofbirth string
-    isDateofbirth: function(dateofbirth) {
+    // Validate dateofbirth date object
+    isDateofbirth: function(date) {
 
-        if (dateofbirth == null) {
+        if (isNaN(date.getTime())) {
             return 'BAD dateofbirth';
         }
 
         return true;
     },
+
+    // Validate Gender boolean
+    isGender: function(gender) {
+
+        if (gender == null || typeof gender != 'boolean') {
+            return 'BAD gender';
+        }
+
+        return true;
+    },
+
     // we currently just check for a number.
     checkAPIKEY: function(apikey) {
 
@@ -72,8 +83,9 @@ module.exports = {
         }
 
         if (isNaN(apikey) || apikey == null) {
-            return false;
+            return "Bad apikey";
         }
+
         return true;
     }
 };
