@@ -56,15 +56,14 @@ if (!GLOBAL.bootstrapped) {
 
     GLOBAL.getModelBase = function() {
         return require(GLOBAL.MODELS + 'modelBase');
-    },
+    };
 
     GLOBAL.getControllerBase = function() {
         return require(GLOBAL.CONTROLLERS + 'controllerBase');
-    },
+    };
 
-    //this lib offers a great deal of good features.
-    GLOBAL.getUtil = function() {
-        return require('util');
+    GLOBAL.getDateFormat = function() {
+        return require('dateformat');
     };
 
     GLOBAL.getApp = function() {

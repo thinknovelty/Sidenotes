@@ -87,8 +87,8 @@ CREATE TABLE IF NOT EXISTS user_account (
 	locked			BOOLEAN NOT NULL,
 	closed			BOOLEAN NOT NULL,
 	created_timestamp	DATETIME NOT NULL,
-	locked_timestamp	DATETIME NOT NULL,
-	closed_timestamp	DATETIME NOT NULL,
+	locked_timestamp	DATETIME,
+	closed_timestamp	DATETIME,
 	PRIMARY KEY (_id),
 	FOREIGN KEY (_id) REFERENCES user(_id)
 ) ENGINE=InnoDB;
