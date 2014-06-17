@@ -46,13 +46,19 @@ if (!GLOBAL.bootstrapped) {
     // Static objects
     GLOBAL.App = null;
 
-    //These SMTP Connection should stay open 
+    //These SMTP Connection should stay open STATIC
     GLOBAL.PicrsmtpTransport = require("nodemailer").createTransport("SMTP", appConfig().picr.email);
     GLOBAL.Side_notesTransport = require("nodemailer").createTransport("SMTP", appConfig().side_notes.email);
 
-    //Makes datebase connection for products.
-    GLOBAL.side_notesConnection = DBCreateConnection(appConfig().side_notes.database);
-    GLOBAL.PicrConnection = DBCreateConnection(appConfig().picr.database);
+    //Makes datebase connection for products. Call them then close your connection with .end();
+    GLOBAL.getSide_notesConnection = function() {
+        return new DBCreateConnection(appConfig().side_notes.database);
+    };
+    GLOBAL.getPicrConnection = function() {
+        return new DBCreateConnection(appConfig().picr.database);
+    };
+
+
 
     GLOBAL.getModelBase = function() {
         return require(GLOBAL.MODELS + 'modelBase');
@@ -64,6 +70,11 @@ if (!GLOBAL.bootstrapped) {
 
     GLOBAL.getDateFormat = function() {
         return require('dateformat');
+    };
+
+    GLOBAL.getEventManager = function() {
+        var events = require('events');
+        return new events.EventEmitter();
     };
 
     GLOBAL.getApp = function() {

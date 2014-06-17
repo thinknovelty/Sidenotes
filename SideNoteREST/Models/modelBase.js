@@ -12,16 +12,28 @@ module.exports = {
     set: function(str, value) {
         this[str] = value;
     },
+    
+    init: function() {
+        appLogger().info('init ' + moduleName);
+    },
 
-    //generates a random 32 digit key;
-    generateRegistrationKey : function() {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    create: function() {
+        appLogger().info('create ' + moduleName);
+    },
 
-        for (var i = 0; i < 32; i++) {
+    delete: function() {
+        appLogger().info('delete ' + moduleName);
+    },
 
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-        return text;
+    read: function() {
+        appLogger().info('read ' + moduleName);
+    },
+
+    update: function() {
+        appLogger().info('update ' + moduleName);
+    },
+    
+    cleanUp: function() {
+        appLogger().info('cleanUp ' + moduleName);
     }
 }

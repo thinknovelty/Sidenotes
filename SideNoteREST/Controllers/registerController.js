@@ -30,7 +30,6 @@ var pw = null;
 var firstname = null;
 var lastname = null;
 var dob = null;
-var username = null;
 var gender = null;
 
 //if fails should tell us why.
@@ -43,10 +42,7 @@ var validate = function() {
     } 
     else if (validator.isEmail(email) !== true) {
         return validator.isEmail(email);
-    } 
-    else if (validator.isUsername(username) !== true) {
-        return validator.isUsername(username);
-    } 
+    }  
     else if (validator.isPassword(pw) !== true) {
         return validator.isPassword(pw);
     }
@@ -71,7 +67,7 @@ var validate = function() {
 module.exports = extend(getControllerBase(), {
     callType: 'POST',
 
-    init: function(req, res, call) {
+    init: function(req, res, call) { 
 
         if (call.apikey) {
             apikey = call.apikey;
@@ -85,15 +81,12 @@ module.exports = extend(getControllerBase(), {
         if (call.firstname) {
             firstname = call.firstname;
         }
-        if (call.lastname) {
-            lastname = call.lastname;
-        }
         //this get turned into a date obj 
         if (call.dob) {
             dob = new Date(call.dob);
         }
-        if (call.username) {
-            username = call.username;
+        if (call.lastname) {
+            lastname = call.lastname;
         }
         //1 = male , 0 = female
         if (call.gender) {
@@ -149,16 +142,16 @@ module.exports = extend(getControllerBase(), {
         model.init();
 
         if (validate() == true) {
-            // bundle the obj
+            // bundle the obj and adds salt and registrationKey;
             var userData = {
-                apikey: apikey,
                 email: email,
-                firstname: firstname,
-                lastname: lastname,
-                dob: dob,
-                username: username,
-                pw: pw,
-                gender: gender,
+                first_name: firstname,
+                last_name: lastname,
+                birthday: dob,
+                password: pw,
+                sex: gender,
+                salt: this.generateKey(),
+                registrationKey: this.generateKey()
             };
 
             model.create(userData);

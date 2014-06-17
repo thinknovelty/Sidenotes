@@ -18,28 +18,19 @@
 
 var moduleName = 'register';
 
+var evt = getEventManager();
+
+
 module.exports = extend(getModelBase(), {
-    registrationKey: null,
-    eventEmitter: null,
 
     init: function() {
-        if (!this.registrationKey) {
-            this.registrationKey = this.generateRegistrationKey();
+
+        if (evt) {
+            evt.on('sendConfirmationEmail', this.sendVerificationEmail);
+        } else {
+            evt = getEventManager();
+            evt.on('sendConfirmationEmail', this.sendVerificationEmail);
         }
-
-        var events = require('events');
-        this.eventEmitter = new events.EventEmitter();
-        this.eventEmitter.on('closeDB', function(msg){
-            console.log(msg);
-        });
-    },
-
-    create: function(userData) {
-        //writes to DB returns true if all its good.
-        var didDataSave = this.writeToDB(userData, this.generateRegistrationKey());
-
-        //sends the registration email we need.
-        this.sendVerificationEmail(this.registrationKey, userData.email);
 
 
     },
@@ -57,10 +48,13 @@ module.exports = extend(getModelBase(), {
     },
 
     cleanUp: function() {
-        this.registrationKey = null;
+        //TODO: lets look into removing the listener;
+        // evt.removeAllListeners(['sendConfirmationEmail']);
     },
 
-    sendVerificationEmail: function(registrationKey, email) {
+    sendVerificationEmail: function(email, registrationKey) {
+
+        console.log('sending email ' + registrationKey );
 
         //creates the link so we can verify the registration.
         var mylink = appConfig().host + '/' + moduleName + '/activation?registerKey=' + registrationKey;
@@ -84,49 +78,49 @@ module.exports = extend(getModelBase(), {
         });
     },
 
-    writeToDB: function(data, salt) {
+    create: function(data) {
 
-        if (PicrConnection) {
-            PicrConnection.connect();
+        //creates the DB connection;
+        var picrConnection = getPicrConnection();
+
+        if (picrConnection) {
+            picrConnection.connect();
 
             var post = {
-                first_name: data.firstname,
-                last_name: data.lastname,
-                sex: data.gender + 0,
-                birthday: data.dob,
+                first_name: data.first_name,
+                last_name: data.last_name,
+                sex: data.sex + 0,
+                birthday: data.birthday,
                 avatar_id: 1
             };
 
-             // this.eventEmitter.emit('closeDB', 'firstClose');
-
             //Writes to User Table
-            PicrConnection.query('INSERT INTO user SET ?', post, function(err, rows, fields) {
+            picrConnection.query('INSERT INTO user SET ?', post, function(err, rows, fields) {
                 if (err) {
                     throw err;
-                    PicrConnection.end();
-                    return;
+                    picrConnection.end();
+                    return false;
                 }
                 appLogger().info(rows);
 
                 var secondPost = {
                     _id: rows.insertId,
                     email: data.email,
-                    password: data.pw,
-                    salt: salt
+                    password: data.password,
+                    salt: data.salt
                 };
 
-               // eventEmitter.emit('closeDB', 'secondClose');
-
-                PicrConnection.query('INSERT INTO user_credentials SET ?', secondPost, function(err, rows, fields) {
+                //Writes to user_credentials Table
+                picrConnection.query('INSERT INTO user_credentials SET ?', secondPost, function(err, rows, fields) {
                     if (err) {
                         throw err;
-                        PicrConnection.end();
-                        return;
+                        picrConnection.end();
+                        return false;
                     }
                     appLogger().info(rows);
 
                     var thirdPost = {
-                        _id: secondPost.insertId,
+                        _id: secondPost._id,
                         locked: 0,
                         closed: 0,
                         created_timestamp: new Date(),
@@ -134,25 +128,23 @@ module.exports = extend(getModelBase(), {
                         closed_timestamp: null
                     };
 
-                    // this.eventEmitter.emit('closeDB', 'secondClose');
-
-                    // PicrConnection.query('INSERT INTO user_account SET ?', thirdPost, function(err, rows, fields) {
-                    //     if (err) {
-                    //         throw err;
-                    //         PicrConnection.end();
-                    //         return;
-                    //     }
-
-                    //     appLogger().info(rows);
-                    // });
+                    //Writes to user_account Table
+                    picrConnection.query('INSERT INTO user_account SET ?', thirdPost, function(err, rows, fields) {
+                        if (err) {
+                            throw err;
+                            picrConnection.end();
+                            return false;
+                        }
+                        appLogger().info(rows);
+                        evt.emit('sendConfirmationEmail', data.email, data.registrationKey);
+                        picrConnection.end();
+                    });
 
 
                 });
 
 
             });
-
-            // PicrConnection.end();
         }
     }
 
