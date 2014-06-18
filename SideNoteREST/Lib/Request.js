@@ -223,7 +223,7 @@ module.exports = {
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.mod + 'Controller.js');
+            throw new Error("A POST callType is required for " + call.mod + 'Controller.js');
         }
 
         try {

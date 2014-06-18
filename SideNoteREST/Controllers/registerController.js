@@ -39,23 +39,17 @@ var validate = function() {
 
     if (validator.checkAPIKEY(apikey) !== true) {
         return validator.checkAPIKEY(apikey);
-    } 
-    else if (validator.isEmail(email) !== true) {
+    } else if (validator.isEmail(email) !== true) {
         return validator.isEmail(email);
-    }  
-    else if (validator.isPassword(pw) !== true) {
+    } else if (validator.isPassword(pw) !== true) {
         return validator.isPassword(pw);
-    }
-    else if (validator.isFirstname(firstname) !== true) {
+    } else if (validator.isFirstname(firstname) !== true) {
         return validator.isFirstname(firstname);
-    } 
-    else if (validator.isLastname(lastname) !== true) {
+    } else if (validator.isLastname(lastname) !== true) {
         return validator.isLastname(lastname);
-    } 
-    else if (validator.isDateofbirth(dob) !== true) {
+    } else if (validator.isDateofbirth(dob) !== true) {
         return validator.isDateofbirth(dob);
-    }
-    else if (validator.isGender(gender) !== true) {
+    } else if (validator.isGender(gender) !== true) {
         return validator.isGender(gender);
     }
 
@@ -67,7 +61,7 @@ var validate = function() {
 module.exports = extend(getControllerBase(), {
     callType: 'POST',
 
-    init: function(req, res, call) { 
+    init: function(req, res, call) {
 
         if (call.apikey) {
             apikey = call.apikey;
@@ -138,10 +132,9 @@ module.exports = extend(getControllerBase(), {
     },
 
     results: function() {
-        var model = require(MODELS + moduleName + 'Model');
-        model.init();
-
         if (validate() == true) {
+            var model = require(MODELS + moduleName + 'Model');
+            model.init();
             // bundle the obj and adds salt and registrationKey;
             var userData = {
                 email: email,
@@ -155,16 +148,12 @@ module.exports = extend(getControllerBase(), {
             };
 
             model.create(userData);
-
-            
-
             model.cleanUp();
+
             return [{
                 Message: 'Successfully registered'
             }];
         }
-
-        model.cleanUp();
         return [{
             Error: validate()
         }];

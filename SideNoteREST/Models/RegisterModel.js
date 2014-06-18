@@ -24,7 +24,6 @@ var evt = getEventManager();
 module.exports = extend(getModelBase(), {
 
         init: function() {
-
             if (evt) {
                 evt.once('sendConfirmationEmail', this.sendVerificationEmail);
                 evt.once('err', this.delete);
@@ -33,8 +32,6 @@ module.exports = extend(getModelBase(), {
                 evt.once('sendConfirmationEmail', this.sendVerificationEmail);
                 evt.once('err', this.delete);
             }
-
-
         },
 
         sendVerificationEmail: function(email, registrationKey) {
@@ -83,7 +80,7 @@ module.exports = extend(getModelBase(), {
                 picrConnection.query('INSERT INTO user SET ?', post, function(err, rows, fields) {
                     if (err) {
                         throw err;
-                        appLogger().error('Error: SQL insert error data could not be stored');
+                        appLogger().error('Error: SQL couldn\'t INSERT INTO user table');
                         evt.emit('err', null);
                         picrConnection.end();
                         return false;
@@ -101,7 +98,7 @@ module.exports = extend(getModelBase(), {
                     picrConnection.query('INSERT INTO user_credentials SET ?', secondPost, function(err, rows, fields) {
                         if (err) {
                             throw err;
-                            appLogger().error('Error: SQL insert error data could not be stored');
+                            appLogger().error('Error: SQL couldn\'t INSERT INTO user_credentials table');
                             evt.emit('err', secondPost._id);
                             picrConnection.end();
                             return false;
@@ -121,7 +118,7 @@ module.exports = extend(getModelBase(), {
                         picrConnection.query('INSERT INTO user_account SET ?', thirdPost, function(err, rows, fields) {
                             if (err) {
                                 throw err;
-                                appLogger().error('Error: SQL insert error data could not be stored');
+                                appLogger().error('Error: SQL couldn\'t INSERT INTO user_account table');
                                 evt.emit('err', thirdPost._id);
                                 picrConnection.end();
                                 return false;
@@ -138,7 +135,7 @@ module.exports = extend(getModelBase(), {
                             picrConnection.query('INSERT INTO user_verification SET ?', fouthPost, function(err, rows, fields) {
                                 if (err) {
                                     throw err;
-                                    appLogger().error('Error: SQL insert error data could not be stored');
+                                    appLogger().error('Error: SQL couldn\'t INSERT INTO user_verification table');
                                     evt.emit('err', fouthPost._id);
                                     picrConnection.end();
                                     return false;
@@ -170,7 +167,7 @@ module.exports = extend(getModelBase(), {
                 picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.excute(email) + ' ', post, function(err, rows, fields) {
                     if (err) {
                         throw err;
-                        appLogger().error('Error: SQL update error data could not be stored');
+                        appLogger().error('Error: SQL error couldn\'t get _id');
                         picrConnection.end();
                         return false;
                     }
@@ -184,7 +181,7 @@ module.exports = extend(getModelBase(), {
                     picrConnection.query('UPDATE user_verification SET ? WHERE _id =' + picrConnection.excute(rows.id) + ' ', post, function(err, rows, fields) {
                         if (err) {
                             throw err;
-                            appLogger().error('Error: SQL update error data could not be stored');
+                            appLogger().error('Error: SQL couldn\'t update user_verification table ');
                             picrConnection.end();
                             return false;
                         }
@@ -198,7 +195,7 @@ module.exports = extend(getModelBase(), {
                 if (!id) {
                     return;
                 }
-                appLogger().warning('Deleting ID ' + id + ' from the system!');
+                appLogger().warning('Deleting ID = ' + id + ' from the system!');
 
 
 
