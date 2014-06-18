@@ -14,7 +14,7 @@ module.exports = {
         var apikey = null;
         var call = {
             module: null,
-            callType: 'get',
+            callType: 'GET',
             type: null,
             id: null
         };
@@ -25,21 +25,13 @@ module.exports = {
 
         appLogger().info('Get call from ' + ip);
 
-        //this should be here if not we have a issue.
-        if (req.params.mod) {
-            call.module = req.params.mod;
-        } else {
-            throw new Error("BAD MODULAR, MODULAR is a required.");
+        if(!req.params.mod || req.params.mod  === 'test'){
+            appLogger().info('No mod provided, this is a error or test call.');
             return;
         }
 
         //this should be here if not we have a issue.
-        if (req.params.id) {
-            call.id = req.params.id;
-        } else {
-            throw new Error("BAD ID, ID is a required, it cannot be found or is incorrect.");
-            return;
-        }
+        call.module = req.params.mod;
 
         //check for API KEY.
         if (req.query.apikey) {
@@ -74,7 +66,7 @@ module.exports = {
         var apikey = null;
         var call = {
             module: null,
-            callType: 'get',
+            callType: 'GET',
             type: null,
             id: null
         };
@@ -134,7 +126,7 @@ module.exports = {
         var apikey = null;
         var call = {
             module: null,
-            callType: 'get',
+            callType: 'GET',
             type: null,
             id: null
         };
@@ -377,7 +369,7 @@ module.exports = {
         var apikey = null;
         var call = {
             module: req.params.mod,
-            callType: 'POST'
+            callType: 'PUT'
         };
 
         call = extend(true, req.body, call);
@@ -435,7 +427,7 @@ module.exports = {
         var apikey = null;
         var call = {
             module: req.params.mod,
-            callType: 'POST'
+            callType: 'PUT'
         };
 
         call = extend(true, req.body, call);
@@ -493,7 +485,7 @@ module.exports = {
         var apikey = null;
         var call = {
             module: req.params.mod,
-            callType: 'POST'
+            callType: 'PUT'
         };
 
         call = extend(true, req.body, call);
@@ -552,7 +544,7 @@ module.exports = {
         var apikey = null;
         var call = {
             module: req.params.mod,
-            callType: 'POST'
+            callType: 'DELETE'
         };
 
         call = extend(true, req.body, call);
@@ -610,7 +602,7 @@ module.exports = {
         var apikey = null;
         var call = {
             module: req.params.mod,
-            callType: 'POST'
+            callType: 'DELETE'
         };
 
         call = extend(true, req.body, call);
@@ -668,7 +660,7 @@ module.exports = {
         var apikey = null;
         var call = {
             module: req.params.mod,
-            callType: 'POST'
+            callType: 'DELETE'
         };
 
         call = extend(true, req.body, call);

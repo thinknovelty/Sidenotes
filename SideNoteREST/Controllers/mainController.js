@@ -94,15 +94,19 @@ if (app) {
 
     app.route('/:mod')
         .get(function(req, res, next) {
+            console.log("GET");
             request.getCallBack(req, res);
         })
         .post(function(req, res, next) {
+            console.log("POST");
             request.postCallBack(req, res);
         })
         .put(function(req, res, next) {
+            console.log("PUT");
             request.putCallBack(req, res);
         })
         .delete(function(req, res, next) {
+            console.log("DELTE");
             request.deleteCallBack(req, res);
         });
 

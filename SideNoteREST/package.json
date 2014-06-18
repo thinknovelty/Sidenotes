@@ -19,8 +19,9 @@
         "node.extend": "*",
         "node-mysql": "*",
         "nodemailer": "*",
+        "email-templates" : "*" ,
         "mysql": "*",
         "dateformat": "*",
-        "events":    "*" 
+        "events":    "*"
     }
 }

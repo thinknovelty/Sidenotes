@@ -28,8 +28,6 @@ module.exports = {
     picr: {
         email: {
             service: "Gmail",
-            from: 'no-reply@gmail.com',
-            host: 'smtp.gmail.com', // hostname
             secureConnection: true, // use SSL
             port: 465, // port for secure SMTP
             transportMethod: 'SMTP', // default is SMTP. Accepts anything that nodemailer accepts

@@ -23,15 +23,15 @@ module.exports = {
         return text;
     },
 
-    init: function() {
-        appLogger().info('init ' + moduleName);
+    init: function(req, res, call) {
+        appLogger().info('Default Init()');
     },
 
     results: function() {
-        appLogger().info('results ' + moduleName);
+        appLogger().info('Default Results()');
     },
 
     cleanUp: function() {
-        appLogger().info('cleanUp ' + moduleName);
+        appLogger().info('Default cleanUp()');
     }
 }
