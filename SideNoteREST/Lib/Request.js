@@ -223,7 +223,7 @@ module.exports = {
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST callType is required for " + call.mod + 'Controller.js');
+            throw new Error(call.module + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
 
         try {
@@ -378,7 +378,7 @@ module.exports = {
         var finalObj = null;
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-        appLogger().info('Post from ' + ip);
+        appLogger().info('PUT from ' + ip);
 
         //this should be here if not we have a issue.
         if (!call.module) {
@@ -398,7 +398,7 @@ module.exports = {
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.module + 'Controller.js');
+            throw new Error(call.module + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
 
         try {
@@ -409,11 +409,10 @@ module.exports = {
             gModular.cleanUp();
             throw new Error(err);
         }
-
         gModular.cleanUp();
 
         if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Post ' + call.module + ' complete..');
+            appLogger().info('PUT ' + call.module + ' complete..');
             finalObj.push({
                 timeStamp: timeStamp()
             });

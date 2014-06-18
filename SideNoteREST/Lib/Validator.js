@@ -2,6 +2,7 @@
 // Validator.js
 
 var moduleName = 'Validator';
+var util = require('util');
 
 module.exports = {
 
@@ -11,11 +12,11 @@ module.exports = {
     },
     // Validate e-mail string
     isEmail: function(email) {
-
-        if (email == null) {
-            return 'BAD email address';
+        var atpos = email.indexOf("@");
+        var dotpos = email.lastIndexOf(".");
+        if (email == null || atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length) {
+            return 'email address is required please check your format';
         }
-
         return true;
     },
     // Validate username string
@@ -31,7 +32,7 @@ module.exports = {
     isPassword: function(password) {
 
         if (password == null || password == ' ') {
-            return 'BAD password';
+            return 'password is required';
         }
 
         var decryptor = getDecrypter();
@@ -41,7 +42,7 @@ module.exports = {
     isFirstname: function(firstname) {
 
         if (firstname == null) {
-            return 'BAD firstname';
+            return 'first_name is required';
         }
 
         return true;
@@ -50,26 +51,24 @@ module.exports = {
     isLastname: function(lastname) {
 
         if (lastname == null) {
-            return 'BAD lastname';
+            return 'last_name is required';
         }
 
         return true;
     },
-    // Validate dateofbirth date object
-    isDateofbirth: function(date) {
-
-        if (isNaN(date.getTime())) {
-            return 'BAD dateofbirth';
+    // Validate Date Of Birth date object
+    isDateofbirth: function(brithday) {
+        if (!brithday || !(util.isDate(brithday)) || brithday.toString() === 'Invalid Date') {
+            return 'Bad brithday format should be MM/DD/YYYY';
         }
-
         return true;
     },
 
-    // Validate Gender boolean
-    isGender: function(gender) {
+    // Validate Sex boolean
+    isSex: function(sex) {
 
-        if (gender == null || typeof gender != 'boolean') {
-            return 'BAD gender';
+        if (sex == null || typeof sex != 'boolean') {
+            return 'Bad Sex 0 = Female; 1 = Male;';
         }
 
         return true;
@@ -85,6 +84,14 @@ module.exports = {
         if (isNaN(apikey) || apikey == null) {
             return "Bad apikey";
         }
+
+        return true;
+    },
+    isEmailInSystem: function(email) {
+
+        return true;
+    },
+    isRegistrationKey: function(key) {
 
         return true;
     }

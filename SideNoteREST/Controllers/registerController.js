@@ -3,13 +3,13 @@
 //registerController.js
 
 // -required variables
-// firstname
-// lastname
+// first_name
+// last_name
 // username
 // apikey
 // email
-// pw
-// dob
+// password
+// birthday
 
 
 
@@ -24,13 +24,13 @@
 var moduleName = 'register';
 
 //defaults
+var first_name = null;
+var last_name = null;
 var apikey = null;
 var email = null;
-var pw = null;
-var firstname = null;
-var lastname = null;
-var dob = null;
-var gender = null;
+var password = null;
+var birthday = null;
+var sex = null;
 
 //if fails should tell us why.
 var validate = function() {
@@ -41,16 +41,16 @@ var validate = function() {
         return validator.checkAPIKEY(apikey);
     } else if (validator.isEmail(email) !== true) {
         return validator.isEmail(email);
-    } else if (validator.isPassword(pw) !== true) {
-        return validator.isPassword(pw);
-    } else if (validator.isFirstname(firstname) !== true) {
-        return validator.isFirstname(firstname);
-    } else if (validator.isLastname(lastname) !== true) {
-        return validator.isLastname(lastname);
-    } else if (validator.isDateofbirth(dob) !== true) {
-        return validator.isDateofbirth(dob);
-    } else if (validator.isGender(gender) !== true) {
-        return validator.isGender(gender);
+    } else if (validator.isPassword(password) !== true) {
+        return validator.isPassword(password);
+    } else if (validator.isFirstname(first_name) !== true) {
+        return validator.isFirstname(first_name);
+    } else if (validator.isLastname(last_name) !== true) {
+        return validator.isLastname(last_name);
+    } else if (validator.isDateofbirth(birthday) !== true) {
+        return validator.isDateofbirth(birthday);
+    } else if (validator.isSex(sex) !== true) {
+        return validator.isSex(sex);
     }
 
     //TODO: check if email,username, are not used in DB
@@ -69,22 +69,26 @@ module.exports = extend(getControllerBase(), {
         if (call.email) {
             email = call.email;
         }
-        if (call.pw) {
-            pw = call.pw;
+        if (call.password) {
+            password = call.password;
         }
-        if (call.firstname) {
-            firstname = call.firstname;
+        if (call.first_name) {
+            first_name = call.first_name;
         }
         //this get turned into a date obj 
-        if (call.dob) {
-            dob = new Date(call.dob);
+        if (call.birthday) {
+            try{
+               birthday = new Date(call.birthday); 
+           }catch(err){
+            appLogger().error('Error in controller init() ' + err);
+           }
         }
-        if (call.lastname) {
-            lastname = call.lastname;
+        if (call.last_name) {
+            last_name = call.last_name;
         }
         //1 = male , 0 = female
-        if (call.gender) {
-            gender = Boolean(call.gender);
+        if (call.sex) {
+            sex = Boolean(call.sex);
         }
     },
 
@@ -102,33 +106,33 @@ module.exports = extend(getControllerBase(), {
         return email;
 
     },
-    setPw: function(par) {
-        pw = par;
+    setpassword: function(par) {
+        password = par;
     },
-    getPw: function() {
-        return pw;
+    getpassword: function() {
+        return password;
 
     },
-    setFirstname: function(par) {
-        firstname = par;
+    setfirst_name: function(par) {
+        first_name = par;
     },
     getFirsname: function() {
-        return firstname;
+        return first_name;
 
     },
-    setLastname: function(par) {
-        lastname = par;
+    setlast_name: function(par) {
+        last_name = par;
     },
-    getLastname: function() {
-        return lastname;
+    getlast_name: function() {
+        return last_name;
 
     },
-    getDob: function() {
-        return dob;
+    getbirthday: function() {
+        return birthday;
 
     },
-    setDob: function(par) {
-        dob = par;
+    setbirthday: function(par) {
+        birthday = par;
     },
 
     results: function() {
@@ -138,11 +142,11 @@ module.exports = extend(getControllerBase(), {
             // bundle the obj and adds salt and registrationKey;
             var userData = {
                 email: email,
-                first_name: firstname,
-                last_name: lastname,
-                birthday: dob,
-                password: pw,
-                sex: gender,
+                first_name: first_name,
+                last_name: last_name,
+                birthday: birthday,
+                password: password,
+                sex: sex,
                 salt: this.generateKey(),
                 registrationKey: this.generateKey()
             };
@@ -162,9 +166,9 @@ module.exports = extend(getControllerBase(), {
     cleanUp: function() {
         apikey = null;
         email = null;
-        pw = null;
-        firstname = null;
-        lastname = null;
-        dob = null;
+        password = null;
+        first_name = null;
+        last_name = null;
+        birthday = null;
     }
 });

@@ -2,6 +2,10 @@
 // -----------------------------------------------------------
 //verificationController.js
 
+//variables:
+// email
+// registrationKey
+// password
 
 
 
@@ -59,7 +63,6 @@ module.exports = extend(getControllerBase(), {
 
         if (validate(data) == true) {
             var model = require(MODELS + 'Register' + 'Model');
-
             model.init();
             model.update(data.email);
             model.cleanUp();
