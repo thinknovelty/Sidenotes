@@ -26,10 +26,12 @@ module.exports = extend(getModelBase(), {
         init: function() {
 
             if (evt) {
-                evt.on('sendConfirmationEmail', this.sendVerificationEmail);
+                evt.once('sendConfirmationEmail', this.sendVerificationEmail);
+                evt.once('err', this.delete);
             } else {
                 evt = getEventManager();
-                evt.on('sendConfirmationEmail', this.sendVerificationEmail);
+                evt.once('sendConfirmationEmail', this.sendVerificationEmail);
+                evt.once('err', this.delete);
             }
 
 
@@ -81,6 +83,8 @@ module.exports = extend(getModelBase(), {
                 picrConnection.query('INSERT INTO user SET ?', post, function(err, rows, fields) {
                     if (err) {
                         throw err;
+                        appLogger().error('Error: SQL insert error data could not be stored');
+                        evt.emit('err', null);
                         picrConnection.end();
                         return false;
                     }
@@ -97,6 +101,8 @@ module.exports = extend(getModelBase(), {
                     picrConnection.query('INSERT INTO user_credentials SET ?', secondPost, function(err, rows, fields) {
                         if (err) {
                             throw err;
+                            appLogger().error('Error: SQL insert error data could not be stored');
+                            evt.emit('err', secondPost._id);
                             picrConnection.end();
                             return false;
                         }
@@ -115,6 +121,8 @@ module.exports = extend(getModelBase(), {
                         picrConnection.query('INSERT INTO user_account SET ?', thirdPost, function(err, rows, fields) {
                             if (err) {
                                 throw err;
+                                appLogger().error('Error: SQL insert error data could not be stored');
+                                evt.emit('err', thirdPost._id);
                                 picrConnection.end();
                                 return false;
                             }
@@ -130,6 +138,8 @@ module.exports = extend(getModelBase(), {
                             picrConnection.query('INSERT INTO user_verification SET ?', fouthPost, function(err, rows, fields) {
                                 if (err) {
                                     throw err;
+                                    appLogger().error('Error: SQL insert error data could not be stored');
+                                    evt.emit('err', fouthPost._id);
                                     picrConnection.end();
                                     return false;
                                 }
@@ -160,6 +170,7 @@ module.exports = extend(getModelBase(), {
                 picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.excute(email) + ' ', post, function(err, rows, fields) {
                     if (err) {
                         throw err;
+                        appLogger().error('Error: SQL update error data could not be stored');
                         picrConnection.end();
                         return false;
                     }
@@ -173,6 +184,7 @@ module.exports = extend(getModelBase(), {
                     picrConnection.query('UPDATE user_verification SET ? WHERE _id =' + picrConnection.excute(rows.id) + ' ', post, function(err, rows, fields) {
                         if (err) {
                             throw err;
+                            appLogger().error('Error: SQL update error data could not be stored');
                             picrConnection.end();
                             return false;
                         }
@@ -182,7 +194,14 @@ module.exports = extend(getModelBase(), {
                 });
             },
 
-            delete: function() {
+            delete: function(id) {
+                if (!id) {
+                    return;
+                }
+                appLogger().warning('Deleting ID ' + id + ' from the system!');
+
+
+
 
             },
 
