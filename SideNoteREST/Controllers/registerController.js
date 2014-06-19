@@ -95,49 +95,6 @@ module.exports = {
         }
     },
 
-    setApikey: function(apikey) {
-        apikey = apikey;
-    },
-
-    getApikey: function() {
-        return apikey;
-    },
-    setEmail: function(par) {
-        email = par;
-    },
-    getEmail: function() {
-        return email;
-
-    },
-    setpassword: function(par) {
-        password = par;
-    },
-    getpassword: function() {
-        return password;
-
-    },
-    setfirst_name: function(par) {
-        first_name = par;
-    },
-    getFirsname: function() {
-        return first_name;
-
-    },
-    setlast_name: function(par) {
-        last_name = par;
-    },
-    getlast_name: function() {
-        return last_name;
-
-    },
-    getbirthday: function() {
-        return birthday;
-
-    },
-    setbirthday: function(par) {
-        birthday = par;
-    },
-
     results: function() {
         if (validate() == true) {
             var model = require(MODELS + moduleName + 'Model');
@@ -159,11 +116,14 @@ module.exports = {
             m.cleanUp();
 
             return [{
-                Message: 'Successfully registered'
+                message: 'Successfully registered',
+                error: 0
             }];
         }
         return [{
-            Error: validate()
+            message: 'Failed registion process',
+            error: 2,
+            errormsg: validate()
         }];
     },
 

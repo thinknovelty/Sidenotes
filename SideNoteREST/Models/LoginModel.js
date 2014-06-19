@@ -19,12 +19,12 @@ var eventManager = getEventManager();
 var BaseModel = getModelBase();
 var util = require('util');
 
-function LoginModel(){
+function LoginModel() {
     this.moduleName = 'login';
     this.init = function() {
 
     };
-    this.create = function(email) {
+    this.create = function(email, didfailLogin) {
         var picrConnection = getPicrConnection();
 
         if (picrConnection) {
@@ -35,21 +35,33 @@ function LoginModel(){
                     picrConnection.end();
                     return false;
                 }
-                appLogger().info('_id for ' + email + ' = ' + rows[0]._id);
+                appLogger().info('FOUND _id for ' + email + ' = ' + rows[0]._id);
 
-                //Writes to user_login table
-                picrConnection.query('INSERT INTO user_login SET ?', {
+                var post = {
                     user_id: rows[0]._id,
                     success: 1,
                     timestamp: new Date()
-                }, function(err, rows, fields) {
+                }
+                //if we failed login me are going to mark it so.
+                if (didfailLogin) {
+                    post.success = 0;
+                }
+
+                //Writes to user_login table
+                picrConnection.query('INSERT INTO user_login SET ?', post, function(err, rows, fields) {
                     if (err) {
                         appLogger().error('SQL couldn\'t INSERT INTO user_login table\n' + err);
                         picrConnection.end();
                         return false;
+                    } else if (rows.affectedRows > 0) {
+                        appLogger().info('INSERT INTO user_login ' + JSON.stringify(rows));
                     }
-                    appLogger().info(rows);
                     picrConnection.end();
+                    //if we failed we are going to read how many times he failed login.
+                    if (didfailLogin) {
+                        this.read(post.user_id);
+                    }
+                    return true;
                 });
             });
         } else {
@@ -61,7 +73,7 @@ function LoginModel(){
 
     };
 
-    this.read = function() {
+    this.read = function(user_id) {
 
     };
 
@@ -76,4 +88,3 @@ function LoginModel(){
 
 util.inherits(LoginModel, BaseModel);
 module.exports = LoginModel;
-

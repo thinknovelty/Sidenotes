@@ -12,9 +12,8 @@
 
 //tables:
 //USER, USER_CREDENTIALS, USER_ACCOUNT, USER_VERIFICATION
-
-
 // ----------------------------------------
+
 var evt = getEventManager();
 var BaseModel = getModelBase();
 var util = require('util');
