@@ -61,7 +61,7 @@ if (!GLOBAL.bootstrapped) {
 
 
     GLOBAL.getModelBase = function() {
-        return require(GLOBAL.MODELS + 'modelBase');
+       return require(GLOBAL.MODELS + 'modelBase');
     };
 
     GLOBAL.getControllerBase = function() {

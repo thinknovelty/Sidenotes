@@ -18,7 +18,7 @@ var moduleName = 'Login';
 
 //this is the controller for the login process.
 
-module.exports = extend(getControllerBase(),{
+module.exports = {
     callType: 'POST',
     init: function() {
 
@@ -32,4 +32,4 @@ module.exports = extend(getControllerBase(),{
     },
 
     cleanUp: function() {}
-});
+};

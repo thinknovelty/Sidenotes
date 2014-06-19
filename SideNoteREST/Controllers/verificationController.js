@@ -7,7 +7,14 @@
 // registrationKey
 // password
 
+//Call Types:
+// PUT:
+// localhost/verification/
 
+// PUT Variables:
+// email = example@gmail.com
+// password = 1234123
+// registrationKey = 12321dqe1231dfqwe123fwe12345t
 
 
 
@@ -34,7 +41,7 @@ var validate = function(data) {
     return true;
 };
 
-module.exports = extend(getControllerBase(), {
+module.exports = {
     callType: 'PUT',
     email: null,
     registrationKey: null,
@@ -53,7 +60,6 @@ module.exports = extend(getControllerBase(), {
     },
 
     results: function() {
-
         // bundle the data
         var data = {
             email: this.email,
@@ -63,15 +69,13 @@ module.exports = extend(getControllerBase(), {
 
         if (validate(data) == true) {
             var model = require(MODELS + 'Register' + 'Model');
-            model.init();
-            model.update(data.email);
-            model.cleanUp();
-
+            var m = new model();
+            m.update(data.email);
+            m.cleanUp();
             return [{
                 Message: 'Successfully registered'
             }];
         }
-
         return [{
             Error: validate(data)
         }];
@@ -81,4 +85,4 @@ module.exports = extend(getControllerBase(), {
         this.email = null;
         this.registerKey = null;
     }
-});
+};

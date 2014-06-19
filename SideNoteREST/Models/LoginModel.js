@@ -14,14 +14,17 @@
 //user_login
 // ----------------------------------------
 
-var moduleName = 'login';
+//if we need a event manager;
+var eventManager = getEventManager();
+var BaseModel = getModelBase();
+var util = require('util');
 
-module.exports = extend(getModelBase(), {
+function LoginModel(){
+    this.moduleName = 'login';
+    this.init = function() {
 
-    init: function() {
-
-    },
-    create: function(email) {
+    };
+    this.create = function(email) {
         var picrConnection = getPicrConnection();
 
         if (picrConnection) {
@@ -52,22 +55,25 @@ module.exports = extend(getModelBase(), {
         } else {
             appLogger().error('Issue getting DB object.');
         }
-    },
+    };
 
-    delete: function() {
+    this.delete = function() {
 
-    },
+    };
 
-    read: function() {
+    this.read = function() {
 
-    },
+    };
 
-    update: function() {
+    this.update = function() {
 
-    },
+    };
 
-    cleanUp: function() {
+    this.cleanUp = function() {
 
-    }
+    };
+};
 
-});
+util.inherits(LoginModel, BaseModel);
+module.exports = LoginModel;
+

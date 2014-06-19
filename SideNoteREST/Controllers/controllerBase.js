@@ -24,14 +24,14 @@ module.exports = {
     },
 
     init: function(req, res, call) {
-        appLogger().info('Default Init()');
+        appLogger().info('Init from Base Controller');
     },
 
     results: function() {
-        appLogger().info('Default Results()');
+        appLogger().info('Default from Base Controller');
     },
 
     cleanUp: function() {
-        appLogger().info('Default cleanUp()');
+        appLogger().info('Default from Base Controller');
     }
 }

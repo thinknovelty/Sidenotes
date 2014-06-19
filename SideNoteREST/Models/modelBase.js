@@ -1,39 +1,41 @@
 'use strict';
 //base for all models!
 
-module.exports = {
-
-    get: function(str) {
+function BaseModel() {
+    this.get = function(str) {
         if (this[str] != null) {
             return this[str];
         }
-    },
-
-    set: function(str, value) {
+    };
+    this.set = function(str, value) {
         this[str] = value;
-    },
-    
-    init: function() {
-        appLogger().info('init ' + moduleName);
-    },
+    };
 
-    create: function() {
-        appLogger().info('create ' + moduleName);
-    },
+    this.init = function() {
+        appLogger().info('init from base');
+    };
 
-    delete: function() {
-        appLogger().info('delete ' + moduleName);
-    },
+    this.create = function() {
+        appLogger().info('create from base');
+    };
 
-    read: function() {
-        appLogger().info('read ' + moduleName);
-    },
+    this.delete = function() {
+        appLogger().info('delete from base');
+    };
 
-    update: function() {
-        appLogger().info('update ' + moduleName);
-    },
-    
-    cleanUp: function() {
-        appLogger().info('cleanUp ' + moduleName);
-    }
-}
+    this.read = function() {
+        appLogger().info('read from base');
+    };
+
+    this.update = function() {
+        appLogger().info('update from base');
+    };
+
+    this.cleanUp = function() {
+        appLogger().info('cleanUp from base');
+    };
+};
+
+// BaseModel.prototype.fromID = function() { };
+
+module.exports = BaseModel;

@@ -15,15 +15,14 @@
 
 
 // ----------------------------------------
-
-var moduleName = 'register';
-
 var evt = getEventManager();
+var BaseModel = getModelBase();
+var util = require('util');
 
-
-module.exports = extend(getModelBase(), {
-
-    init: function() {
+function RegisterModel() {
+    BaseModel.apply(this, arguments);
+    this.moduleName = 'register';
+    this.init = function() {
         if (evt) {
             evt.once('sendConfirmationEmail', this.sendVerificationEmail);
             evt.once('err', this.delete);
@@ -32,14 +31,14 @@ module.exports = extend(getModelBase(), {
             evt.once('sendConfirmationEmail', this.sendVerificationEmail);
             evt.once('err', this.delete);
         }
-    },
+    };
 
-    sendVerificationEmail: function(email, registrationKey) {
+    this.sendVerificationEmail = function(email, registrationKey) {
 
         appLogger().info('Attending to send email to: ' + email);
 
         //creates the link so we can verify the registration.
-        var mylink = appConfig().host + '/' + moduleName + '/activation?registerKey=' + registrationKey + '&' + 'email=' + email;
+        var mylink = appConfig().host + '/activation?registerKey=' + registrationKey + '&' + 'email=' + email;
 
         // setup e-mail data with unicode symbols
         var mailOptions = {
@@ -58,9 +57,9 @@ module.exports = extend(getModelBase(), {
                 appLogger().info('Email Sent ' + response.message);
             }
         });
-    },
+    };
 
-    create: function(data) {
+    this.create = function(data) {
 
         //creates the DB connection;
         var picrConnection = getPicrConnection();
@@ -145,13 +144,25 @@ module.exports = extend(getModelBase(), {
                 });
             });
         }
-    },
+    };
 
-    read: function() {
+    this.read = function() {
+        appLogger().info('RegisterModel read();');
+    };
 
-    },
+    this.delete = function(id) {
+        if (!id) {
+            return;
+        }
+        appLogger().warn('Deleting ID =' + id + ' from the database!');
+    };
 
-    update: function(email) {
+    this.cleanUp = function() {
+        //TODO: lets look into removing the listener;
+        // evt.removeAllListeners(['sendConfirmationEmail']);
+    };
+
+    this.update = function(email) {
         //this will be used by activation to update the user_verifcation;
         //creates the DB connection;
         var picrConnection = getPicrConnection();
@@ -183,24 +194,15 @@ module.exports = extend(getModelBase(), {
                     picrConnection.end();
 
                     //TODO: this will login the user. I may need to make a global trigger for this process.
-                    var loginObj = require(MODELS + 'Login' + 'Model');
-                    loginObj.init();
-                    loginObj.create(email);
+                    var loginModel = require(MODELS + 'Login' + 'Model');
+                    var m = new loginModel();
+                    m.init();
+                    m.create(email);
                 });
             });
         }
-    },
+    };
 
-    delete: function(id) {
-        if (!id) {
-            return;
-        }
-        appLogger().warn('Deleting ID =' + id + ' from the database!');
-    },
-
-    cleanUp: function() {
-        //TODO: lets look into removing the listener;
-        // evt.removeAllListeners(['sendConfirmationEmail']);
-    }
-
-});
+};
+util.inherits(RegisterModel, BaseModel);
+module.exports = RegisterModel;

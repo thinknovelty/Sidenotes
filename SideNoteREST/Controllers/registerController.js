@@ -2,14 +2,17 @@
 // -----------------------------------------------------------
 //registerController.js
 
-// -required variables
-// first_name
-// last_name
-// username
-// apikey
-// email
-// password
-// birthday
+//Call Types:
+// POST:
+// localhost/register/
+
+// POST Variables:
+// email = example@gmail.com
+// password = 1234123
+// first_name = John
+// last_name = Doe
+// birthday = MM-DD-YYYY
+// sex = 0
 
 
 
@@ -17,8 +20,8 @@
 
 
 
-
-
+//tables:
+//USER, USER_CREDENTIALS, USER_ACCOUNT, USER_VERIFICATION
 // ------------------------------------------------------------
 
 var moduleName = 'register';
@@ -58,7 +61,7 @@ var validate = function() {
 };
 
 
-module.exports = extend(getControllerBase(), {
+module.exports = {
     callType: 'POST',
 
     init: function(req, res, call) {
@@ -77,11 +80,11 @@ module.exports = extend(getControllerBase(), {
         }
         //this get turned into a date obj 
         if (call.birthday) {
-            try{
-               birthday = new Date(call.birthday); 
-           }catch(err){
-            appLogger().error('Error in controller init() ' + err);
-           }
+            try {
+                birthday = new Date(call.birthday);
+            } catch (err) {
+                appLogger().error('Error in controller init() ' + err);
+            }
         }
         if (call.last_name) {
             last_name = call.last_name;
@@ -138,7 +141,8 @@ module.exports = extend(getControllerBase(), {
     results: function() {
         if (validate() == true) {
             var model = require(MODELS + moduleName + 'Model');
-            model.init();
+            var m = new model();
+            m.init();
             // bundle the obj and adds salt and registrationKey;
             var userData = {
                 email: email,
@@ -151,8 +155,8 @@ module.exports = extend(getControllerBase(), {
                 registrationKey: this.generateKey()
             };
 
-            model.create(userData);
-            model.cleanUp();
+            m.create(userData);
+            m.cleanUp();
 
             return [{
                 Message: 'Successfully registered'
@@ -171,4 +175,4 @@ module.exports = extend(getControllerBase(), {
         last_name = null;
         birthday = null;
     }
-});
+};

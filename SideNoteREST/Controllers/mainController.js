@@ -138,7 +138,7 @@ if (app) {
     GLOBAL.App = app;
 };
 
-module.exports = extend(getControllerBase(),{
+module.exports = {
     didLoadWithoutError: function() {
         if (app) {
             return true;
@@ -146,4 +146,4 @@ module.exports = extend(getControllerBase(),{
             return false;
         }
     },
-});
+};

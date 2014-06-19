@@ -46,7 +46,8 @@ module.exports = {
 
         appLogger().info(JSON.stringify(call));
 
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
         gModular.init(req, res);
 
         finalObj = gModular.results();
@@ -106,7 +107,8 @@ module.exports = {
 
         appLogger().info(JSON.stringify(call));
 
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
         gModular.init(req, res);
 
         finalObj = gModular.results();
@@ -174,7 +176,8 @@ module.exports = {
 
         appLogger().info(JSON.stringify(call));
 
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
         gModular.init(req, res);
 
         finalObj = gModular.results();
@@ -216,7 +219,8 @@ module.exports = {
             throw new Error("BAD API KEY, APIKEY is required parameter.");
         }
 
-        gModular = require(GLOBAL.CONTROLLERS + call.mod + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
@@ -274,7 +278,8 @@ module.exports = {
         }
 
         appLogger().info(JSON.stringify(call));
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
@@ -332,7 +337,8 @@ module.exports = {
         }
 
         appLogger().info(JSON.stringify(call));
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
@@ -391,7 +397,11 @@ module.exports = {
         }
 
         appLogger().info(JSON.stringify(call));
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
+
+        // console.log(gModular);
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
@@ -448,7 +458,8 @@ module.exports = {
         }
 
         appLogger().info(JSON.stringify(call));
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
@@ -506,7 +517,8 @@ module.exports = {
         }
 
         appLogger().info(JSON.stringify(call));
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
@@ -565,7 +577,8 @@ module.exports = {
         }
 
         appLogger().info(JSON.stringify(call));
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
@@ -623,7 +636,8 @@ module.exports = {
         }
 
         appLogger().info(JSON.stringify(call));
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
@@ -681,7 +695,8 @@ module.exports = {
         }
 
         appLogger().info(JSON.stringify(call));
-        gModular = require(GLOBAL.CONTROLLERS + call.module + 'Controller');
+        //creates and mix in:
+        gModular = extend(true, getControllerBase(), require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
