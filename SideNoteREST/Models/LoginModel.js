@@ -1,38 +1,73 @@
-//this is the model which we will use to validate the API KEY.
-var api = null;
-var whoAmI = 'anonymous';
+'use strict';
+// LoginModel.js
+// ----------------------------------------
+//  CRUD
+//  all models should have a:
+//  init()
+//  create()
+//  delete()
+//  read()
+//  update()
+//  cleanUp()
 
-module.exports = {
-    init: function(api) {
+//tables:
+//user_login
+// ----------------------------------------
 
-        if (api == null) {
-            whoAmI = 'anonymous';
-            return;
+var moduleName = 'login';
+
+module.exports = extend(getModelBase(), {
+
+    init: function() {
+
+    },
+    create: function(email) {
+        var picrConnection = getPicrConnection();
+
+        if (picrConnection) {
+            picrConnection.connect();
+            picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows, fields) {
+                if (err || !(rows[0])) {
+                    appLogger().error('SQL error couldn\'t get _id\n' + rows);
+                    picrConnection.end();
+                    return false;
+                }
+                appLogger().info('_id for ' + email + ' = ' + rows[0]._id);
+
+                //Writes to user_login table
+                picrConnection.query('INSERT INTO user_login SET ?', {
+                    user_id: rows[0]._id,
+                    success: 1,
+                    timestamp: new Date()
+                }, function(err, rows, fields) {
+                    if (err) {
+                        appLogger().error('SQL couldn\'t INSERT INTO user_login table\n' + err);
+                        picrConnection.end();
+                        return false;
+                    }
+                    appLogger().info(rows);
+                    picrConnection.end();
+                });
+            });
+        } else {
+            appLogger().error('Issue getting DB object.');
         }
+    },
 
-        if (GLOBAL.getAppMode() == 'development') {
-            whoAmI = '00000000';
-        }
-
-        //getting date and find the person who wons the API
-        //set whoAmI to the person who owns this api key. db call
-        appLogger().info('Checking who owns api = ' + api);
+    delete: function() {
 
     },
 
-    setAPI: function(api) {
-        this.api = api;
+    read: function() {
+
     },
 
-    getAPI: function() {
-        return this.api;
+    update: function() {
+
     },
 
-    validate: function() {
-        if (whoAmI == 'anonymous') {
-            return false;
-        }
+    cleanUp: function() {
 
-        return true;
-    },
-};
+    }
+
+});

@@ -79,7 +79,7 @@ module.exports = extend(getModelBase(), {
             //Writes to User Table
             picrConnection.query('INSERT INTO user SET ?', post, function(err, rows, fields) {
                 if (err) {
-                    appLogger().error('SQL couldn\'t INSERT INTO user table\n' + err );
+                    appLogger().error('SQL couldn\'t INSERT INTO user table\n' + err);
                     evt.emit('err', null);
                     picrConnection.end();
                     return;
@@ -160,20 +160,20 @@ module.exports = extend(getModelBase(), {
             //open connection to db;
             picrConnection.connect();
 
-            picrConnection.query('SELECT * FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows, fields) {
-                if (err) {
+            picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows, fields) {
+                if (err || !(rows[0])) {
                     appLogger().error('SQL error couldn\'t get _id\n' + err);
                     picrConnection.end();
                     return false;
                 }
-                appLogger().info(rows._id);
+                appLogger().info('_id for ' + email + ' = ' + rows[0]._id);
 
                 var post = {
                     verified: 1
                 };
 
                 //Writes to User Table
-                picrConnection.query('UPDATE user_verification SET ? WHERE _id =' + picrConnection.escape(rows._id) + ' ', post, function(err, rows, fields) {
+                picrConnection.query('UPDATE user_verification SET ? WHERE _id =' + picrConnection.escape(rows[0]._id) + ' ', post, function(err, rows, fields) {
                     if (err) {
                         appLogger().error('SQL couldn\'t update user_verification table\n' + err);
                         picrConnection.end();
@@ -181,6 +181,11 @@ module.exports = extend(getModelBase(), {
                     }
                     appLogger().info(rows);
                     picrConnection.end();
+
+                    //TODO: this will login the user. I may need to make a global trigger for this process.
+                    var loginObj = require(MODELS + 'Login' + 'Model');
+                    loginObj.init();
+                    loginObj.create(email);
                 });
             });
         }
