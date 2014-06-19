@@ -65,78 +65,74 @@ function RegisterModel() {
         var picrConnection = getPicrConnection();
 
         if (picrConnection) {
-            picrConnection.connect();
 
-            var post = {
+            //Writes to User Table
+            picrConnection.query('INSERT INTO user SET ?', {
                 first_name: data.first_name,
                 last_name: data.last_name,
                 sex: data.sex + 0,
                 birthday: data.birthday,
                 avatar_id: 1
-            };
-
-            //Writes to User Table
-            picrConnection.query('INSERT INTO user SET ?', post, function(err, rows, fields) {
+            }, function(err, rows) {
                 if (err) {
                     appLogger().error('SQL couldn\'t INSERT INTO user table\n' + err);
                     evt.emit('err', null);
                     picrConnection.end();
                     return;
+                } else if (rows.affectedRows > 0) {
+                    appLogger().info('INSERT INTO user ' + JSON.stringify(rows));
                 }
-                appLogger().info(rows);
+                var user_id = rows.insertId;
 
-                var secondPost = {
-                    _id: rows.insertId,
+                //Writes to user_credentials Table
+                picrConnection.query('INSERT INTO user_credentials SET ?', {
+                    _id: user_id,
                     email: data.email,
                     password: data.password,
                     salt: data.salt
-                };
-
-                //Writes to user_credentials Table
-                picrConnection.query('INSERT INTO user_credentials SET ?', secondPost, function(err, rows, fields) {
+                }, function(err, rows) {
                     if (err) {
                         appLogger().error('SQL couldn\'t INSERT INTO user_credentials table\n' + err);
-                        evt.emit('err', secondPost._id);
+                        evt.emit('err', user_id);
                         picrConnection.end();
                         return;
+                    } else if (rows.affectedRows > 0) {
+                        appLogger().info('INSERT INTO user_credentials ' + JSON.stringify(rows));
                     }
-                    appLogger().info(rows);
 
-                    var thirdPost = {
-                        _id: secondPost._id,
+                    //Writes to user_account Table
+                    picrConnection.query('INSERT INTO user_account SET ?', {
+                        _id: user_id,
                         locked: 0,
                         closed: 0,
                         created_timestamp: new Date(),
                         locked_timestamp: null,
                         closed_timestamp: null
-                    };
-
-                    //Writes to user_account Table
-                    picrConnection.query('INSERT INTO user_account SET ?', thirdPost, function(err, rows, fields) {
+                    }, function(err, rows) {
                         if (err) {
                             appLogger().error('SQL couldn\'t INSERT INTO user_account table\n' + err);
-                            evt.emit('err', thirdPost._id);
+                            evt.emit('err', user_id);
                             picrConnection.end();
                             return;
+                        } else if (rows.affectedRows > 0) {
+                            appLogger().info('INSERT INTO user_account ' + JSON.stringify(rows));
                         }
-                        appLogger().info(rows);
 
-                        var fouthPost = {
-                            _id: thirdPost._id,
+                        //Writes to user_verification Table
+                        picrConnection.query('INSERT INTO user_verification SET ?', {
+                            _id: user_id,
                             code: data.registrationKey,
                             verified: 0,
                             timestamp: new Date()
-                        };
-
-                        picrConnection.query('INSERT INTO user_verification SET ?', fouthPost, function(err, rows, fields) {
+                        }, function(err, rows) {
                             if (err) {
                                 appLogger().error('SQL couldn\'t INSERT INTO user_verification table\n' + err);
-                                evt.emit('err', fouthPost._id);
+                                evt.emit('err', user_id);
                                 picrConnection.end();
                                 return;
+                            } else if (rows.affectedRows > 0) {
+                                appLogger().info('INSERT INTO user_verification ' + JSON.stringify(rows));
                             }
-
-                            appLogger().info(rows);
                             evt.emit('sendConfirmationEmail', data.email, data.registrationKey);
                             picrConnection.end();
                         });
@@ -150,11 +146,57 @@ function RegisterModel() {
         appLogger().info('RegisterModel read();');
     };
 
-    this.delete = function(id) {
-        if (!id) {
+    this.delete = function(_id) {
+        if (!_id) {
+            appLogger().error('_id is needed for DELETEING patron.');
             return;
         }
-        appLogger().warn('Deleting ID =' + id + ' from the database!');
+        appLogger().warn('Atending to delete ID =' + _id + ' from the database!');
+        //creates the DB connection;
+        var picrConnection = getPicrConnection();
+        if (picrConnection) {
+            //DELETE in user_verification
+            picrConnection.query('DELETE FROM user_verification WHERE _id = ' + picrConnection.escape(_id), function(err, rows) {
+                if (err) {
+                    //their is a issue if we can not delete from this table.
+                    appLogger().error('SQL couldn\'t DELETE FROM user_verification\n' + err);
+                } else if (rows.affectedRows > 0) {
+                    appLogger().info('DELETE FROM user_verification ' + JSON.stringify(rows));
+                }
+
+                //DELETE in user_account
+                picrConnection.query('DELETE FROM user_account WHERE _id = ' + picrConnection.escape(_id), function(err, rows) {
+                    if (err) {
+                        //their is a issue if we can not delete from this table.
+                        appLogger().error('SQL couldn\'t DELETE FROM user_account\n' + err);
+                    } else if (rows.affectedRows > 0) {
+                        appLogger().info('DELETE FROM user_account ' + JSON.stringify(rows));
+                    }
+
+                    //DELETE in user_credentials
+                    picrConnection.query('DELETE FROM user_credentials WHERE _id = ' + picrConnection.escape(_id), function(err, rows) {
+                        if (err) {
+                            //their is a issue if we can not delete from this table.
+                            appLogger().error('SQL couldn\'t DELETE FROM user_credentials\n' + err);
+                        } else if (rows.affectedRows > 0) {
+                            appLogger().info('DELETE FROM user_credentials ' + JSON.stringify(rows));
+                        }
+
+                        //DELETE in user
+                        picrConnection.query('DELETE FROM user WHERE _id = ' + picrConnection.escape(_id), function(err, rows) {
+                            if (err) {
+                                //their is a issue if we can not delete from this table.
+                                appLogger().error('SQL couldn\'t DELETE FROM user\n' + err);
+                            } else if (rows.affectedRows > 0) {
+                                appLogger().info('DELETE FROM user ' + JSON.stringify(rows));
+                            }
+
+                            picrConnection.end();
+                        });
+                    });
+                });
+            });
+        }
     };
 
     this.cleanUp = function() {
