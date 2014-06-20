@@ -1,31 +1,16 @@
+'use strict';
 // Decrypter.js
-var modularName = 'Decrypter';
 
-//this obj is used to dencryption a password or other user information.
+//this obj is used to dencryption a password / hashing / other stuff.
 
-module.exports = {
+module.exports = function DecrypterModel() {
+    this.modularName = 'Decrypter';
+    this.init = function(argument) {
+        console.log('init of the Decrypter');
+    };
 
-    init: function(argument) {
-        console.log('init of the obj');
-    },
+    this.cleanUp = function() {
+        console.log('clean up for Decrypter');
+    };
 
-    cleanUp: function() {
-        console.log('init of the obj');
-    },
-
-    removeEncryptionFrom: function(redObj, objectType) {
-        switch (objectType) {
-            case 'apikey':
-
-                break;
-            case 'password':
-
-                break;
-            case 'password':
-
-                break;
-            default:
-                console.log('Removed encryption from ' + objectType);
-        }
-    }
-}
+};

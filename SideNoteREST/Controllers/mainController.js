@@ -90,48 +90,49 @@ var startExpress = function() {
 var app = startExpress();
 
 if (app) {
-    var request = GLOBAL.getRequest();
+    var requestModel = GLOBAL.getRequest();
+    var r = new requestModel();
 
     app.route('/:mod')
         .get(function(req, res, next) {
-            request.getCallBack(req, res);
+            r.getCallBack(req, res);
         })
         .post(function(req, res, next) {
-            request.postCallBack(req, res);
+            r.postCallBack(req, res);
         })
         .put(function(req, res, next) {
-            request.putCallBack(req, res);
+            r.putCallBack(req, res);
         })
         .delete(function(req, res, next) {
-            request.deleteCallBack(req, res);
+            r.deleteCallBack(req, res);
         });
 
     app.route('/:mod/:id')
         .get(function(req, res, next) {
-            request.getCallBackTwo(req, res);
+            r.getCallBackTwo(req, res);
         })
         .post(function(req, res, next) {
-            request.postCallBackTwo(req, res);
+            r.postCallBackTwo(req, res);
         })
         .put(function(req, res, next) {
-            request.putCallBackTwo(req, res);
+            r.putCallBackTwo(req, res);
         })
         .delete(function(req, res, next) {
-            request.deleteCallBackTwo(req, res);
+            r.deleteCallBackTwo(req, res);
         });
 
     app.route('/:mod/:type/:id')
         .get(function(req, res, next) {
-            request.getCallBackThree(req, res);
+            r.getCallBackThree(req, res);
         })
         .post(function(req, res, next) {
-            request.postCallBackThree(req, res);
+            r.postCallBackThree(req, res);
         })
         .put(function(req, res, next) {
-            request.putCallBackThree(req, res);
+            r.putCallBackThree(req, res);
         })
         .delete(function(req, res, next) {
-            request.deleteCallBackThree(req, res);
+            r.deleteCallBackThree(req, res);
         });
 
     //Makes the App obj static.

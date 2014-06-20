@@ -58,7 +58,7 @@ function RegisterModel() {
         });
     };
 
-    this.create = function(data) {
+    this.create = function(data, callback) {
 
         //creates the DB connection;
         var picrConnection = getPicrConnection();
@@ -77,6 +77,9 @@ function RegisterModel() {
                     appLogger().error('SQL couldn\'t INSERT INTO user table\n' + err);
                     evt.emit('err', null);
                     picrConnection.end();
+                    if (callback) {
+                        callback(false);
+                    }
                     return;
                 } else if (rows.affectedRows > 0) {
                     appLogger().info('INSERT INTO user ' + JSON.stringify(rows));
@@ -94,6 +97,9 @@ function RegisterModel() {
                         appLogger().error('SQL couldn\'t INSERT INTO user_credentials table\n' + err);
                         evt.emit('err', user_id);
                         picrConnection.end();
+                        if (callback) {
+                            callback(false);
+                        }
                         return;
                     } else if (rows.affectedRows > 0) {
                         appLogger().info('INSERT INTO user_credentials ' + JSON.stringify(rows));
@@ -112,6 +118,9 @@ function RegisterModel() {
                             appLogger().error('SQL couldn\'t INSERT INTO user_account table\n' + err);
                             evt.emit('err', user_id);
                             picrConnection.end();
+                            if (callback) {
+                                callback(false);
+                            }
                             return;
                         } else if (rows.affectedRows > 0) {
                             appLogger().info('INSERT INTO user_account ' + JSON.stringify(rows));
@@ -128,12 +137,18 @@ function RegisterModel() {
                                 appLogger().error('SQL couldn\'t INSERT INTO user_verification table\n' + err);
                                 evt.emit('err', user_id);
                                 picrConnection.end();
+                                if (callback) {
+                                    callback(false);
+                                }
                                 return;
                             } else if (rows.affectedRows > 0) {
                                 appLogger().info('INSERT INTO user_verification ' + JSON.stringify(rows));
                             }
                             evt.emit('sendConfirmationEmail', data.email, data.registrationKey);
                             picrConnection.end();
+                            if (callback) {
+                                callback(true);
+                            }
                         });
                     });
                 });
@@ -150,7 +165,7 @@ function RegisterModel() {
             appLogger().error('_id is needed for DELETEING patron.');
             return;
         }
-        appLogger().warn('Atending to delete ID =' + _id + ' from the database!');
+        appLogger().warn('Atending to delete ID = ' + _id + ' from the database!');
         //creates the DB connection;
         var picrConnection = getPicrConnection();
         if (picrConnection) {
@@ -200,23 +215,30 @@ function RegisterModel() {
 
     this.cleanUp = function() {
         //TODO: lets look into removing the listener;
-        // evt.removeAllListeners(['sendConfirmationEmail']);
+        this.removeListeners();
     };
+    this.removeListeners = function() {
+        if (evt) {
+            evt.removeAllListeners(['sendConfirmationEmail']);
+            evt.removeAllListeners(['err']);
+        }
+    }
 
-    this.update = function(email) {
+    this.update = function(email, callback) {
         //this will be used by activation to update the user_verifcation;
         //creates the DB connection;
         var picrConnection = getPicrConnection();
 
         if (picrConnection) {
-            //open connection to db;
-            picrConnection.connect();
 
             picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows, fields) {
                 if (err || !(rows[0])) {
-                    appLogger().error('SQL error couldn\'t get _id\n' + err);
+                    appLogger().error('SQL error couldn\'t get _id for ' + email);
                     picrConnection.end();
-                    return false;
+                    if (callback) {
+                        callback(false);
+                    }
+                    return;
                 }
                 appLogger().info('_id for ' + email + ' = ' + rows[0]._id);
 
@@ -229,21 +251,35 @@ function RegisterModel() {
                     if (err) {
                         appLogger().error('SQL couldn\'t update user_verification table\n' + err);
                         picrConnection.end();
-                        return false;
+                        if (callback) {
+                            callback(false);
+                        }
+                        return;
+                    } else if (rows.affectedRows > 0) {
+                        appLogger().info('UPDATE user_verification ' + JSON.stringify(rows));
                     }
-                    appLogger().info(rows);
+
                     picrConnection.end();
+                    if (callback) {
+                        callback(true);
+                    }
 
                     //TODO: this will login the user. I may need to make a global trigger for this process.
                     var loginModel = require(MODELS + 'Login' + 'Model');
                     var m = new loginModel();
                     m.init();
-                    m.create(email);
+                    m.create(email, false, function(bool) {
+                        if (bool) {
+                            appLogger().info('Login process completed for ' + email);
+                        } else {
+                            appLogger().error('Login process failed for ' + email);
+                        }
+                    });
                 });
             });
         }
     };
-
 };
+
 util.inherits(RegisterModel, BaseModel);
 module.exports = RegisterModel;

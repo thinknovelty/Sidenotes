@@ -29,14 +29,18 @@ var moduleName = 'verification';
 
 //if fails should tell us why.
 var validate = function(data) {
-    var validator = getValidator();
-    if (validator.isEmail(data.email) !== true) {
-        return validator.isEmail(data.email);
-    } else if (validator.isEmailInSystem(data.email) !== true) {
-        return validator.isEmailInSystem(data.email);
-    } else if (validator.isRegistrationKey(data.registrationKey) !== true) {
-        return validator.isRegistrationKey(data.registrationKey);
+    var validatorModel = getValidator();
+    var v = new validatorModel(data.email);
+    if (v.isEmail(data.email) !== true) {
+        return v.isEmail(data.email);
+    } else if (v.isEmailInSystem(data.email) !== true) {
+        return v.isEmailInSystem(data.email);
+    } else if (v.isRegistrationKey(data.registrationKey) !== true) {
+        return v.isRegistrationKey(data.registrationKey);
+    }else if (v.isPassword(data.password) !== true) {
+        return v.isPassword(data.password);
     }
+    
     //if everything is good return clean.
     return true;
 };
@@ -59,7 +63,7 @@ module.exports = {
         }
     },
 
-    results: function() {
+    results: function(callback) {
         // bundle the data
         var data = {
             email: this.email,
@@ -67,18 +71,36 @@ module.exports = {
             password: this.password
         };
 
-        if (validate(data) == true) {
+        //check for valid data.
+        var isvalid = validate(data);
+
+        if (isvalid !== true) {
+            callback([{
+                message: 'Verification failed please check errormsg for details.',
+                success: 0,
+                error: 3,
+                errormsg: validate(data)
+            }]);
+        } else if (isvalid === true) {
             var model = require(MODELS + 'Register' + 'Model');
             var m = new model();
-            m.update(data.email);
-            m.cleanUp();
-            return [{
-                Message: 'Successfully registered'
-            }];
+            m.update(data.email, function(bool) {
+                if (bool) {
+                    callback([{
+                        message: 'Verification Successfully',
+                        success: 1,
+                        error: 0
+                    }]);
+                } else {
+                    callback([{
+                        message: 'Verification failed due to DB issue.',
+                        success: 0,
+                        error: 0
+                    }]);
+                }
+                m.cleanUp();
+            });
         }
-        return [{
-            Error: validate(data)
-        }];
     },
 
     cleanUp: function() {

@@ -38,22 +38,23 @@ var sex = null;
 //if fails should tell us why.
 var validate = function() {
 
-    var validator = getValidator();
+    var validatorModel = getValidator();
+    var v = new validatorModel();
 
-    if (validator.checkAPIKEY(apikey) !== true) {
-        return validator.checkAPIKEY(apikey);
-    } else if (validator.isEmail(email) !== true) {
-        return validator.isEmail(email);
-    } else if (validator.isPassword(password) !== true) {
-        return validator.isPassword(password);
-    } else if (validator.isFirstname(first_name) !== true) {
-        return validator.isFirstname(first_name);
-    } else if (validator.isLastname(last_name) !== true) {
-        return validator.isLastname(last_name);
-    } else if (validator.isDateofbirth(birthday) !== true) {
-        return validator.isDateofbirth(birthday);
-    } else if (validator.isSex(sex) !== true) {
-        return validator.isSex(sex);
+    if (v.checkAPIKEY(apikey) !== true) {
+        return v.checkAPIKEY(apikey);
+    } else if (v.isEmail(email) !== true) {
+        return v.isEmail(email);
+    } else if (v.isPassword(password) !== true) {
+        return v.isPassword(password);
+    } else if (v.isFirstname(first_name) !== true) {
+        return v.isFirstname(first_name);
+    } else if (v.isLastname(last_name) !== true) {
+        return v.isLastname(last_name);
+    } else if (v.isDateofbirth(birthday) !== true) {
+        return v.isDateofbirth(birthday);
+    } else if (v.isSex(sex) !== true) {
+        return v.isSex(sex);
     }
 
     //TODO: check if email,username, are not used in DB
@@ -65,7 +66,6 @@ module.exports = {
     callType: 'POST',
 
     init: function(req, res, call) {
-
         if (call.apikey) {
             apikey = call.apikey;
         }
@@ -95,11 +95,20 @@ module.exports = {
         }
     },
 
-    results: function() {
-        if (validate() == true) {
+    results: function(callback) {
+        var isvalid = validate();
+        if (isvalid !== true) {
+            callback([{
+                message: 'Failed registion process',
+                error: 2,
+                errormsg: validate()
+            }]);
+        } else if (isvalid == true) {
+            
             var model = require(MODELS + moduleName + 'Model');
             var m = new model();
             m.init();
+
             // bundle the obj and adds salt and registrationKey;
             var userData = {
                 email: email,
@@ -111,20 +120,21 @@ module.exports = {
                 salt: this.generateKey(),
                 registrationKey: this.generateKey()
             };
-
-            m.create(userData);
-            m.cleanUp();
-
-            return [{
-                message: 'Successfully registered',
-                error: 0
-            }];
+            m.create(userData, function(bool) {
+                if (bool) {
+                    callback([{
+                        message: 'Successfully registered',
+                        error: 0
+                    }]);
+                } else {
+                    callback([{
+                        message: 'Failed registered due to db issue.',
+                        error: 0
+                    }]);
+                }
+                m.cleanUp();
+            });
         }
-        return [{
-            message: 'Failed registion process',
-            error: 2,
-            errormsg: validate()
-        }];
     },
 
     cleanUp: function() {

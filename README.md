@@ -21,27 +21,18 @@ SidenotesAPI.docx - This is a doc which is used to documnet all api calls.
 Project Folder Structure:
 --------------------------
 /config - This holds the config files for production or development environments.
-
 /Controllers - All controller files are stored here, including the MainController.js, all controllers should validate data before providing it to a model.
-
 /Lib - Currently just holds the wrapper for the logger lib.
-
 /Models - Holds all the model files which controllers can call on to perform work, example models will save,delete,create, and destroy date for the datbase.
-
 /Views - This holds email template view, current the rest servers has no need for a true view file.
-
 /node_modules - This dir is controlled by node.js it houses the node.js controlled libaries which are used throughout this server.
 
-
-Personal notes for project:
-----------------------------
-
 picr error codes:
-
+-----------------
 0 - no error is present.
 1 - failed to login.
 2 - failed to register patron.
-
+3 - failed the verifcation process.
 
 Current API calls:
 ----------------------------
@@ -70,3 +61,5 @@ PUT Variables:
 	registrationKey = 12321dqe1231dfqwe123fwe12345t;
 
 
+Personal notes for project:
+----------------------------

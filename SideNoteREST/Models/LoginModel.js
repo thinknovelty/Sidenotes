@@ -21,19 +21,35 @@ var util = require('util');
 
 function LoginModel() {
     this.moduleName = 'login';
+
     this.init = function() {
-
+        if (eventManager) {
+            eventManager.once('readLoginAndLock', this.readLoginAttemptsAndLockUser);
+        } else {
+            eventManager = getEventManager();
+            eventManager.once('readLoginAndLock', this.readLoginAttemptsAndLockUser);
+        };
     };
-    this.create = function(email, didfailLogin) {
-        var picrConnection = getPicrConnection();
 
+    //      usage: 
+    //      email = the login name; 
+    //      didfailLogin = (true) if we already falsed validation (false) if we passed validzation;
+    //      callback = used to trigger the calling object (optional);
+    this.create = function(email, didfailLogin, callback) {
+        if (!email) {
+            appLogger().error('email is required for loginModel create()');
+            return;
+        }
+        var picrConnection = getPicrConnection();
         if (picrConnection) {
-            picrConnection.connect();
             picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows, fields) {
                 if (err || !(rows[0])) {
-                    appLogger().error('SQL error couldn\'t get _id\n' + rows);
+                    appLogger().error('SQL error couldn\'t get _id for ' + email);
                     picrConnection.end();
-                    return false;
+                    if (callback) {
+                        callback(false);
+                    }
+                    return;
                 }
                 appLogger().info('FOUND _id for ' + email + ' = ' + rows[0]._id);
 
@@ -48,20 +64,25 @@ function LoginModel() {
                 }
 
                 //Writes to user_login table
-                picrConnection.query('INSERT INTO user_login SET ?', post, function(err, rows, fields) {
+                picrConnection.query('INSERT INTO user_login SET ? ', post, function(err, rows, fields) {
                     if (err) {
                         appLogger().error('SQL couldn\'t INSERT INTO user_login table\n' + err);
                         picrConnection.end();
-                        return false;
+                        if (callback) {
+                            callback(false);
+                        }
+                        return;
                     } else if (rows.affectedRows > 0) {
                         appLogger().info('INSERT INTO user_login ' + JSON.stringify(rows));
                     }
                     picrConnection.end();
-                    //if we failed we are going to read how many times he failed login.
-                    if (didfailLogin) {
-                        this.read(post.user_id);
+                    if (callback) {
+                        callback(true);
                     }
-                    return true;
+                    //if we failed we are going to read how many times they failed the login process.
+                    if (didfailLogin) {
+                        eventManager.emit('readLoginAndLock', post.user_id);
+                    }
                 });
             });
         } else {
@@ -73,7 +94,24 @@ function LoginModel() {
 
     };
 
-    this.read = function(user_id) {
+    //      usage: 
+    //      user_id = the user ID which you want to read
+    //      callback = used to trigger the calling object with the amount of times the user attempted to login (optional);
+    this.readLoginAttemptsAndLockUser = function(user_id, callback) {
+        if (!user_id) {
+            appLogger().error('user_id is required for loginModel readLoginAttemptsAndLockUser()');
+            return;
+        }
+        appLogger().info('Checking user = ' + user_id + ' for failed login attempts.');
+    };
+
+    this.read = function(user_id, callback){
+        if (!user_id) {
+            appLogger().error('user_id is required for loginModel read()');
+            return;
+        }
+
+
 
     };
 
@@ -81,8 +119,14 @@ function LoginModel() {
 
     };
 
-    this.cleanUp = function() {
+    this.removeListeners = function(){
+        if(eventManager){
+            eventManager.removeAllListeners(['readLoginAndLock']);
+        }
+    };
 
+    this.cleanUp = function() {
+        this.removeListeners();
     };
 };
 
