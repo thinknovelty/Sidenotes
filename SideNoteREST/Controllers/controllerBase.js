@@ -1,37 +1,41 @@
 'use strict';
+'use strict';
 //base for all controllers!
 
-module.exports = {
-
-    get: function(str) {
+module.exports = function BaseController(moduleName) {
+	this.moduleName = 'base';
+	if(moduleName){
+	this.moduleName = moduleName;
+	}
+	this.get = function(str) {
         if (this[str] != null) {
             return this[str];
         }
-    },
+    };
 
-    set: function(str, value) {
+    this.set = function(str, value) {
         this[str] = value;
-    },
+    };
 
     //generates a random 32 digit key;
-    generateKey: function() {
+    this.generateKey = function() {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         for (var i = 0; i < 32; i++) {
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         }
         return text;
-    },
+    };
 
-    init: function(req, res, call) {
+    this.init = function(req, res, call) {
         appLogger().info('Init from Base Controller');
-    },
+    };
 
-    results: function() {
+    this.results = function() {
         appLogger().info('Default from Base Controller');
-    },
+    };
 
-    cleanUp: function() {
+    this.cleanUp = function() {
         appLogger().info('Default from Base Controller');
-    }
-}
+    };
+};
