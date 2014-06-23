@@ -29,7 +29,7 @@ var addTestResponds = function(app) {
 
     var tcall = function(req) {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        appLogger().info(ip + ' is testing the server.');
+        appLogger.info(ip + ' is testing the server.');
         return {
             respondBack: 'Yes, the server is alive and kicking',
             Error: 'No error yet!...'
@@ -39,13 +39,13 @@ var addTestResponds = function(app) {
     app.route('/test')
         .all(function(req, res) {
             res.send([tcall(req)]);
-            appLogger().info('Testing completed.');
+            appLogger.info('Testing completed.');
         });
 
     app.route('/')
         .all(function(req, res) {
             res.send([tcall(req)]);
-            appLogger().info('Testing completed.');
+            appLogger.info('Testing completed.');
         });
 };
 
@@ -71,7 +71,7 @@ var startExpress = function() {
     //error handling...
     app.use(function(err, req, res, next) {
         res.send(500, err.toString());
-        appLogger().error(err.stack);
+        appLogger.error(err.stack);
     });
 
     app.listen(appConfig().restPort);
@@ -79,10 +79,10 @@ var startExpress = function() {
     if (app) {
         addTestResponds(app);
         // addMailer(app);
-        appLogger().info('Listening on port ' + appConfig().restPort);
+        appLogger.info('Listening on port ' + appConfig().restPort);
         return app;
     } else {
-        appLogger().info('Failed to start server on port ' + appConfig().restPort);
+        appLogger.info('Failed to start server on port ' + appConfig().restPort);
         return false;
     }
 };

@@ -6,11 +6,10 @@
 module.exports = function DecrypterModel() {
     this.modularName = 'Decrypter';
     this.init = function(argument) {
-        console.log('init of the Decrypter');
+        applogger.info('init of the Decrypter');
     };
 
     this.cleanUp = function() {
-        console.log('clean up for Decrypter');
+        applogger.info('clean up for Decrypter');
     };
-
 };

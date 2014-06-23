@@ -50,6 +50,9 @@ if (!GLOBAL.bootstrapped) {
     GLOBAL.PicrsmtpTransport = require("nodemailer").createTransport("SMTP", appConfig().picr.email);
     GLOBAL.Side_notesTransport = require("nodemailer").createTransport("SMTP", appConfig().side_notes.email);
 
+    //setup Logger
+    GLOBAL.appLogger = require(GLOBAL.LIB + 'Logger.js');
+
     //Makes datebase connection for products. Call them then close your connection with .end();
     GLOBAL.getSide_notesConnection = function() {
         return new DBCreateConnection(appConfig().side_notes.database);
@@ -57,8 +60,6 @@ if (!GLOBAL.bootstrapped) {
     GLOBAL.getPicrConnection = function() {
         return new DBCreateConnection(appConfig().picr.database);
     };
-
-
 
     GLOBAL.getModelBase = function() {
        return require(GLOBAL.MODELS + 'modelBase');
@@ -97,10 +98,6 @@ if (!GLOBAL.bootstrapped) {
         return require(GLOBAL.LIB + 'Decrypter');
     };
 
-    GLOBAL.appLogger = function() {
-        return require(GLOBAL.LIB + 'Logger.js');
-    };
-
     GLOBAL.appRequire = function(module) {
         return require(root + module);
     };
@@ -108,9 +105,7 @@ if (!GLOBAL.bootstrapped) {
     GLOBAL.loadView = function(view) {
         return fs.readFileSync(VIEW_ROOT + view, 'utf-8');
     };
-
-    appLogger().info('config mode ' + getAppMode());
-    appLogger().info('bootstrap complete');
+    appLogger.info('Config mode = ' + getAppMode());
+    appLogger.info('GLOBAL Object and functions loaded.');
 }
-
 GLOBAL.bootstrapped = true;

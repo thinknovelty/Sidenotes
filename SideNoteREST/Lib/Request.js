@@ -8,32 +8,35 @@
 //
 //-----------------------------------------
 
-module.exports = function RequestModel(){
+module.exports = function RequestModel() {
     this.moduleName = 'Request';
 
     timeStamp = function() {
-    return getDateFormat()(new Date(), "mm-dd-yyyy hh:MM:ss");
+        return getDateFormat()(new Date(), "mm-dd-yyyy hh:MM:ss");
     };
 
     this.getCallBack = function(req, res) {
         //required parameters
-		var apikey = null;
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'GET';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('GET from ' + ip);
-        
-        if (!req.params.mod || req.params.mod === 'test') {
-            appLogger().info('No mod provided, this is a error or test call.');
+        call.callType = 'GET';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('GET from ' + ip);
+
+        if (getAppMode() === 'development' && !call.mod || call.mod === 'test') {
+            appLogger.info('No mod provided, this is a error or test call.');
             return;
         }
 
         //this should be here if not we have a issue.
-        call.module = req.params.mod;
+        if (!call.mod) {
+            throw new Error("BAD MODULAR, MODULAR is a required.");
+            return;
+        }
 
         //check for API KEY.
         if (req.query.apikey) {
@@ -42,24 +45,22 @@ module.exports = function RequestModel(){
 
         var v = new validatorModel();
         if (!v.checkAPIKEY(apikey)) {
-            appLogger().error('apikey = ' + apikey);
+            appLogger.error('apikey = ' + apikey);
             throw new Error("BAD API KEY, APIKEY is required parameter.");
             return;
         }
 
-        appLogger().info(JSON.stringify(call));
-
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error(call.module + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
         gModular.init(req, res, call);
 
@@ -67,14 +68,12 @@ module.exports = function RequestModel(){
             gModular.results(function(arr) {
 
                 if (arr && Array.isArray(arr)) {
-                    appLogger().info('PUT ' + call.module + ' complete..');
-                    arr.push({
-                        timeStamp: this.timeStamp()
-                    });
+                    appLogger.info('GET ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
                     res.send(arr);
                 } else {
                     gModular.cleanUp();
-                    appLogger().error("Issue with returned data.");
+                    appLogger.error("Issue with returned data.");
                     throw new Error("Issue with returned data.");
                 }
                 gModular.cleanUp();
@@ -88,28 +87,24 @@ module.exports = function RequestModel(){
 
     this.getCallBackTwo = function(req, res) {
         //required parameters
-		var apikey = null;
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'GET';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('GET from ' + ip);
+        call.callType = 'GET';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('GET from ' + ip);
 
         //this should be here if not we have a issue.
-        if (req.params.mod) {
-            call.module = req.params.mod;
-        } else {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
             return;
         }
 
         //this should be here if not we have a issue.
-        if (req.params.id) {
-            call.id = req.params.id;
-        } else {
+        if (!call.id) {
             throw new Error("BAD ID, ID is a required, it cannot be found or is incorrect.");
             return;
         }
@@ -118,66 +113,73 @@ module.exports = function RequestModel(){
         if (req.query.apikey) {
             apikey = req.query.apikey;
         }
+
         var v = new validatorModel();
         if (!v.checkAPIKEY(apikey)) {
-            appLogger().error('apikey = ' + apikey);
+            appLogger.error('apikey = ' + apikey);
             throw new Error("BAD API KEY, APIKEY is required parameter.");
             return;
         }
 
-        appLogger().info(JSON.stringify(call));
+        appLogger.info(JSON.stringify(call));
 
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
-        gModular.init(req, res);
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
-        finalObj = gModular.results();
-        if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Get call ' + call.module + ' complete..');
-            finalObj.push({
-                timeStamp: this.timeStamp()
-            });
-            res.send(finalObj);
-        } else {
-            throw new Error("Issue with returned data.");
+        if (gModular.callType !== call.callType) {
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
-        gModular.cleanUp();
+        gModular.init(req, res, call);
+
+        try {
+            gModular.results(function(arr) {
+
+                if (arr && Array.isArray(arr)) {
+                    appLogger.info('GET ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
+                    res.send(arr);
+                } else {
+                    gModular.cleanUp();
+                    appLogger.error("Issue with returned data.");
+                    throw new Error("Issue with returned data.");
+                }
+                gModular.cleanUp();
+            });
+
+        } catch (err) {
+            gModular.cleanUp();
+            throw new Error(err);
+        }
     };
 
     this.getCallBackThree = function(req, res) {
         //required parameters
-		var apikey = null;
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'GET';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('GET from ' + ip);
+        call.callType = 'GET';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info('GET from ' + ip);
+        appLogger.info(JSON.stringify(call));
 
         //this should be here if not we have a issue.
-        if (req.params.mod) {
-            call.module = req.params.mod;
-        } else {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
             return;
         }
 
         //this should be here if not we have a issue.
-        if (req.params.type) {
-            call.type = req.params.type;
-        } else {
+        if (!call.type) {
             throw new Error("BAD TYPE, TYPE is a required.");
             return;
         }
 
         //this should be here if not we have a issue.
-        if (req.params.id) {
-            call.id = req.params.id;
-        } else {
+        if (!call.id) {
             throw new Error("BAD ID, ID is a required, it cannot be found or is incorrect.");
             return;
         }
@@ -189,43 +191,53 @@ module.exports = function RequestModel(){
 
         var v = new validatorModel();
         if (!v.checkAPIKEY(apikey)) {
-            appLogger().error('apikey = ' + apikey);
+            appLogger.error('apikey = ' + apikey);
             throw new Error("BAD API KEY, APIKEY is required parameter.");
             return;
         }
 
-        appLogger().info(JSON.stringify(call));
-
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
-        gModular.init(req, res);
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
-        finalObj = gModular.results();
-        if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Get call ' + call.module + ' complete..');
-            finalObj.push({
-                timeStamp: this.timeStamp()
-            });
-            res.send(finalObj);
-        } else {
-            throw new Error("Issue with returned data.");
+        if (gModular.callType !== call.callType) {
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
-        gModular.cleanUp();
+        gModular.init(req, res, call);
+
+        try {
+            gModular.results(function(arr) {
+
+                if (arr && Array.isArray(arr)) {
+                    appLogger.info('GET ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
+                    res.send(arr);
+                } else {
+                    gModular.cleanUp();
+                    appLogger.error("Issue with returned data.");
+                    throw new Error("Issue with returned data.");
+                }
+                gModular.cleanUp();
+            });
+
+        } catch (err) {
+            gModular.cleanUp();
+            throw new Error(err);
+        }
     };
 
     this.postCallBack = function(req, res) {
         //required parameters
-		var apikey = null;
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'POST';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('Post from ' + ip);
+        call.callType = 'POST';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('Post from ' + ip);
 
         //this should be here if not we have a issue.
         if (!call.mod) {
@@ -238,9 +250,8 @@ module.exports = function RequestModel(){
         }
 
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.mod);
-		console.log(call.mod);
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
@@ -248,7 +259,7 @@ module.exports = function RequestModel(){
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error(call.module + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
         gModular.init(req, res, call);
 
@@ -256,18 +267,17 @@ module.exports = function RequestModel(){
             gModular.results(function(arr) {
 
                 if (arr && Array.isArray(arr)) {
-                    appLogger().info('POST ' + call.module + ' complete..');
-                    arr.push({
-                        timeStamp: this.timeStamp()
-                    });
+                    appLogger.info('POST ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
                     res.send(arr);
                 } else {
                     gModular.cleanUp();
-                    appLogger().error("Issue with returned data.");
+                    appLogger.error("Issue with returned data.");
                     throw new Error("Issue with returned data.");
                 }
                 gModular.cleanUp();
             });
+
         } catch (err) {
             gModular.cleanUp();
             throw new Error(err);
@@ -275,20 +285,26 @@ module.exports = function RequestModel(){
     };
 
     this.postCallBackTwo = function(req, res) {
-		//required parameters
-		var apikey = null;
+        //required parameters
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'POST';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('Post from ' + ip);
+        call.callType = 'POST';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('Post from ' + ip);
 
         //this should be here if not we have a issue.
         if (!call.module) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
+        }
+
+        //this should be here if not we have a issue.
+        if (!call.id) {
+            throw new Error("BAD ID, ID is a required, it cannot be found or is incorrect.");
+            return;
         }
 
         var v = new validatorModel();
@@ -296,139 +312,17 @@ module.exports = function RequestModel(){
             throw new Error("BAD API KEY, APIKEY is required parameter.");
         }
 
-        appLogger().info(JSON.stringify(call));
-		
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.module + 'Controller.js');
-        }
-
-        try {
-            gModular.init(req, res, call);
-            finalObj = gModular.results();
-
-        } catch (err) {
-            gModular.cleanUp();
-            throw new Error(err);
-        }
-
-        gModular.cleanUp();
-
-        if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Post ' + call.module + ' complete..');
-            finalObj.push({
-                timeStamp: this.timeStamp()
-            });
-            res.send(finalObj);
-        } else {
-            throw new Error("Issue with returned data.");
-        }
-    };
-
-    this.postCallBackThree = function(req, res) {
-		//required parameters
-		var apikey = null;
-        var call = extend(true, req.params, req.body);
-		call.callType = 'POST';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('Post from ' + ip);
-		
-        //this should be here if not we have a issue.
-        if (!call.module) {
-            throw new Error("BAD MODULAR, MODULAR is a required.");
-        }
-
-        var v = new validatorModel();
-        if (!v.checkAPIKEY(apikey)) {
-            throw new Error("BAD API KEY, APIKEY is required parameter.");
-        }
-
-        appLogger().info(JSON.stringify(call));
-		
-        //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
-
-        if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
-        }
-
-        if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.module + 'Controller.js');
-        }
-
-        try {
-            gModular.init(req, res, call);
-            finalObj = gModular.results();
-
-        } catch (err) {
-            gModular.cleanUp();
-            throw new Error(err);
-        }
-
-        gModular.cleanUp();
-
-        if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Post ' + call.module + ' complete..');
-            finalObj.push({
-                timeStamp: this.timeStamp()
-            });
-            res.send(finalObj);
-        } else {
-            throw new Error("Issue with returned data.");
-        }
-    };
-
-    this.putCallBack = function(req, res) {
-		//required parameters
-		var apikey = null;
-        var call = extend(true, req.params, req.body);
-		call.callType = 'PUT';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('PUT from ' + ip);
-		
-        //this should be here if not we have a issue.
-        if (!call.module) {
-            throw new Error("BAD MODULAR, MODULAR is a required.");
-        }
-
-        var v = new validatorModel();
-        if (!v.checkAPIKEY(apikey)) {
-            throw new Error("BAD API KEY, APIKEY is required parameter.");
-        }
-
-        appLogger().info(JSON.stringify(call));
-
-        //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
-
-        // console.log(gModular);
-
-        if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
-        }
-
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.module + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
         gModular.init(req, res, call);
 
@@ -436,14 +330,138 @@ module.exports = function RequestModel(){
             gModular.results(function(arr) {
 
                 if (arr && Array.isArray(arr)) {
-                    appLogger().info('PUT ' + call.module + ' complete..');
-                    arr.push({
-                        timeStamp: this.timeStamp()
-                    });
+                    appLogger.info('POST ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
                     res.send(arr);
                 } else {
                     gModular.cleanUp();
-                    appLogger().error("Issue with returned data.");
+                    appLogger.error("Issue with returned data.");
+                    throw new Error("Issue with returned data.");
+                }
+                gModular.cleanUp();
+            });
+
+        } catch (err) {
+            gModular.cleanUp();
+            throw new Error(err);
+        }
+    };
+
+    this.postCallBackThree = function(req, res) {
+        //required parameters
+        var apikey = null;
+        var call = extend(true, req.params, req.body);
+        call.callType = 'POST';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('Post from ' + ip);
+
+        //this should be here if not we have a issue.
+        if (!call.module) {
+            throw new Error("BAD MODULAR, MODULAR is a required.");
+        }
+
+        //this should be here if not we have a issue.
+        if (!call.type) {
+            throw new Error("BAD TYPE, TYPE is a required.");
+            return;
+        }
+
+        //this should be here if not we have a issue.
+        if (!call.id) {
+            throw new Error("BAD ID, ID is a required, it cannot be found or is incorrect.");
+            return;
+        }
+
+        var v = new validatorModel();
+        if (!v.checkAPIKEY(apikey)) {
+            throw new Error("BAD API KEY, APIKEY is required parameter.");
+        }
+
+        //creates main controller and mix in to our module:
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
+
+        if (!gModular) {
+            throw new Error("Cannot find " + call.module + 'Controller.js');
+        }
+
+        if (gModular.callType !== call.callType) {
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
+        }
+        gModular.init(req, res, call);
+
+        try {
+            gModular.results(function(arr) {
+
+                if (arr && Array.isArray(arr)) {
+                    appLogger.info('POST ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
+                    res.send(arr);
+                } else {
+                    gModular.cleanUp();
+                    appLogger.error("Issue with returned data.");
+                    throw new Error("Issue with returned data.");
+                }
+                gModular.cleanUp();
+            });
+
+        } catch (err) {
+            gModular.cleanUp();
+            throw new Error(err);
+        }
+    };
+
+    this.putCallBack = function(req, res) {
+        //required parameters
+        var apikey = null;
+        var call = extend(true, req.params, req.body);
+        call.callType = 'PUT';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('PUT from ' + ip);
+
+        //this should be here if not we have a issue.
+        if (!call.mod) {
+            throw new Error("BAD MODULAR, MODULAR is a required.");
+        }
+
+        var v = new validatorModel();
+        if (!v.checkAPIKEY(apikey)) {
+            throw new Error("BAD API KEY, APIKEY is required parameter.");
+        }
+
+        //creates main controller and mix in to our module:
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
+
+        if (!gModular) {
+            throw new Error("Cannot find " + call.mod + 'Controller.js');
+        }
+
+        if (gModular.callType !== call.callType) {
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
+        }
+        gModular.init(req, res, call);
+
+        try {
+            gModular.results(function(arr) {
+
+                if (arr && Array.isArray(arr)) {
+                    appLogger.info('PUT ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
+                    res.send(arr);
+                } else {
+                    gModular.cleanUp();
+                    appLogger.error("Issue with returned data.");
                     throw new Error("Issue with returned data.");
                 }
                 gModular.cleanUp();
@@ -456,20 +474,26 @@ module.exports = function RequestModel(){
     };
 
     this.putCallBackTwo = function(req, res) {
-		//required parameters
-		var apikey = null;
+        //required parameters
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'PUT';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('PUT from ' + ip);
-		
+        call.callType = 'PUT';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('PUT from ' + ip);
+
         //this should be here if not we have a issue.
-        if (!call.module) {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
+        }
+
+        //this should be here if not we have a issue.
+        if (!call.id) {
+            throw new Error("BAD ID, ID is a required, it cannot be found or is incorrect.");
+            return;
         }
 
         var v = new validatorModel();
@@ -477,58 +501,68 @@ module.exports = function RequestModel(){
             throw new Error("BAD API KEY, APIKEY is required parameter.");
         }
 
-        appLogger().info(JSON.stringify(call));
-		
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
+            throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.module + 'Controller.js');
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
+        gModular.init(req, res, call);
 
         try {
-            gModular.init(req, res, call);
-            finalObj = gModular.results();
+            gModular.results(function(arr) {
+
+                if (arr && Array.isArray(arr)) {
+                    appLogger.info('PUT ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
+                    res.send(arr);
+                } else {
+                    gModular.cleanUp();
+                    appLogger.error("Issue with returned data.");
+                    throw new Error("Issue with returned data.");
+                }
+                gModular.cleanUp();
+            });
 
         } catch (err) {
             gModular.cleanUp();
             throw new Error(err);
-        }
-
-        gModular.cleanUp();
-
-        if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Post ' + call.module + ' complete..');
-            finalObj.push({
-                timeStamp: this.timeStamp()
-            });
-            res.send(finalObj);
-        } else {
-            throw new Error("Issue with returned data.");
         }
     };
 
     this.putCallBackThree = function(req, res) {
-		//required parameters
-		var apikey = null;
+        //required parameters
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'PUT';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('PUT from ' + ip);
-		
+        call.callType = 'PUT';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('PUT from ' + ip);
+
         //this should be here if not we have a issue.
         if (!call.module) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
+        }
+
+        //this should be here if not we have a issue.
+        if (!call.id) {
+            throw new Error("BAD ID, ID is a required, it cannot be found or is incorrect.");
+            return;
+        }
+
+        //this should be here if not we have a issue.
+        if (!call.type) {
+            throw new Error("BAD TYPE, TYPE is a required.");
+            return;
         }
 
         var v = new validatorModel();
@@ -536,57 +570,55 @@ module.exports = function RequestModel(){
             throw new Error("BAD API KEY, APIKEY is required parameter.");
         }
 
-        appLogger().info(JSON.stringify(call));
-		
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.module + 'Controller.js');
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
+        gModular.init(req, res, call);
 
         try {
-            gModular.init(req, res, call);
-            finalObj = gModular.results();
+            gModular.results(function(arr) {
+
+                if (arr && Array.isArray(arr)) {
+                    appLogger.info('PUT ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
+                    res.send(arr);
+                } else {
+                    gModular.cleanUp();
+                    appLogger.error("Issue with returned data.");
+                    throw new Error("Issue with returned data.");
+                }
+                gModular.cleanUp();
+            });
 
         } catch (err) {
             gModular.cleanUp();
             throw new Error(err);
-        }
-
-        gModular.cleanUp();
-
-        if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Post ' + call.module + ' complete..');
-            finalObj.push({
-                timeStamp: this.timeStamp()
-            });
-            res.send(finalObj);
-        } else {
-            throw new Error("Issue with returned data.");
         }
     };
 
     this.deleteCallBack = function(req, res) {
-		//required parameters
-		var apikey = null;
+        //required parameters
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'DELETE';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('DELETE from ' + ip);
-		
+        call.callType = 'DELETE';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('DELETE from ' + ip);
+
         //this should be here if not we have a issue.
-        if (!call.module) {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
         }
 
@@ -595,58 +627,62 @@ module.exports = function RequestModel(){
             throw new Error("BAD API KEY, APIKEY is required parameter.");
         }
 
-        appLogger().info(JSON.stringify(call));
-		
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.module + 'Controller.js');
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
+        gModular.init(req, res, call);
 
         try {
-            gModular.init(req, res, call);
-            finalObj = gModular.results();
+            gModular.results(function(arr) {
+
+                if (arr && Array.isArray(arr)) {
+                    appLogger.info('DELETE ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
+                    res.send(arr);
+                } else {
+                    gModular.cleanUp();
+                    appLogger.error("Issue with returned data.");
+                    throw new Error("Issue with returned data.");
+                }
+                gModular.cleanUp();
+            });
 
         } catch (err) {
             gModular.cleanUp();
             throw new Error(err);
-        }
-
-        gModular.cleanUp();
-
-        if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Post ' + call.module + ' complete..');
-            finalObj.push({
-                timeStamp: this.timeStamp()
-            });
-            res.send(finalObj);
-        } else {
-            throw new Error("Issue with returned data.");
         }
     };
 
     this.deleteCallBackTwo = function(req, res) {
-		//required parameters
-		var apikey = null;
+        //required parameters
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'DELETE';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('DELETE from ' + ip);
-		
+        call.callType = 'DELETE';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('DELETE from ' + ip);
+
         //this should be here if not we have a issue.
         if (!call.module) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
+        }
+
+        //this should be here if not we have a issue.
+        if (!call.id) {
+            throw new Error("BAD ID, ID is a required, it cannot be found or is incorrect.");
+            return;
         }
 
         var v = new validatorModel();
@@ -654,58 +690,68 @@ module.exports = function RequestModel(){
             throw new Error("BAD API KEY, APIKEY is required parameter.");
         }
 
-        appLogger().info(JSON.stringify(call));
-		
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.module + 'Controller.js');
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
+        gModular.init(req, res, call);
 
         try {
-            gModular.init(req, res, call);
-            finalObj = gModular.results();
+            gModular.results(function(arr) {
+
+                if (arr && Array.isArray(arr)) {
+                    appLogger.info('DELETE ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
+                    res.send(arr);
+                } else {
+                    gModular.cleanUp();
+                    appLogger.error("Issue with returned data.");
+                    throw new Error("Issue with returned data.");
+                }
+                gModular.cleanUp();
+            });
 
         } catch (err) {
             gModular.cleanUp();
             throw new Error(err);
-        }
-
-        gModular.cleanUp();
-
-        if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Post ' + call.module + ' complete..');
-            finalObj.push({
-                timeStamp: this.timeStamp()
-            });
-            res.send(finalObj);
-        } else {
-            throw new Error("Issue with returned data.");
         }
     };
 
     this.deleteCallBackThree = function(req, res) {
-		//required parameters
-		var apikey = null;
+        //required parameters
+        var apikey = null;
         var call = extend(true, req.params, req.body);
-		call.callType = 'DELETE';
-		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		var gModular = null;
-		var validatorModel = getValidator();
-	
-        appLogger().info(JSON.stringify(call));
-        appLogger().info('DELETE from ' + ip);
-		
+        call.callType = 'DELETE';
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var gModular = null;
+        var validatorModel = getValidator();
+
+        appLogger.info(JSON.stringify(call));
+        appLogger.info('DELETE from ' + ip);
+
         //this should be here if not we have a issue.
-        if (!call.module) {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
+        }
+
+        //this should be here if not we have a issue.
+        if (!call.id) {
+            throw new Error("BAD ID, ID is a required, it cannot be found or is incorrect.");
+            return;
+        }
+
+        //this should be here if not we have a issue.
+        if (!call.type) {
+            throw new Error("BAD TYPE, TYPE is a required.");
+            return;
         }
 
         var v = new validatorModel();
@@ -713,40 +759,38 @@ module.exports = function RequestModel(){
             throw new Error("BAD API KEY, APIKEY is required parameter.");
         }
 
-        appLogger().info(JSON.stringify(call));
-		
         //creates main controller and mix in to our module:
-		var bController = getControllerBase();
-		var cb = new bController(call.module);
-        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.module + 'Controller'));
+        var bController = getControllerBase();
+        var cb = new bController(call.mod);
+        gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
             throw new Error("Cannot find " + call.module + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
-            throw new Error("A POST call is required for " + call.module + 'Controller.js');
+            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
         }
+        gModular.init(req, res, call);
 
         try {
-            gModular.init(req, res, call);
-            finalObj = gModular.results();
+            gModular.results(function(arr) {
+
+                if (arr && Array.isArray(arr)) {
+                    appLogger.info('DELETE ' + call.mod + ' complete..');
+                    arr[0].time_stamp = this.timeStamp();
+                    res.send(arr);
+                } else {
+                    gModular.cleanUp();
+                    appLogger.error("Issue with returned data.");
+                    throw new Error("Issue with returned data.");
+                }
+                gModular.cleanUp();
+            });
 
         } catch (err) {
             gModular.cleanUp();
             throw new Error(err);
-        }
-
-        gModular.cleanUp();
-
-        if (finalObj && Array.isArray(finalObj)) {
-            appLogger().info('Post ' + call.module + ' complete..');
-            finalObj.push({
-                timeStamp: this.timeStamp()
-            });
-            res.send(finalObj);
-        } else {
-            throw new Error("Issue with returned data.");
         }
     };
 };

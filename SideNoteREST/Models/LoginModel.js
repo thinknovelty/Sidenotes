@@ -37,21 +37,21 @@ function LoginModel() {
     //      callback = used to trigger the calling object (optional);
     this.create = function(email, didfailLogin, callback) {
         if (!email) {
-            appLogger().error('email is required for loginModel create()');
+            appLogger.error('email is required for loginModel create()');
             return;
         }
         var picrConnection = getPicrConnection();
         if (picrConnection) {
             picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows, fields) {
                 if (err || !(rows[0])) {
-                    appLogger().error('SQL error couldn\'t get _id for ' + email);
+                    appLogger.error('SQL error couldn\'t get _id for ' + email);
                     picrConnection.end();
                     if (callback) {
-                        callback(false);
+                        callback(false, err);
                     }
                     return;
                 }
-                appLogger().info('FOUND _id for ' + email + ' = ' + rows[0]._id);
+                appLogger.info('FOUND _id for ' + email + ' = ' + rows[0]._id);
 
                 var post = {
                     user_id: rows[0]._id,
@@ -66,14 +66,14 @@ function LoginModel() {
                 //Writes to user_login table
                 picrConnection.query('INSERT INTO user_login SET ? ', post, function(err, rows, fields) {
                     if (err) {
-                        appLogger().error('SQL couldn\'t INSERT INTO user_login table\n' + err);
+                        appLogger.error('SQL couldn\'t INSERT INTO user_login table\n' + err);
                         picrConnection.end();
                         if (callback) {
-                            callback(false);
+                            callback(false, err);
                         }
                         return;
                     } else if (rows.affectedRows > 0) {
-                        appLogger().info('INSERT INTO user_login ' + JSON.stringify(rows));
+                        appLogger.info('INSERT INTO user_login ' + JSON.stringify(rows));
                     }
                     picrConnection.end();
                     if (callback) {
@@ -86,7 +86,7 @@ function LoginModel() {
                 });
             });
         } else {
-            appLogger().error('Issue getting DB object.');
+            appLogger.error('Issue getting DB object.');
         }
     };
 
@@ -99,15 +99,15 @@ function LoginModel() {
     //      callback = used to trigger the calling object with the amount of times the user attempted to login (optional);
     this.readLoginAttemptsAndLockUser = function(user_id, callback) {
         if (!user_id) {
-            appLogger().error('user_id is required for loginModel readLoginAttemptsAndLockUser()');
+            appLogger.error('user_id is required for loginModel readLoginAttemptsAndLockUser()');
             return;
         }
-        appLogger().info('Checking user = ' + user_id + ' for failed login attempts.');
+        appLogger.info('Checking user = ' + user_id + ' for failed login attempts.');
     };
 
     this.read = function(user_id, callback){
         if (!user_id) {
-            appLogger().error('user_id is required for loginModel read()');
+            appLogger.error('user_id is required for loginModel read()');
             return;
         }
 

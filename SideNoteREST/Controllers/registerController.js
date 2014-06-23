@@ -24,8 +24,6 @@
 //USER, USER_CREDENTIALS, USER_ACCOUNT, USER_VERIFICATION
 // ------------------------------------------------------------
 
-var moduleName = 'register';
-
 //defaults
 var first_name = null;
 var last_name = null;
@@ -83,7 +81,7 @@ module.exports = {
             try {
                 birthday = new Date(call.birthday);
             } catch (err) {
-                appLogger().error('Error in controller init() ' + err);
+                appLogger.error('Error in controller init() ' + err);
             }
         }
         if (call.last_name) {
@@ -104,8 +102,8 @@ module.exports = {
                 errormsg: validate()
             }]);
         } else if (isvalid == true) {
-            
-            var model = require(MODELS + moduleName + 'Model');
+
+            var model = require(MODELS + this.moduleName + 'Model');
             var m = new model();
             m.init();
 
@@ -120,7 +118,7 @@ module.exports = {
                 salt: this.generateKey(),
                 registrationKey: this.generateKey()
             };
-            m.create(userData, function(bool) {
+            m.create(userData, function(bool, err) {
                 if (bool) {
                     callback([{
                         message: 'Successfully registered',
@@ -129,7 +127,8 @@ module.exports = {
                 } else {
                     callback([{
                         message: 'Failed registered due to db issue.',
-                        error: 0
+                        error: 0,
+                        errormsg: err,
                     }]);
                 }
                 m.cleanUp();

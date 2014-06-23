@@ -12,27 +12,27 @@ function BaseModel() {
     };
 
     this.init = function() {
-        appLogger().info('init from base');
+        appLogger.info('init from base');
     };
 
     this.create = function() {
-        appLogger().info('create from base');
+        appLogger.info('create from base');
     };
 
     this.delete = function() {
-        appLogger().info('delete from base');
+        appLogger.info('delete from base');
     };
 
     this.read = function() {
-        appLogger().info('read from base');
+        appLogger.info('read from base');
     };
 
     this.update = function() {
-        appLogger().info('update from base');
+        appLogger.info('update from base');
     };
 
     this.cleanUp = function() {
-        appLogger().info('cleanUp from base');
+        appLogger.info('cleanUp from base');
     };
 };
 

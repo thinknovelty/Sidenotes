@@ -22,7 +22,6 @@
 //user_verification, user_login
 
 // ------------------------------------------------------------
-var moduleName = 'verification';
 
 // Usage: 
 //this is the controller used for managering a user who activates his or her account.
@@ -37,10 +36,10 @@ var validate = function(data) {
         return v.isEmailInSystem(data.email);
     } else if (v.isRegistrationKey(data.registrationKey) !== true) {
         return v.isRegistrationKey(data.registrationKey);
-    }else if (v.isPassword(data.password) !== true) {
+    } else if (v.isPassword(data.password) !== true) {
         return v.isPassword(data.password);
     }
-    
+
     //if everything is good return clean.
     return true;
 };
@@ -84,18 +83,20 @@ module.exports = {
         } else if (isvalid === true) {
             var model = require(MODELS + 'Register' + 'Model');
             var m = new model();
-            m.update(data.email, function(bool) {
+            m.update(data.email, function(bool, err) {
                 if (bool) {
                     callback([{
                         message: 'Verification Successfully',
                         success: 1,
-                        error: 0
+                        error: 0,
+                        errormsg: err
                     }]);
                 } else {
                     callback([{
                         message: 'Verification failed due to DB issue.',
                         success: 0,
-                        error: 0
+                        error: 0,
+                        errormsg: err
                     }]);
                 }
                 m.cleanUp();

@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS user_login (
 	success		BOOLEAN NOT NULL,
 	timestamp	DATETIME,
 	PRIMARY KEY (_id),
-	FOREIGN KEY (_id) REFERENCES user(_id)
+	FOREIGN KEY (user_id) REFERENCES user(_id)
 ) ENGINE=InnoDB;
 
 # This table stores a user's friend list.

@@ -5,18 +5,18 @@
  */
 var winston = require('winston');
 var Logger = {};
-
 winston.addColors({
-    info: "green",
+    info: "blue",
     warning: "orange",
-    debug: "blue",
+    debug: "green",
     error: "red"
 });
-
 var logger = new(winston.Logger)({
     transports: [
         new(winston.transports.Console)({
-            'timestamp': true,
+            'timestamp': function() {
+                return getDateFormat()(new Date(), "mm-dd-yyyy HH:MM:ss");;
+            },
             level: 'info',
             silent: false,
             colorize: true

@@ -1,22 +1,24 @@
 //this is the start to the rest server.
 
-require('./bootstrap'); //just loads globals, not catching return
+//loads GLOBAL stuff..
+require('./bootstrap');
 
-// console.log(util.inspect(util, { showHidden: true, depth: null }));
-
-//are we in development or not?
-if (GLOBAL.bootstrapped && GLOBAL.getAppMode() == 'development') {
-
+if (!GLOBAL.bootstrapped) {
+    cosole.log('Error: bootstrapped has failed.');
+} else if (GLOBAL.getAppMode() == 'development') {
     var mainController = require(GLOBAL.CONTROLLERS + 'mainController');
-
+    // -- extra code for development --
     if (mainController.didLoadWithoutError()) {
-        appLogger().info('starting rest server in development mode');
+        appLogger.info('Started server in development mode');
     } else {
-        appLogger().error('Error starting rest server in development');
+        appLogger.error('Failed to start server in development');
     }
-}
-
-if (GLOBAL.bootstrapped && GLOBAL.getAppMode() == 'production') {
-    appLogger().info('starting reset server in production mode');
-    //do the extra stuff needed for production..
+} else if (GLOBAL.getAppMode() == 'production') {
+    var mainController = require(GLOBAL.CONTROLLERS + 'mainController');
+    // -- extra code for production --
+    if (mainController.didLoadWithoutError()) {
+        appLogger.info('Started server in production mode');
+    } else {
+        appLogger.error('Failed to start server server in production');
+    }
 }

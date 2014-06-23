@@ -19,7 +19,6 @@
 
 // ------------------------------------------------------------
 //LoginController.js
-var moduleName = 'login';
 
 module.exports = {
     callType: 'POST',
@@ -50,20 +49,20 @@ module.exports = {
         var isValid = this.validate(data);
         if (isValid !== true && data.email) {
             //true is set becuase we failed to vaildate. now we will record the failed attempt. We WILL GET THAT HACKER!!
-            m.create(data.email, true, function(didLogin) {
+            m.create(data.email, true, function(didLogin, err) {
                 if (didLogin) {
                     callback([{
                         message: 'Login failed login attempt has been recorded.',
                         success: 0,
                         error: 1,
-                        errormsg: isValid,
+                        errormsg: isValid + '' + err,
                     }]);
                 } else {
                     callback([{
                         message: 'Login failed login attempt has not been recorded.',
                         success: 0,
                         error: 1,
-                        errormsg: isValid,
+                        errormsg: isValid + '' + err,
                     }]);
                 }
             });
@@ -76,10 +75,10 @@ module.exports = {
 
             }]);
         } else if (isValid == true) {
-            var model = require(MODELS + moduleName + 'Model');
+            var model = require(MODELS + this.moduleName + 'Model');
             var m = new model();
             m.init();
-            m.create(data.email, false, function(didLogin) {
+            m.create(data.email, false, function(didLogin, err) {
                 if (didLogin) {
                     callback([{
                         message: 'Login Successfully',
@@ -90,7 +89,8 @@ module.exports = {
                     callback([{
                         message: 'Login failed due to DB issue.',
                         success: 0,
-                        error: 0
+                        error: 0,
+                        errormsg: err,
                     }]);
                 }
             });
@@ -120,7 +120,7 @@ module.exports = {
     },
 
     loginInProcess: function(email, didfailLogin) {
-        var model = require(MODELS + moduleName + 'Model');
+        var model = require(MODELS + this.moduleName + 'Model');
         var m = new model();
         m.init();
         m.create(email, didfailLogin);

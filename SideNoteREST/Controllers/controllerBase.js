@@ -1,13 +1,12 @@
 'use strict';
-'use strict';
 //base for all controllers!
 
 module.exports = function BaseController(moduleName) {
-	this.moduleName = 'base';
-	if(moduleName){
-	this.moduleName = moduleName;
-	}
-	this.get = function(str) {
+    this.moduleName = 'base';
+    if (moduleName) {
+        this.moduleName = moduleName;
+    }
+    this.get = function(str) {
         if (this[str] != null) {
             return this[str];
         }
@@ -28,14 +27,14 @@ module.exports = function BaseController(moduleName) {
     };
 
     this.init = function(req, res, call) {
-        appLogger().info('Init from Base Controller');
+        appLogger.info('Init from Base Controller');
     };
 
     this.results = function() {
-        appLogger().info('Default from Base Controller');
+        appLogger.info('Default from Base Controller');
     };
 
     this.cleanUp = function() {
-        appLogger().info('Default from Base Controller');
+        appLogger.info('Default from Base Controller');
     };
 };

@@ -9,7 +9,7 @@ module.exports = function ValidatorModel(email) {
         this.email = null;
     }
 
-    this.init = function(){
+    this.init = function() {
 
     };
 
@@ -55,7 +55,6 @@ module.exports = function ValidatorModel(email) {
 
     // Validate firstname string TODO: check for string
     this.isFirstname = function(firstname) {
-        console.log(typeof firstname);
         if (firstname == null) {
             return 'first_name is required';
         }
@@ -64,7 +63,6 @@ module.exports = function ValidatorModel(email) {
 
     // Validate lastname string TODO: check for string
     this.isLastname = function(lastname) {
-        console.log(typeof lastname);
         if (lastname == null) {
             return 'last_name is required';
         }
@@ -72,9 +70,9 @@ module.exports = function ValidatorModel(email) {
     };
 
     // Validate Date Of Birth date object
-    this.isDateofbirth = function(brithday) {
-        if (!brithday || !(util.isDate(brithday)) || brithday.toString() === 'Invalid Date') {
-            return 'Bad brithday format should be MM/DD/YYYY';
+    this.isDateofbirth = function(birthday) {
+        if (!birthday || !(util.isDate(birthday)) || birthday.toString() === 'Invalid Date') {
+            return 'birthday is required format should be MM/DD/YYYY';
         }
         return true;
     };
@@ -82,7 +80,7 @@ module.exports = function ValidatorModel(email) {
     // Validate Sex boolean
     this.isSex = function(sex) {
         if (sex == null || typeof sex != 'boolean') {
-            return 'Bad Sex 0 = Female; 1 = Male;';
+            return 'sex is required 0 = Female; 1 = Male;';
         }
         return true;
     };
