@@ -5,13 +5,14 @@
 
 
 //Call Types:
-// POST:
-// localhost/login/
+// PUT:
+// localhost/configuration/settings
 
-// POST Variables:
+// PUT Variables:
+//<name_of_setting> & <value>
 
-
-
+// note:
+// this will modifify only the settings which you provide in the call.
 // ------------------------------------------------------------
 //configurationController.js
 
@@ -31,13 +32,13 @@ module.exports = {
                     callback([{
                         message: 'Configurations successfully saved.',
                         settings: appConfig().picr,
-                        error: 0
+                        error: 00
                     }]);
                 } else {
                     callback([{
                         message: 'Configurations save failed.',
                         settings: appConfig().picr,
-                        error: 0,
+                        error: 04,
                         errormsg: err
                     }]);
                 }

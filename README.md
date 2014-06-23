@@ -29,14 +29,15 @@ Project Folder Structure:
 
 picr error codes:
 -----------------
-0 - no error is present.
-1 - failed to login.
-2 - failed to register patron.
-3 - failed the verifcation process.
+00 - no error is present.
+01 - failed to login.
+02 - failed to register patron.
+03 - failed the verifcation process.
+04 - failed to save configurations.
 
 Current API calls:
 ----------------------------
-localhost/register/ 	-used to register a new patron.
+localhost/register/ 					-used to register a new patron.
 Calltype: POST
 POST Variables:
 	email = example@gmail.com;
@@ -46,19 +47,26 @@ POST Variables:
 	birthday = MM-DD-YYYY;
 	sex = 0;
 
-localhost/login/ 		-used to log a patron into the system.
+localhost/login/ 						-used to log a patron into the system.
 Calltype: POST
 POST Variables:
 	email = example@gmail.com;
 	password = 1234123;
 	apiKey = 23tfwr234f234424;
 
-localhost/verification/ -used to verfiy a new patron.
+localhost/verification/ 				-used to verfiy a new patron.
 Calltype: PUT
 PUT Variables:
 	email = example@gmail.com;
 	password = 1234123;
 	registrationKey = 12321dqe1231dfqwe123fwe12345t;
+
+localhost/configuration/settings 		-this will modifify only the settings which you provide in the call.
+Calltype: PUT
+
+PUT Variables:
+<name_of_setting> & <value>
+
 
 
 Personal notes for project:

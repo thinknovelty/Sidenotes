@@ -98,7 +98,7 @@ module.exports = {
         if (isvalid !== true) {
             callback([{
                 message: 'Failed registion process',
-                error: 2,
+                error: 02,
                 errormsg: validate()
             }]);
         } else if (isvalid == true) {
@@ -122,12 +122,12 @@ module.exports = {
                 if (bool) {
                     callback([{
                         message: 'Successfully registered',
-                        error: 0
+                        error: 00
                     }]);
                 } else {
                     callback([{
                         message: 'Failed registered due to db issue.',
-                        error: 0,
+                        error: 00,
                         errormsg: err,
                     }]);
                 }

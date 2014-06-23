@@ -53,15 +53,15 @@ module.exports = {
                 if (didLogin) {
                     callback([{
                         message: 'Login failed login attempt has been recorded.',
-                        success: 0,
-                        error: 1,
+                        success: 00,
+                        error: 01,
                         errormsg: isValid + '' + err,
                     }]);
                 } else {
                     callback([{
                         message: 'Login failed login attempt has not been recorded.',
-                        success: 0,
-                        error: 1,
+                        success: 00,
+                        error: 01,
                         errormsg: isValid + '' + err,
                     }]);
                 }
@@ -69,8 +69,8 @@ module.exports = {
         } else if (isValid !== true) {
             callback([{
                 message: 'Login failed attempt please check errormsg for details.',
-                success: 0,
-                error: 1,
+                success: 00,
+                error: 01,
                 errormsg: isValid,
 
             }]);
@@ -83,13 +83,13 @@ module.exports = {
                     callback([{
                         message: 'Login Successfully',
                         success: 1,
-                        error: 0
+                        error: 00
                     }]);
                 } else {
                     callback([{
                         message: 'Login failed due to DB issue.',
                         success: 0,
-                        error: 0,
+                        error: 00,
                         errormsg: err,
                     }]);
                 }

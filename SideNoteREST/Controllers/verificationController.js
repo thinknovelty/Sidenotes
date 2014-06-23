@@ -77,7 +77,7 @@ module.exports = {
             callback([{
                 message: 'Verification failed please check errormsg for details.',
                 success: 0,
-                error: 3,
+                error: 03,
                 errormsg: validate(data)
             }]);
         } else if (isvalid === true) {
@@ -88,14 +88,14 @@ module.exports = {
                     callback([{
                         message: 'Verification Successfully',
                         success: 1,
-                        error: 0,
+                        error: 00,
                         errormsg: err
                     }]);
                 } else {
                     callback([{
                         message: 'Verification failed due to DB issue.',
                         success: 0,
-                        error: 0,
+                        error: 00,
                         errormsg: err
                     }]);
                 }
