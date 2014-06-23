@@ -73,7 +73,7 @@ var startExpress = function() {
         res.send(500, err.toString());
         appLogger.error(err.stack);
     });
-
+    console.log(AppSettings.server_port);
     app.listen(appConfig().restPort);
 
     if (app) {

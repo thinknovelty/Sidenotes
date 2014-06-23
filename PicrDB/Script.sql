@@ -44,6 +44,18 @@ CREATE TABLE IF NOT EXISTS poll (
 	FOREIGN KEY (picture_2_id) REFERENCES picture(_id)
 ) ENGINE=InnoDB;
 
+# A table for the server settings and maybe other settings
+CREATE TABLE IF NOT EXISTS settings (
+	_setting_id		BIGINT NOT NULL AUTO_INCREMENT,
+	setting_name	VARCHAR(35) NOT NULL,
+	value			VARCHAR(35) NOT NULL,
+	is_default		VARCHAR(35) NOT NULL,
+	is_active		CHAR(1) NOT NULL,
+	modified		DATETIME NOT NULL,
+	modified_by 	VARCHAR(35) NOT NULL,
+	PRIMARY KEY (_setting_id)
+) ENGINE=InnoDB;
+
 # This table stores user credentials
 # The salt value is used to has the members password
 # The salt value is created when the member registers

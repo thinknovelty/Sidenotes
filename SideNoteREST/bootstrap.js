@@ -41,6 +41,7 @@ if (!GLOBAL.bootstrapped) {
     GLOBAL.CONTROLLERS = appRoot + '/Controllers/';
     GLOBAL.MODELS = appRoot + '/Models/';
     GLOBAL.LIB = appRoot + '/Lib/';
+    GLOBAL.AppSettings = {};
 
 
     // Static objects
@@ -61,8 +62,25 @@ if (!GLOBAL.bootstrapped) {
         return new DBCreateConnection(appConfig().picr.database);
     };
 
+    var getSettingsFromDB = function(setName) {
+        var picrConnection = getPicrConnection();
+        if (picrConnection) {
+            picrConnection.query('SELECT setting_name, value FROM SETTINGS', function(err, rows) {
+                if (err || !(rows[0].value)) {
+                    appLogger.error('SQL error couldn\'t get settings');
+                    picrConnection.end();
+                    return;
+                }
+                rows.forEach(function(e) {
+                    AppSettings[e.setting_name] = e.value;
+                });
+                appLogger.info('FOUND settings ' + JSON.stringify(AppSettings));
+            });
+        }
+    }();
+
     GLOBAL.getModelBase = function() {
-       return require(GLOBAL.MODELS + 'modelBase');
+        return require(GLOBAL.MODELS + 'modelBase');
     };
 
     GLOBAL.getControllerBase = function() {

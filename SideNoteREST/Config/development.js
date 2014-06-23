@@ -5,8 +5,6 @@ module.exports = {
     restPort: 80,
     host: '127.0.0.1',
     side_notes: {
-        max_login_attempts: 4,
-        session_timeout: 500,
         email: {
             service: "Gmail",
             from: 'no-reply@gmail.com',
@@ -28,8 +26,6 @@ module.exports = {
 
     },
     picr: {
-        max_login_attempts: 4,
-        session_timeout: 500,
         email: {
             service: "Gmail",
             secureConnection: true, // use SSL
