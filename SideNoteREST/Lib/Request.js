@@ -294,10 +294,10 @@ module.exports = function RequestModel() {
         var validatorModel = getValidator();
 
         appLogger.info(JSON.stringify(call));
-        appLogger.info('Post from ' + ip);
+        appLogger.info('POST from ' + ip);
 
         //this should be here if not we have a issue.
-        if (!call.module) {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
         }
 
@@ -318,7 +318,7 @@ module.exports = function RequestModel() {
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
+            throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
@@ -360,7 +360,7 @@ module.exports = function RequestModel() {
         appLogger.info('Post from ' + ip);
 
         //this should be here if not we have a issue.
-        if (!call.module) {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
         }
 
@@ -387,7 +387,7 @@ module.exports = function RequestModel() {
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
+            throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
@@ -549,7 +549,7 @@ module.exports = function RequestModel() {
         appLogger.info('PUT from ' + ip);
 
         //this should be here if not we have a issue.
-        if (!call.module) {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
         }
 
@@ -576,7 +576,7 @@ module.exports = function RequestModel() {
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
+            throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
@@ -633,7 +633,7 @@ module.exports = function RequestModel() {
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
+            throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
@@ -675,7 +675,7 @@ module.exports = function RequestModel() {
         appLogger.info('DELETE from ' + ip);
 
         //this should be here if not we have a issue.
-        if (!call.module) {
+        if (!call.mod) {
             throw new Error("BAD MODULAR, MODULAR is a required.");
         }
 
@@ -696,7 +696,7 @@ module.exports = function RequestModel() {
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
+            throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {
@@ -765,7 +765,7 @@ module.exports = function RequestModel() {
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
-            throw new Error("Cannot find " + call.module + 'Controller.js');
+            throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
         if (gModular.callType !== call.callType) {

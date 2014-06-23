@@ -49,12 +49,6 @@ var addTestResponds = function(app) {
         });
 };
 
-var checkAPI = function(apikey) {
-    var modelAPI = require(GLOBAL.MODELS + 'ValidateAPIKEY');
-    modelAPI.init(apikey);
-    return modelAPI.validate();
-};
-
 var startExpress = function() {
     var express = require('express');
     var compress = require('compression');
@@ -77,12 +71,12 @@ var startExpress = function() {
     if(getAppMode() === 'development'){
         app.listen(appConfig().restPort);
     }else{
+        //get server port setting.
         app.listen(AppSettings.server_port);
     }
 
     if (app) {
         addTestResponds(app);
-        // addMailer(app);
         appLogger.info('Listening on port ' + appConfig().restPort);
         return app;
     } else {
@@ -90,6 +84,7 @@ var startExpress = function() {
         return false;
     }
 };
+
 //starts express obj
 var app = startExpress();
 

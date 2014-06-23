@@ -65,8 +65,11 @@ if (!GLOBAL.bootstrapped) {
         var picrConnection = getPicrConnection();
         if (picrConnection) {
             picrConnection.query('SELECT setting_name, value FROM SETTINGS', function(err, rows) {
-                if (err || !(rows[0].value)) {
+                if (err || !(rows[0])) {
                     appLogger.error('SQL error couldn\'t get settings');
+                    if(err){
+                        appLogger.error(err);
+                    }
                     picrConnection.end();
                     callback(false);
                     return;
@@ -74,7 +77,7 @@ if (!GLOBAL.bootstrapped) {
                 rows.forEach(function(e) {
                     AppSettings[e.setting_name] = e.value;
                 });
-                appLogger.info('FOUND settings ' + JSON.stringify(AppSettings));
+                appLogger.info('Settings = ' + JSON.stringify(AppSettings));
                 callback(true);
             });
         }

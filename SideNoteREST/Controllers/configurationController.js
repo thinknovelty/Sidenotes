@@ -1,5 +1,3 @@
-'use strict';
-
 // -----------------------------------------------------------
 //configurationController.js
 
@@ -19,11 +17,13 @@
 module.exports = {
     callType: 'PUT',
     id: null,
+    configuration: {},
     init: function(req, res, call) {
-        if (call.settings) {}
-        if (call.id) {
-            this.id = call.id;
-        }
+        // removes mod, id, callType for call obj
+        Object.keys(call).forEach(function(e) {
+            if(e === 'mod'|| e === 'id'|| e === 'callType') return true;
+            this.configuration[e] = call[e];
+        }, this);
     },
     results: function(callback) {
         if (this.id === 'settings') {
