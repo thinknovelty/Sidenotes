@@ -73,8 +73,12 @@ var startExpress = function() {
         res.send(500, err.toString());
         appLogger.error(err.stack);
     });
-    console.log(AppSettings.server_port);
-    app.listen(appConfig().restPort);
+
+    if(getAppMode() === 'development'){
+        app.listen(appConfig().restPort);
+    }else{
+        app.listen(AppSettings.server_port);
+    }
 
     if (app) {
         addTestResponds(app);

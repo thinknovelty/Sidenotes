@@ -20,14 +20,13 @@ if (!GLOBAL.bootstrapped) {
         if (arguments.length == 2) {
             //not deep mix
             return require('node.extend')(arguments[0], arguments[1]);
-
         } else if (arguments.length == 3) {
             //deep mix
             return require('node.extend')(arguments[0], arguments[1], arguments[2]);
         }
     };
 
-    GLOBAL.getAppMode = function(property) {
+    GLOBAL.getAppMode = function() {
         return appMode;
     };
 
@@ -62,22 +61,24 @@ if (!GLOBAL.bootstrapped) {
         return new DBCreateConnection(appConfig().picr.database);
     };
 
-    var getSettingsFromDB = function(setName) {
+    GLOBAL.getSettingsFromDB = function(callback) {
         var picrConnection = getPicrConnection();
         if (picrConnection) {
             picrConnection.query('SELECT setting_name, value FROM SETTINGS', function(err, rows) {
                 if (err || !(rows[0].value)) {
                     appLogger.error('SQL error couldn\'t get settings');
                     picrConnection.end();
+                    callback(false);
                     return;
                 }
                 rows.forEach(function(e) {
                     AppSettings[e.setting_name] = e.value;
                 });
                 appLogger.info('FOUND settings ' + JSON.stringify(AppSettings));
+                callback(true);
             });
         }
-    }();
+    };
 
     GLOBAL.getModelBase = function() {
         return require(GLOBAL.MODELS + 'modelBase');
