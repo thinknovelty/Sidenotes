@@ -34,6 +34,15 @@ module.exports = {
     },
 
     results: function(callback) {
+        if (this.id == null) {
+            callback([{
+                message: 'no id provided.',
+                success: 0,
+                error: 04,
+                errormsg: 'Error: No id provided this call only supports calls with id\'s',
+            }]);
+            return;
+        }
         if (this.callType === 'GET') {
             this.getResults(callback)
         } else if (this.callType === 'POST') {
@@ -49,6 +58,7 @@ module.exports = {
         var isValid = this.validate({
             apikey: this.apikey
         });
+
         if (isValid !== true) {
             callback([{
                 message: 'failed to save configuration settings please check errormsg for details.',
