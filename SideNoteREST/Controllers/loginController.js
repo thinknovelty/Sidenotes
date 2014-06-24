@@ -1,5 +1,3 @@
-
-
 // -----------------------------------------------------------
 //loginController.js
 
@@ -39,6 +37,42 @@ module.exports = {
     },
 
     results: function(callback) {
+        if (this.callType === 'GET') {
+            this.getResults(callback)
+        } else if (this.callType === 'POST') {
+            this.postResults(callback);
+        } else if (this.callType === 'PUT') {
+            this.putResults(callback);
+        } else if (this.callType === 'DELETE') {
+            this.deleteResults(callback);
+        }
+    },
+
+    putResults: function(callback) {
+        callback([{
+            message: 'call is not set up for a get put.',
+            success: 0,
+            error: 01
+        }]);
+    },
+
+    getResults: function(callback) {
+        callback([{
+            message: 'call is not set up for a get call.',
+            success: 0,
+            error: 01
+        }]);
+    },
+    
+    deleteResults: function(callback) {
+        callback([{
+            message: 'call is not set up for a get delete.',
+            success: 0,
+            error: 01
+        }]);
+    },
+
+    postResults: function(callback) {
         var data = {
             email: this.email,
             apiKey: this.apiKey,

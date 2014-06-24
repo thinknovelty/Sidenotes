@@ -34,10 +34,18 @@ module.exports = {
     },
 
     results: function(callback) {
-        // if(this.callType === 'GET'){
-        //     this.getResults(callback);
-        //     return;
-        // }
+        if (this.callType === 'GET') {
+            this.getResults(callback)
+        } else if (this.callType === 'POST') {
+            this.postResults(callback);
+        } else if (this.callType === 'PUT') {
+            this.putResults(callback);
+        } else if (this.callType === 'DELETE') {
+            this.deleteResults(callback);
+        }
+    },
+
+    putResults: function(callback) {
         var isValid = this.validate({
             apikey: this.apikey
         });
@@ -82,8 +90,27 @@ module.exports = {
         //other settings would go here!
     },
 
-    getResults : function(callback){
+    getResults: function(callback) {
+        callback([{
+            message: 'call is not set up for a get call.',
+            success: 0,
+            error: 04
+        }]);
+    },
+    deleteResults: function(callback) {
+        callback([{
+            message: 'call is not set up for a get delete.',
+            success: 0,
+            error: 04
+        }]);
+    },
 
+    postResults: function(callback) {
+        callback([{
+            message: 'call is not set up for a get post.',
+            success: 0,
+            error: 04
+        }]);
     },
 
     cleanUp: function() {},

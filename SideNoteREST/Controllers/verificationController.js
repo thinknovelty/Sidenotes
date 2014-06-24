@@ -1,4 +1,3 @@
-
 // -----------------------------------------------------------
 //verificationController.js
 
@@ -62,6 +61,18 @@ module.exports = {
     },
 
     results: function(callback) {
+        if (this.callType === 'GET') {
+            this.getResults(callback)
+        } else if (this.callType === 'POST') {
+            this.postResults(callback);
+        } else if (this.callType === 'PUT') {
+            this.putResults(callback);
+        } else if (this.callType === 'DELETE') {
+            this.deleteResults(callback);
+        }
+    },
+
+    putResults: function(callback) {
         // bundle the data
         var data = {
             email: this.email,
@@ -96,6 +107,65 @@ module.exports = {
                         success: 0,
                         error: 00,
                         errormsg: err
+                    }]);
+                }
+                m.cleanUp();
+            });
+        }
+    },
+
+    getResults: function(callback) {
+        callback([{
+            message: 'call is not set up for a get call.',
+            success: 0,
+            error: 01
+        }]);
+    },
+
+    deleteResults: function(callback) {
+        callback([{
+            message: 'call is not set up for a get delete.',
+            success: 0,
+            error: 01
+        }]);
+    },
+
+    postResults: function(callback) {
+        var isvalid = validate();
+        if (isvalid !== true) {
+            callback([{
+                message: 'Failed registion process.',
+                error: 02,
+                errormsg: validate()
+            }]);
+        } else if (isvalid == true) {
+
+            var model = require(MODELS + this.moduleName + 'Model');
+            var m = new model();
+            m.init();
+
+            // bundle the obj and adds salt and registrationKey;
+            var userData = {
+                email: email,
+                first_name: first_name,
+                last_name: last_name,
+                birthday: birthday,
+                password: password,
+                sex: sex,
+                salt: this.generateKey(),
+                registrationKey: this.generateKey()
+            };
+            m.create(userData, function(bool, err) {
+                if (bool) {
+                    callback([{
+                        message: 'Successfully registered.',
+                        error: 00
+                    }]);
+                } else {
+                    callback([{
+                        message: 'Failed registered due to db issue.',
+                        error: 00,
+                        errormsg: err,
                     }]);
                 }
                 m.cleanUp();
