@@ -61,10 +61,14 @@ PUT Variables:
 	password = 1234123;
 	registrationKey = 12321dqe1231dfqwe123fwe12345t;
 
-localhost/configuration/settings 		-this will modifify only the settings which you provide in the call.
+localhost/configuration/settings 		-This will modifify only the settings which you provide in the call.
 Calltype: PUT
-
 PUT Variables:
+<name_of_setting> & <value>
+
+localhost/configuration/settings 		-This will modifify only the settings which you provide in the call.
+Calltype: GET
+GET Variables:
 <name_of_setting> & <value>
 
 

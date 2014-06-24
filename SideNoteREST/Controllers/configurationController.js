@@ -27,22 +27,7 @@ module.exports = {
     },
     results: function(callback) {
         if (this.id === 'settings') {
-            this.setSettings(function(bool, err) {
-                if (bool) {
-                    callback([{
-                        message: 'Configurations successfully saved.',
-                        settings: appConfig().picr,
-                        error: 00
-                    }]);
-                } else {
-                    callback([{
-                        message: 'Configurations save failed.',
-                        settings: appConfig().picr,
-                        error: 04,
-                        errormsg: err
-                    }]);
-                }
-            });
+            
         }
 
         //other settings would go here!
