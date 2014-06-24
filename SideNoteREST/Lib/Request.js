@@ -59,9 +59,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -128,9 +126,7 @@ module.exports = function RequestModel() {
         var cb = new bController(call.mod);
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -201,9 +197,7 @@ module.exports = function RequestModel() {
         var cb = new bController(call.mod);
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -258,9 +252,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -294,7 +286,7 @@ module.exports = function RequestModel() {
         var validatorModel = getValidator();
 
         appLogger.info(JSON.stringify(call));
-        appLogger.info('POST from ' + ip);
+        appLogger.info('PUT from ' + ip);
 
         //this should be here if not we have a issue.
         if (!call.mod) {
@@ -321,9 +313,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -390,9 +380,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -447,9 +435,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -510,9 +496,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -579,9 +563,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -636,9 +618,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -699,9 +679,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {
@@ -768,9 +746,7 @@ module.exports = function RequestModel() {
             throw new Error("Cannot find " + call.mod + 'Controller.js');
         }
 
-        if (gModular.callType !== call.callType) {
-            throw new Error(call.mod + 'Controller.js' + ' is desgined for a ' + gModular.callType + ' call.');
-        }
+        gModular.callType = call.callType;
         gModular.init(req, res, call);
 
         try {

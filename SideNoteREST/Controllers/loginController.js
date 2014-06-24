@@ -21,8 +21,6 @@
 //LoginController.js
 
 module.exports = {
-    callType: 'POST',
-
     //defaults
     email: null,
     apiKey: null,

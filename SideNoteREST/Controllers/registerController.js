@@ -61,7 +61,6 @@ var validate = function() {
 
 
 module.exports = {
-    callType: 'POST',
 
     init: function(req, res, call) {
         if (call.apikey) {

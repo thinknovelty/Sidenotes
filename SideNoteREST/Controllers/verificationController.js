@@ -45,7 +45,6 @@ var validate = function(data) {
 };
 
 module.exports = {
-    callType: 'PUT',
     email: null,
     registrationKey: null,
     password: null,

@@ -42,7 +42,7 @@ function LoginModel() {
         }
         var picrConnection = getPicrConnection();
         if (picrConnection) {
-            picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows, fields) {
+            picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
                 if (err || !(rows[0])) {
                     appLogger.error('SQL error couldn\'t get _id for ' + email);
                     picrConnection.end();
@@ -64,7 +64,7 @@ function LoginModel() {
                 }
 
                 //Writes to user_login table
-                picrConnection.query('INSERT INTO user_login SET ? ', post, function(err, rows, fields) {
+                picrConnection.query('INSERT INTO user_login SET ? ', post, function(err, rows) {
                     if (err) {
                         appLogger.error('SQL couldn\'t INSERT INTO user_login table\n' + err);
                         picrConnection.end();
