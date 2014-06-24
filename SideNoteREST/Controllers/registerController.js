@@ -1,4 +1,4 @@
-'use strict';
+
 // -----------------------------------------------------------
 //registerController.js
 
@@ -96,7 +96,7 @@ module.exports = {
         var isvalid = validate();
         if (isvalid !== true) {
             callback([{
-                message: 'Failed registion process',
+                message: 'Failed registion process.',
                 error: 02,
                 errormsg: validate()
             }]);
@@ -120,7 +120,7 @@ module.exports = {
             m.create(userData, function(bool, err) {
                 if (bool) {
                     callback([{
-                        message: 'Successfully registered',
+                        message: 'Successfully registered.',
                         error: 00
                     }]);
                 } else {

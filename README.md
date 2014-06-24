@@ -71,6 +71,33 @@ Calltype: GET
 GET Variables:
 <name_of_setting> & <value>
 
+localhost/poll 		-Creating a new poll.
+Calltype: POST
+POST Variables:
+question : 'what should i wear today.'
+picture01 : <image>
+picture02 : <image>
+email: hubbertj@gmail.com
+apikey: adssaddsa
+votes_to_close: 5 <one or both>
+time_to_close: 5000 <in mins>
+
+localhost/poll/close 		-This is manual close statment for a poll. Check if this has already been done. 	poll_state close = true. check if they have been logined in.
+Calltype: PUT
+PUT Variables:
+poll_id = 12341299
+email = hubbertj@gamil.com
+apikey = 21341243
+
+
+
+
+
+
+
+
+
+
 
 
 Personal notes for project:

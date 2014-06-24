@@ -34,10 +34,10 @@ module.exports = {
     },
 
     results: function(callback) {
-        if(this.callType === 'GET'){
-            this.getResults(callback);
-            return;
-        }
+        // if(this.callType === 'GET'){
+        //     this.getResults(callback);
+        //     return;
+        // }
         var isValid = this.validate({
             apikey: this.apikey
         });

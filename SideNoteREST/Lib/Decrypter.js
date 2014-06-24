@@ -1,4 +1,4 @@
-'use strict';
+
 // Decrypter.js
 
 //this obj is used to dencryption a password / hashing / other stuff.

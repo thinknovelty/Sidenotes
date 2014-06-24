@@ -1,4 +1,4 @@
-'use strict';
+
 //adds GLOBAL.settings if needed.
 
 //change to production when ready

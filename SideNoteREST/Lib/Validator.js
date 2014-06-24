@@ -1,4 +1,4 @@
-'use strict';
+
 // Validator.js
 
 var util = require('util');

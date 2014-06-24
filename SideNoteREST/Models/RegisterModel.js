@@ -1,4 +1,4 @@
-'use strict';
+
 // RegisterModel.js
 // ----------------------------------------
 //  CRUD
@@ -230,7 +230,7 @@ function RegisterModel() {
         var picrConnection = getPicrConnection();
 
         if (picrConnection) {
-
+            //add check so they cannot double register.
             picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows, fields) {
                 if (err || !(rows[0])) {
                     appLogger.error('SQL error couldn\'t get _id for ' + email);
