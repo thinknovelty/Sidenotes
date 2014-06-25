@@ -1,4 +1,3 @@
-
 // RegisterModel.js
 // ----------------------------------------
 //  CRUD
@@ -56,6 +55,35 @@ function RegisterModel() {
                 appLogger.info('Email Sent ' + response.message);
             }
         });
+    };
+
+    this.isRegistered = function(email, callback) {
+        //creates the DB connection;
+        var picrConnection = getPicrConnection();
+
+        if (picrConnection) {
+            appLogger.info('SELECT FROM user_credentials WHERE email = ' + picrConnection.escape(email));
+            //SELECT FROM to user_credentials table.
+            picrConnection.query('SELECT * FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
+                if (err) {
+                    appLogger.error('SQL couldn\'t SELECT INTO user_credentials table\n' + err);
+                    picrConnection.end();
+                    if (callback) {
+                        //if we fail we assume we are not registered.
+                        callback(false);
+                    }
+                    return;
+                } else if (rows.length > 0) {
+                    appLogger.info('Found user in user_credentials' + ' ' + JSON.stringify(rows));
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            });
+        } else {
+            //if we fail we assume we are not registered.
+            callback(false);
+        }
     };
 
     this.create = function(data, callback) {

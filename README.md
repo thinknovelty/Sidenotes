@@ -34,10 +34,11 @@ picr error codes:
 02 - failed to register patron.
 03 - failed the verifcation process.
 04 - failed to save configurations.
+05 - 
 
 Current API calls:
-----------------------------
-localhost/register/ 					-used to register a new patron.
+----------------------------------------------
+localhost/register/ 					
 Calltype: POST
 POST Variables:
 	email = example@gmail.com;
@@ -46,32 +47,53 @@ POST Variables:
 	last_name = Doe;
 	birthday = MM-DD-YYYY;
 	sex = 0;
-
-localhost/login/ 						-used to log a patron into the system.
+notes:
+------
+-used to register a new patron.
+-Need to ensure that we cannot resgister again.
+------------------------------------------------
+localhost/login/ 						
 Calltype: POST
 POST Variables:
 	email = example@gmail.com;
 	password = 1234123;
 	apiKey = 23tfwr234f234424;
 
-localhost/verification/ 				-used to verfiy a new patron.
+notes:
+------
+-used to log a patron into the system.
+-----------------------------------------------
+localhost/verification/ 				
 Calltype: PUT
 PUT Variables:
 	email = example@gmail.com;
 	password = 1234123;
 	registrationKey = 12321dqe1231dfqwe123fwe12345t;
 
-localhost/configuration/settings 		-This will modifify only the settings which you provide in the call.
+notes:
+------
+-used to verfiy a new patron.
+-Need to verify we cannot verification again.
+------------------------------------------------
+localhost/configuration/settings 		
 Calltype: PUT
 PUT Variables:
 <name_of_setting> & <value>
 
-localhost/configuration/settings 		-This will modifify only the settings which you provide in the call.
+notes:
+------
+-This will modifify only the settings which you provide in the call.
+------------------------------------------------
+localhost/configuration/settings 		
 Calltype: GET
 GET Variables:
 <name_of_setting> & <value>
 
-localhost/poll 		-Creating a new poll.
+notes:
+------
+-This will modifify only the settings which you provide in the call.
+------------------------------------------------
+localhost/poll 		
 Calltype: POST
 POST Variables:
 question : 'what should i wear today.'
@@ -82,13 +104,23 @@ apikey: adssaddsa
 votes_to_close: 5 <one or both>
 time_to_close: 5000 <in mins>
 
-localhost/poll/close 		-This is manual close statment for a poll. Check if this has already been done. 	poll_state close = true. check if they have been logined in.
+notes:
+------
+-Creating a new poll.
+------------------------------------------------
+localhost/poll/close 		
 Calltype: PUT
 PUT Variables:
 poll_id = 12341299
 email = hubbertj@gamil.com
 apikey = 21341243
 
+notes:
+------
+-This is manual close statment for a poll. Check if this has already been done. 
+-poll_state close = true. 
+-Check if they have been logined in.
+-------------------------------------------------
 
 
 

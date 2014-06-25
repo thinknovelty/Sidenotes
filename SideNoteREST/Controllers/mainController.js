@@ -94,46 +94,45 @@ if (app) {
 
     app.route('/:mod')
         .get(function(req, res, next) {
-            r.getCallBack(req, res);
+            r.callBackOne(req, res, 'GET');
         })
         .post(function(req, res, next) {
-            r.postCallBack(req, res);
+            r.callBackOne(req, res, 'POST');
         })
         .put(function(req, res, next) {
-            r.putCallBack(req, res);
+            r.callBackOne(req, res, 'PUT');
         })
         .delete(function(req, res, next) {
-            r.deleteCallBack(req, res);
+            r.callBackOne(req, res, 'DELETE');
         });
 
     app.route('/:mod/:id')
         .get(function(req, res, next) {
-            r.getCallBackTwo(req, res);
+            r.callBackTwo(req, res, 'GET');
         })
         .post(function(req, res, next) {
-            r.postCallBackTwo(req, res);
+            r.callBackTwo(req, res, 'POST');
         })
         .put(function(req, res, next) {
-            r.putCallBackTwo(req, res);
+            r.callBackTwo(req, res, 'PUT');
         })
         .delete(function(req, res, next) {
-            r.deleteCallBackTwo(req, res);
+            r.callBackTwo(req, res, 'DELETE');
         });
 
     app.route('/:mod/:type/:id')
         .get(function(req, res, next) {
-            r.getCallBackThree(req, res);
+            r.callBackThree(req, res, 'GET');
         })
         .post(function(req, res, next) {
-            r.postCallBackThree(req, res);
+            r.callBackThree(req, res, 'POST');
         })
         .put(function(req, res, next) {
-            r.putCallBackThree(req, res);
+            r.callBackThree(req, res, 'PUT');
         })
         .delete(function(req, res, next) {
-            r.deleteCallBackThree(req, res);
+            r.callBackThree(req, res, 'DELETE');
         });
-
     //Makes the App obj static.
     GLOBAL.App = app;
 };

@@ -152,20 +152,33 @@ module.exports = {
                 salt: this.generateKey(),
                 registrationKey: this.generateKey()
             };
-            m.create(userData, function(bool, err) {
-                if (bool) {
+            m.isRegistered(userData.email, function(isReg) {
+                if (isReg) {
                     callback([{
-                        message: 'Successfully registered.',
-                        error: 00
+                        message: 'Failed registion process.',
+                        success: 00,
+                        error: 02,
+                        errormsg: 'User is already registered.'
                     }]);
                 } else {
-                    callback([{
-                        message: 'Failed registered due to db issue.',
-                        error: 00,
-                        errormsg: err,
-                    }]);
+                    m.create(userData, function(bool, err) {
+                        if (bool) {
+                            callback([{
+                                message: 'Successfully registered.',
+                                success: 01,
+                                error: 00
+                            }]);
+                        } else {
+                            callback([{
+                                message: 'Failed registered due to db issue.',
+                                success: 00,
+                                error: 00,
+                                errormsg: err,
+                            }]);
+                        }
+                        m.cleanUp();
+                    });
                 }
-                m.cleanUp();
             });
         }
     },
