@@ -50,7 +50,7 @@ POST Variables:
 notes:
 ------
 -used to register a new patron.
--Need to ensure that we cannot resgister again.
+-checks if a user is already registered.
 ------------------------------------------------
 localhost/login/ 						
 Calltype: POST
@@ -73,7 +73,7 @@ PUT Variables:
 notes:
 ------
 -used to verfiy a new patron.
--Need to verify we cannot verification again.
+-checks if a user is already verified.
 ------------------------------------------------
 localhost/configuration/settings 		
 Calltype: PUT
