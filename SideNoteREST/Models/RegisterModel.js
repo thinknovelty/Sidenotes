@@ -86,6 +86,58 @@ function RegisterModel() {
         }
     };
 
+    this.isVerified = function(email, callback) {
+        //creates the DB connection;
+        var picrConnection = getPicrConnection();
+
+        if (picrConnection) {
+            appLogger.info('SELECT FROM user_verification WHERE email = ' + picrConnection.escape(email));
+
+            picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
+                if (err) {
+                    appLogger.error('SQL couldn\'t SELECT INTO user_credentials table\n' + err);
+                    picrConnection.end();
+                    callback(true, err);
+                    return;
+                } else if (!(rows[0])) {
+                    appLogger.error('SQL error couldn\'t get _id for ' + email);
+                    picrConnection.end();
+                    callback(true, 'couldn\'t find _id in user_credentials' + ' ' + email + ' ' + 'did correctly register.');
+                    return;
+                } else {
+                    appLogger.info('_id for ' + email + ' = ' + rows[0]._id);
+
+                    //SELECT FROM to user_verification table.
+                    picrConnection.query('SELECT verified FROM user_verification WHERE _id =' + picrConnection.escape(rows[0]._id), function(err, rows) {
+                        if (err) {
+                            appLogger.error('SQL couldn\'t SELECT INTO user_verification table\n' + err);
+                            picrConnection.end();
+                            // we are going to stop them for verifcation until the issue is corrected, probly a db thing.
+                            callback(true,  err);
+                            return;
+                        } else if (!(rows[0])) {
+                            appLogger.error('SQL error couldn\'t get _id for ' + email);
+                            picrConnection.end();
+                            callback(true, 'couldn\'t find _id in user_credentials' + ' ' + email + ' ' + 'did correctly register.');
+                            return;
+                        } else if (rows[0].verified) {
+                            appLogger.info('Found' + ' ' + email + ' ' + 'in user_verification, verified = ' + rows[0].verified);
+                            picrConnection.end();
+                            callback(true, 'User has already completed verification process.');
+                            return;
+                        } else {
+                            picrConnection.end();
+                            callback(false);
+                        }
+                    });
+                }
+            });
+        } else {
+            // we are going to stop them for verifcation until the issue is corrected, probly a db thing.
+            callback(true);
+        }
+    };
+
     this.create = function(data, callback) {
 
         //creates the DB connection;

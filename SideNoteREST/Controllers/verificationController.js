@@ -93,23 +93,34 @@ module.exports = {
         } else if (isvalid === true) {
             var model = require(MODELS + 'Register' + 'Model');
             var m = new model();
-            m.update(data.email, function(bool, err) {
-                if (bool) {
+            m.isVerified(data.email, function(isVerified, err) {
+                if (isVerified) {
                     callback([{
-                        message: 'Verification Successfully',
-                        success: 1,
-                        error: 00,
+                        message: 'Verification process failed',
+                        success: 00,
+                        error: 03,
                         errormsg: err
                     }]);
                 } else {
-                    callback([{
-                        message: 'Verification failed due to DB issue.',
-                        success: 0,
-                        error: 00,
-                        errormsg: err
-                    }]);
+                    m.update(data.email, function(bool, err) {
+                        if (bool) {
+                            callback([{
+                                message: 'Verification Successfully',
+                                success: 1,
+                                error: 00,
+                                errormsg: err
+                            }]);
+                        } else {
+                            callback([{
+                                message: 'Verification failed due to DB issue.',
+                                success: 0,
+                                error: 03,
+                                errormsg: err
+                            }]);
+                        }
+                        m.cleanUp();
+                    });
                 }
-                m.cleanUp();
             });
         }
     },
