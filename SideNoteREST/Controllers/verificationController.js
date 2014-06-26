@@ -79,6 +79,9 @@ module.exports = {
             registrationKey: this.registrationKey,
             password: this.password
         };
+        //error codes
+        var CODE_VERIFCATION_ERROR = this.CODE_VERIFCATION_ERROR;
+        var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
 
         //check for valid data.
         var isvalid = validate(data);
@@ -87,7 +90,7 @@ module.exports = {
             callback([{
                 message: 'Verification failed please check errormsg for details.',
                 success: 0,
-                error: 03,
+                error: CODE_VERIFCATION_ERROR,
                 errormsg: validate(data)
             }]);
         } else if (isvalid === true) {
@@ -98,7 +101,7 @@ module.exports = {
                     callback([{
                         message: 'Verification process failed',
                         success: 00,
-                        error: 03,
+                        error: CODE_VERIFCATION_ERROR,
                         errormsg: err
                     }]);
                 } else {
@@ -107,14 +110,13 @@ module.exports = {
                             callback([{
                                 message: 'Verification Successfully',
                                 success: 1,
-                                error: 00,
-                                errormsg: err
+                                error: ERROR_NO_ERROR
                             }]);
                         } else {
                             callback([{
                                 message: 'Verification failed due to DB issue.',
                                 success: 0,
-                                error: 03,
+                                error: CODE_VERIFCATION_ERROR,
                                 errormsg: err
                             }]);
                         }
@@ -129,7 +131,7 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get call.',
             success: 0,
-            error: 01
+            error: this.CODE_VERIFCATION_ERROR
         }]);
     },
 
@@ -137,51 +139,16 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get delete.',
             success: 0,
-            error: 01
+            error: this.CODE_VERIFCATION_ERROR
         }]);
     },
 
     postResults: function(callback) {
-        var isvalid = validate();
-        if (isvalid !== true) {
-            callback([{
-                message: 'Failed registion process.',
-                error: 02,
-                errormsg: validate()
-            }]);
-        } else if (isvalid == true) {
-
-            var model = require(MODELS + this.moduleName + 'Model');
-            var m = new model();
-            m.init();
-
-            // bundle the obj and adds salt and registrationKey;
-            var userData = {
-                email: email,
-                first_name: first_name,
-                last_name: last_name,
-                birthday: birthday,
-                password: password,
-                sex: sex,
-                salt: this.generateKey(),
-                registrationKey: this.generateKey()
-            };
-            m.create(userData, function(bool, err) {
-                if (bool) {
-                    callback([{
-                        message: 'Successfully registered.',
-                        error: 00
-                    }]);
-                } else {
-                    callback([{
-                        message: 'Failed registered due to db issue.',
-                        error: 00,
-                        errormsg: err,
-                    }]);
-                }
-                m.cleanUp();
-            });
-        }
+        callback([{
+            message: 'call is not set up for a get post.',
+            success: 0,
+            error: this.CODE_VERIFCATION_ERROR
+        }]);
     },
 
     cleanUp: function() {

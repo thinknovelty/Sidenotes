@@ -107,7 +107,7 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get put.',
             success: 0,
-            error: 01
+            error: this.CODE_REGISTER_ERROR
         }]);
     },
 
@@ -115,7 +115,7 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get call.',
             success: 0,
-            error: 01
+            error: this.CODE_REGISTER_ERROR
         }]);
     },
 
@@ -123,16 +123,20 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get delete.',
             success: 0,
-            error: 01
+            error: this.CODE_REGISTER_ERROR
         }]);
     },
 
     postResults: function(callback) {
+        //error codes
+        var CODE_REGISTER_ERROR = this.CODE_REGISTER_ERROR;
+        var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
+
         var isvalid = validate();
         if (isvalid !== true) {
             callback([{
                 message: 'Failed registion process.',
-                error: 02,
+                error: CODE_REGISTER_ERROR,
                 errormsg: validate()
             }]);
         } else if (isvalid == true) {
@@ -157,7 +161,7 @@ module.exports = {
                     callback([{
                         message: 'Failed registion process.',
                         success: 00,
-                        error: 02,
+                        error: CODE_REGISTER_ERROR,
                         errormsg: 'User is already registered.'
                     }]);
                 } else {
@@ -166,13 +170,13 @@ module.exports = {
                             callback([{
                                 message: 'Successfully registered.',
                                 success: 01,
-                                error: 00
+                                error: ERROR_NO_ERROR
                             }]);
                         } else {
                             callback([{
                                 message: 'Failed registered due to db issue.',
                                 success: 00,
-                                error: 00,
+                                error: CODE_REGISTER_ERROR,
                                 errormsg: err,
                             }]);
                         }

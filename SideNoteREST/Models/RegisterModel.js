@@ -15,7 +15,6 @@
 
 var evt = getEventManager();
 var BaseModel = getModelBase();
-var util = require('util');
 
 function RegisterModel() {
     BaseModel.apply(this, arguments);
@@ -365,5 +364,5 @@ function RegisterModel() {
     };
 };
 
-util.inherits(RegisterModel, BaseModel);
+getUtil().inherits(RegisterModel, BaseModel);
 module.exports = RegisterModel;

@@ -52,7 +52,7 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get put.',
             success: 0,
-            error: 01
+            error: this.CODE_LOGIN_ERROR
         }]);
     },
 
@@ -60,7 +60,7 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get call.',
             success: 0,
-            error: 01
+            error: this.CODE_LOGIN_ERROR
         }]);
     },
     
@@ -68,7 +68,7 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get delete.',
             success: 0,
-            error: 01
+            error: this.CODE_LOGIN_ERROR
         }]);
     },
 
@@ -78,6 +78,11 @@ module.exports = {
             apiKey: this.apiKey,
             password: this.password
         };
+
+        //error codes
+        var CODE_LOGIN_ERROR = this.CODE_LOGIN_ERROR;
+        var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
+
         var isValid = this.validate(data);
         if (isValid !== true && data.email) {
             //true is set becuase we failed to vaildate. now we will record the failed attempt. We WILL GET THAT HACKER!!
@@ -86,14 +91,14 @@ module.exports = {
                     callback([{
                         message: 'Login failed login attempt has been recorded.',
                         success: 00,
-                        error: 01,
+                        error: CODE_LOGIN_ERROR,
                         errormsg: isValid + '' + err,
                     }]);
                 } else {
                     callback([{
                         message: 'Login failed login attempt has not been recorded.',
                         success: 00,
-                        error: 01,
+                        error: CODE_LOGIN_ERROR,
                         errormsg: isValid + '' + err,
                     }]);
                 }
@@ -102,7 +107,7 @@ module.exports = {
             callback([{
                 message: 'Login failed attempt please check errormsg for details.',
                 success: 00,
-                error: 01,
+                error: CODE_LOGIN_ERROR,
                 errormsg: isValid,
 
             }]);
@@ -115,13 +120,13 @@ module.exports = {
                     callback([{
                         message: 'Login Successfully',
                         success: 1,
-                        error: 00
+                        error: ERROR_NO_ERROR,
                     }]);
                 } else {
                     callback([{
                         message: 'Login failed due to DB issue.',
                         success: 0,
-                        error: 00,
+                        error: CODE_LOGIN_ERROR,
                         errormsg: err,
                     }]);
                 }

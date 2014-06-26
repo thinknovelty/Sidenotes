@@ -1,8 +1,16 @@
-
 //base for all controllers!
 
 module.exports = function BaseController(moduleName) {
     this.moduleName = 'base';
+
+    this.CODE_NO_ERROR = 00; //- no error is present.
+    this.CODE_LOGIN_ERROR = 01; //- failed to login.
+    this.CODE_REGISTER_ERROR = 02; //- failed to register patron.
+    this.CODE_VERIFCATION_ERROR = 03; //- failed the verifcation process.
+    this.CODE_CONFIGURATION_ERROR = 04; //- failed to save configurations.
+    this.CODE_POLL_CREATE_ERROR = 05; //- failed to create a poll.
+
+
     if (moduleName) {
         this.moduleName = moduleName;
     }

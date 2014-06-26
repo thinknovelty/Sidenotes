@@ -9,7 +9,6 @@
 //if we need a event manager;
 var eventManager = getEventManager();
 var BaseModel = getModelBase();
-var util = require('util');
 
 function ConfigurationModel() {
     this.moduleName = 'configuration';
@@ -61,5 +60,5 @@ function ConfigurationModel() {
     };
 };
 
-util.inherits(ConfigurationModel, BaseModel);
+getUtil().inherits(ConfigurationModel, BaseModel);
 module.exports = ConfigurationModel;

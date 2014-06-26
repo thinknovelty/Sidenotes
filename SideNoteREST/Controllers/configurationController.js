@@ -38,7 +38,7 @@ module.exports = {
             callback([{
                 message: 'no id provided.',
                 success: 0,
-                error: 04,
+                error: this.CODE_CONFIGURATION_ERROR,
                 errormsg: 'Error: No id provided this call only supports calls with id\'s',
             }]);
             return;
@@ -58,12 +58,15 @@ module.exports = {
         var isValid = this.validate({
             apikey: this.apikey
         });
+        //error codes
+        var CODE_CONFIGURATION_ERROR = this.CODE_CONFIGURATION_ERROR;
+        var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
 
         if (isValid !== true) {
             callback([{
                 message: 'failed to save configuration settings please check errormsg for details.',
                 success: 0,
-                error: 04,
+                error: CODE_CONFIGURATION_ERROR,
                 errormsg: isValid,
             }]);
             return;
@@ -77,20 +80,20 @@ module.exports = {
                     callback([{
                         message: 'Configuration settings successfully saved.',
                         success: 1,
-                        error: 00,
+                        error: CODE_NO_ERROR,
                     }]);
                 } else if (!bool) {
                     callback([{
                         message: 'failed to save configuration settings. This could be a db issue. Please check errormsg for details.',
                         success: 0,
-                        error: 04,
+                        error: CODE_CONFIGURATION_ERROR,
                         errormsg: err,
                     }]);
                 } else if (bool && err) {
                     callback([{
                         message: 'Issue with updating setting.',
                         success: 0,
-                        error: 04,
+                        error: CODE_CONFIGURATION_ERROR,
                         errormsg: err,
                     }]);
                 }
@@ -104,14 +107,14 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get call.',
             success: 0,
-            error: 04
+            error: this.CODE_CONFIGURATION_ERROR
         }]);
     },
     deleteResults: function(callback) {
         callback([{
             message: 'call is not set up for a get delete.',
             success: 0,
-            error: 04
+            error: this.CODE_CONFIGURATION_ERROR
         }]);
     },
 
@@ -119,7 +122,7 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get post.',
             success: 0,
-            error: 04
+            error: this.CODE_CONFIGURATION_ERROR
         }]);
     },
 

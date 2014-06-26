@@ -12,8 +12,12 @@
 //      picture02 : <image>
 //      email: hubbertj@gmail.com
 //      apikey: adssaddsa
-//      votes_to_close: 5 <one or both>
-//      time_to_close: 5000 <in mins>
+//      close_on_vote: 5 <one or both>
+//      close_on_time: 5000 <in mins>
+
+//tabels:
+// poll, poll_state
+
 
 // - This controller has the ablility to create a poll.
 // ------------------------------------------------------------
@@ -26,8 +30,8 @@ module.exports = {
     picture_02: null,
     email: null,
     apikey: null,
-    votes_to_close: null,
-    time_to_close: null,
+    close_on_vote: null,
+    close_on_time: null,
 
     init: function(req, res, call) {
         if (call.question) {
@@ -45,11 +49,11 @@ module.exports = {
         if (call.apikey) {
             this.apikey = call.apikey;
         }
-        if (call.votes_to_close) {
-            this.votes_to_close = call.votes_to_close;
+        if (call.close_on_vote) {
+            this.close_on_vote = call.close_on_vote;
         }
-        if (call.time_to_close) {
-            this.time_to_close = call.time_to_close;
+        if (call.close_on_time) {
+            this.close_on_time = call.close_on_time;
         }
     },
 
@@ -69,7 +73,7 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get put.',
             success: 0,
-            error: 05
+            error: this.CODE_POLL_CREATE_ERROR
         }]);
     },
 
@@ -77,7 +81,7 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get call.',
             success: 0,
-            error: 05
+            error: this.CODE_POLL_CREATE_ERROR
         }]);
     },
 
@@ -85,16 +89,53 @@ module.exports = {
         callback([{
             message: 'call is not set up for a get delete.',
             success: 0,
-            error: 05
+            error: this.CODE_POLL_CREATE_ERROR
         }]);
     },
 
     postResults: function(callback) {
-        callback([{
-            message: 'call is not set up for a get post.',
-            success: 0,
-            error: 05
-        }]);
+        //error codes
+        var CODE_POLL_CREATE_ERROR = this.CODE_POLL_CREATE_ERROR;
+        var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
+
+        var data = {
+            question: this.question,
+            picture_1: this.picture_1,
+            picture_2: this.picture_2,
+            email: this.email,
+            apikey: this.apikey,
+            close_on_vote: this.close_on_vote,
+            close_on_time: this.close_on_time
+        };
+
+        var isvalid = validate(data);
+        if (isvalid !== true) {
+            callback([{
+                message: 'Failed poll create process.',
+                error: CODE_POLL_CREATE_ERROR,
+                errormsg: isvalid
+            }]);
+        } else if (isvalid == true) {
+            var model = require(MODELS + this.moduleName + 'Model');
+            var m = new model();
+            m.init();
+            m.create(data, function(didInsert, err) {
+                if (didInsert) {
+                    callback([{
+                        message: 'Poll created successfully',
+                        success: 01,
+                        error: ERROR_NO_ERROR,
+                    }]);
+                } else {
+                    callback([{
+                        message: 'Failed to create poll.',
+                        success: 00,
+                        error: CODE_POLL_CREATE_ERROR,
+                        errormsg: err
+                    }]);
+                }
+            });
+        }
     },
 
     cleanUp: function() {
@@ -104,7 +145,7 @@ module.exports = {
         this.email = null;
         this.apikey = null;
         this.votes_to_close = null;
-        this.time_to_close = null;
+        this.close_on_time = null;
     },
     //if fails should tell us why.
     validate: function(data) {
@@ -124,8 +165,8 @@ module.exports = {
             return v.isEmailInSystem(data.email);
         } else if (v.isVoteToClose(data.votes_to_close) !== true) {
             return v.isVoteToClose(data.votes_to_close);
-        } else if (v.isTimeToClose(data.time_to_close) !== true) {
-            return v.isTimeToClose(data.time_to_close);
+        } else if (v.isTimeToClose(data.close_on_time) !== true) {
+            return v.isTimeToClose(data.close_on_time);
         } else if (v.checkAPIKEY(apikey) !== true) {
             return v.checkAPIKEY(apikey);
         }

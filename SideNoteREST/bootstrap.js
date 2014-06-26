@@ -120,6 +120,10 @@ if (!GLOBAL.bootstrapped) {
         return require(GLOBAL.LIB + 'Decrypter');
     };
 
+    GLOBAL.getUtil = function(){
+        return require('util');
+    };
+
     GLOBAL.appRequire = function(module) {
         return require(root + module);
     };

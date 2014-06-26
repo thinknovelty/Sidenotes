@@ -17,7 +17,6 @@
 //if we need a event manager;
 var eventManager = getEventManager();
 var BaseModel = getModelBase();
-var util = require('util');
 
 function LoginModel() {
     this.moduleName = 'login';
@@ -130,5 +129,5 @@ function LoginModel() {
     };
 };
 
-util.inherits(LoginModel, BaseModel);
+getUtil().inherits(LoginModel, BaseModel);
 module.exports = LoginModel;
