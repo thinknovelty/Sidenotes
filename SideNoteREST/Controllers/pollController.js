@@ -24,7 +24,7 @@
 //pollController.js
 
 module.exports = {
-    //defaults
+//  defaults
     question: null,
     picture_01: null,
     picture_02: null,
@@ -94,7 +94,7 @@ module.exports = {
     },
 
     postResults: function(callback) {
-        //error codes
+//      error codes
         var CODE_POLL_CREATE_ERROR = this.CODE_POLL_CREATE_ERROR;
         var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
 
@@ -116,23 +116,37 @@ module.exports = {
                 errormsg: isvalid
             }]);
         } else if (isvalid == true) {
-            var model = require(MODELS + this.moduleName + 'Model');
-            var m = new model();
-            m.init();
-            m.create(data, function(didInsert, err) {
-                if (didInsert) {
-                    callback([{
-                        message: 'Poll created successfully',
-                        success: 01,
-                        error: ERROR_NO_ERROR,
-                    }]);
-                } else {
+            var model = require(MODELS + 'Picture' + 'Model');
+            var p = new model();
+            p.init();
+            p.create([date.picture_1, date.picture_2], function(didFail, err) {
+                if (didFail) {
                     callback([{
                         message: 'Failed to create poll.',
                         success: 00,
                         error: CODE_POLL_CREATE_ERROR,
                         errormsg: err
                     }]);
+                } else {
+                    var model = require(MODELS + this.moduleName + 'Model');
+                    var m = new model();
+                    m.init();
+                    m.create(data, function(didFail, err) {
+                        if (didInsert) {
+                            callback([{
+                                message: 'Failed to create poll.',
+                                success: 00,
+                                error: CODE_POLL_CREATE_ERROR,
+                                errormsg: err
+                            }]);
+                        } else {
+                            callback([{
+                                message: 'Poll created successfully',
+                                success: 01,
+                                error: ERROR_NO_ERROR,
+                            }]);
+                        }
+                    });
                 }
             });
         }

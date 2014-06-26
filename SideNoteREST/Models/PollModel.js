@@ -1,4 +1,4 @@
-// PollModel.js
+// PictureModel.js
 // ----------------------------------------
 
 //tables:
@@ -9,22 +9,19 @@
 var eventManager = getEventManager();
 var BaseModel = getModelBase();
 
-function PollModel() {
-    this.moduleName = 'poll';
-    this.init = function() {};
+function PictureModel() {
+    this.moduleName = 'picture';
+    this.init = function() {
+        if (evt) {
+            evt.once('err', this.delete);
+        } else {
+            evt = getEventManager();
+            evt.once('err', this.delete);
+        }
+    };
     this.create = function(data, callback) {
-        //  take the email and get the user _id;
-
-        //  insert all data into poll;
-
-        //  insert all data into poll_state;
-
-
-
-
-
-
-
+        var picrConnection = getPicrConnection();
+        if (picrConnection) {}
     };
     this.delete = function(data, callback) {};
     this.read = function(data, callback) {};
@@ -33,5 +30,5 @@ function PollModel() {
     this.cleanUp = function() {};
 };
 
-getUtil().inherits(PollModel, BaseModel);
-module.exports = PollModel;
+getUtil().inherits(PictureModel, BaseModel);
+module.exports = PictureModel;
