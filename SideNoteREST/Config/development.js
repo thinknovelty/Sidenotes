@@ -4,6 +4,8 @@ module.exports = {
     serverRoot: null,
     restPort: 80,
     host: '127.0.0.1',
+    image_directory: '\\Pictures\\original',
+    image_format: 'jpg',
     side_notes: {
         email: {
             service: "Gmail",

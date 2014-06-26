@@ -1,64 +1,76 @@
-
-// ConfigurationModel.js
+// PictureModel.js
 // ----------------------------------------
 
 //tables:
-//settings
+//picture
 // ----------------------------------------
 
 //if we need a event manager;
 var eventManager = getEventManager();
 var BaseModel = getModelBase();
 
-function ConfigurationModel() {
-    this.moduleName = 'configuration';
-
+function PictureModel(user_id) {
+    this.moduleName = 'picture';
+    this.user_id = null;
+    if (user_id) {
+        this.user_id = user_id;
+    }
     this.init = function() {};
-    this.create = function(con, callback) {};
-    this.delete = function(con, callback) {
 
-    };
-
-    this.read = function(con, callback) {
-
-    };
-
-    this.update = function(con, callback) {
-        if (!con) {
-            appLogger.error('failed to pass in configurations in ConfigurationModel.update()');
-            return;
-        }
-        var arr = Object.keys(con);
+    this.create = function(imageArr, callback) {
+        var outArr = [];
+        var mode = getAppMode();
+        //creates the DB connection;
         var picrConnection = getPicrConnection();
         if (picrConnection) {
-            picrConnection.query('UPDATE SETTINGS SET ? WHERE setting_name =' + picrConnection.escape(arr[0]), {
-                value: con[arr[0]]
-            }, function(err, rows) {
+            var queryStr = 'INSERT INTO picture(name, timestamp) values';
+            for (i = 0; i > imageArr.length; i++) {
+                var name = new Date().getTime().toString() + this.user_id;
+                outArr.push(name);
+                query += '(' + name + ', now())';
+                if (!(i == imageArr.length)) {
+                    query += ',';
+                }
+                require("fs").writeFile("out.png", imageArr[i], 'base64', function(writeError) {
+                    if(writeError){
+
+
+                        callback(true, writeError);
+                        return;
+                    }
+                });
+            }
+            //Writes to user_credentials Table
+            picrConnection.query(queryStr, function(err, rows) {
                 if (err) {
-                    appLogger.error('SQL couldn\'t UPDATE SETTINGS table\n' + err);
+                    appLogger.error('SQL couldn\'t INSERT INTO picture table\n' + err);
                     picrConnection.end();
-                    callback(false, err);
-                    return;
-                } else if (rows.affectedRows > 0) {
-                    appLogger.info('UPDATE value in SETTINGS for ' + arr[0] + ' ' + JSON.stringify(rows));
-                    picrConnection.end();
-                    callback(true);
+                    callback(true, err);
                     return;
                 }
+                appLogger.info('INSERT INTO picture ' + JSON.stringify(rows));
+                // wirte to the image to fileSystem.
+
+
+
+
+
+
+
                 picrConnection.end();
-                callback(true, 'Setting not found');
+                callback(false);
             });
         }
     };
 
-    this.removeListeners = function() {
-
-    };
-
+    this.delete = function(con, callback) {};
+    this.read = function(con, callback) {};
+    this.update = function(con, callback) {};
+    this.removeListeners = function() {};
     this.cleanUp = function() {
-
+        this.user_id = null;
     };
 };
 
-getUtil().inherits(ConfigurationModel, BaseModel);
-module.exports = ConfigurationModel;
+getUtil().inherits(PictureModel, BaseModel);
+module.exports = PictureModel;
