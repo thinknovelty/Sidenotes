@@ -103,13 +103,8 @@ if (!GLOBAL.bootstrapped) {
         return App;
     };
 
-    GLOBAL.getGUID = function(guidStr) {
-        if (guidStr) {
-            var Guid = require('guid');
-            return new Guid(guidStr);
-        } else {
-            return new require('guid').create();
-        }
+    GLOBAL.getGuid = function() {
+        return require('guid').create().toString().replace(/-/g, '');
     };
 
     GLOBAL.getMailer = function() {
@@ -139,6 +134,11 @@ if (!GLOBAL.bootstrapped) {
     GLOBAL.loadView = function(view) {
         return fs.readFileSync(VIEW_ROOT + view, 'utf-8');
     };
+
+    GLOBAL.getOriginalImgDir = function() {
+        return APP_ROOT + '\\' + appConfig().image_directory + '\\Original\\'
+    };
+
     appLogger.info('Config mode = ' + getAppMode());
     appLogger.info('GLOBAL Object and functions loaded.');
 }

@@ -15,6 +15,7 @@
         "restler": "*",
         "winston": "*",
         "body-parser": "*",
+        "json" : "*",
         "compression": "*",
         "jade": "*",
         "node.extend": "*",

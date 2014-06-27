@@ -20,47 +20,56 @@ function PictureModel(user_id) {
     this.create = function(imageArr, callback) {
         var outArr = [];
         var mode = getAppMode();
+
         //creates the DB connection;
         var picrConnection = getPicrConnection();
         if (picrConnection) {
             var queryStr = 'INSERT INTO picture(name, timestamp) values';
-            for (i = 0; i > imageArr.length; i++) {
-                var name = new Date().getTime().toString() + this.user_id;
+            //loop so we can form the query and save the image in out dir
+            for (var i = 0; i < imageArr.length; i++) {
+                var name = getGuid();
                 outArr.push(name);
-                query += '(' + name + ', now())';
-                if (!(i == imageArr.length)) {
-                    query += ',';
+                queryStr += '(\'' + name + '\', now())';
+                if (!(i + 1 == imageArr.length)) {
+                    queryStr += ',';
                 }
-                console.log(name);
-                
-                // require("fs").writeFile("out.png", imageArr[i], 'base64', function(writeError) {
-                //     if(writeError){
+                //decodes the image into a Buffer.
+                var decodedImage = new Buffer(imageArr[i], 'base64');
 
-
-                //         callback(true, writeError);
-                //         return;
-                //     }
-                // });
+                //write image to dir orginal
+                if (mode == 'development') {
+                    require("fs").writeFile(getOriginalImgDir() + name + '.' + appConfig().image_format, decodedImage, function(err) {
+                        if (err) {
+                            appLogger.error('Issue with saving image to the file system.' + err);
+                            callback(true, rows, err);
+                            return;
+                        }
+                        appLogger.info('Save image' + ' ' + name + '.' + appConfig().image_format);
+                    });
+                }
+                if (mode == 'production') {
+                    require("fs").writeFile(getOriginalImgDir() + name + '.' + appConfig().image_format, decodedImage, function(err) {
+                        if (err) {
+                            appLogger.error('Issue with saving image to the file system.' + err);
+                            throw Error(err);
+                            callback(true, rows, err);
+                            return;
+                        }
+                        appLogger.info('Save image' + ' ' + name + '.' + appConfig().image_format);
+                    });
+                }
             }
             //Writes to user_credentials Table
             picrConnection.query(queryStr, function(err, rows) {
                 if (err) {
                     appLogger.error('SQL couldn\'t INSERT INTO picture table\n' + err);
                     picrConnection.end();
-                    callback(true, err);
+                    callback(true, rows, err);
                     return;
                 }
                 appLogger.info('INSERT INTO picture ' + JSON.stringify(rows));
-                // wirte to the image to fileSystem.
-
-
-
-
-
-
-
                 picrConnection.end();
-                callback(false);
+                callback(false, rows);
             });
         }
     };

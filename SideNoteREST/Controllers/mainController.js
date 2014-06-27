@@ -53,12 +53,18 @@ var startExpress = function() {
     var express = require('express');
     var compress = require('compression');
     var bodyParser = require('body-parser');
+    // var json = require('json');
+    // var urlencoded = require('urlencoded');
 
     var app = express();
 
     //express settings.
     app.use(compress());
-    app.use(bodyParser());
+    app.use(bodyParser({limit: '50mb'}));
+
+    // app.use(json({limit: '50mb'}));
+    // app.use(urlencoded({limit: '50mb'}));
+
     app.set('views', GLOBAL.APP_ROOT + '/Views');
     app.set('title', 'SideNote_REST');
 

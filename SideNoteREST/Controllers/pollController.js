@@ -28,6 +28,7 @@ module.exports = {
     question: null,
     picture_01: null,
     picture_02: null,
+    share_type_id: null,
     email: null,
     apikey: null,
     close_on_vote: null,
@@ -48,6 +49,9 @@ module.exports = {
         }
         if (call.apikey) {
             this.apikey = call.apikey;
+        }
+        if (call.share_type_id) {
+            this.share_type_id = call.share_type_id;
         }
         if (call.close_on_vote) {
             this.close_on_vote = call.close_on_vote;
@@ -92,7 +96,12 @@ module.exports = {
             error: this.CODE_POLL_CREATE_ERROR
         }]);
     },
-
+    calcCloseTime: function(close_on_time, date){
+        if(!close_on_time){
+            return null;
+        }
+        return new Date(date.getTime() + close_on_time*60000);
+    },
     postResults: function(callback) {
         //      error codes
         var CODE_POLL_CREATE_ERROR = this.CODE_POLL_CREATE_ERROR;
@@ -103,14 +112,12 @@ module.exports = {
             picture_01: this.picture_01,
             picture_02: this.picture_02,
             email: this.email,
-            apikey: this.apikey,
+            share_type_id: this.share_type_id,
             close_on_vote: this.close_on_vote,
-            close_on_time: this.close_on_time
+            close_on_time: this.close_on_time,
+            close_timestamp: this.calcCloseTime(this.close_on_time, new Date())
         };
-
         var isvalid = this.validate(data);
-
-
         if (isvalid !== true) {
             callback([{
                 message: 'Failed poll create process.',
@@ -118,7 +125,7 @@ module.exports = {
                 errormsg: isvalid
             }]);
         } else {
-            
+
             var model = require(MODELS + this.moduleName + 'Model');
             var m = new model();
 
@@ -151,9 +158,13 @@ module.exports = {
         this.apikey = null;
         this.votes_to_close = null;
         this.close_on_time = null;
+        this.share_type_id = null;
     },
     //if fails should tell us why.
     validate: function(data) {
+        if (!data.close_on_vote && !data.close_on_time) {
+            return 'Close type is required.'
+        }
         var validatorModel = getValidator();
         var v = new validatorModel(data.email);
         v.init();

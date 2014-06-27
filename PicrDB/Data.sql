@@ -23,3 +23,7 @@ INSERT INTO settings(setting_name, value, is_default, is_active, modified, modif
 ('session_timeout', '600', '600', 1,now(),user());
 INSERT INTO settings(setting_name, value, is_default, is_active, modified, modified_by) values
 ('server_port', '80', '80', 1,now(),user());
+
+INSERT INTO share_type(name, description) values('family', 'all your family.');
+INSERT INTO share_type(name, description) values('friends', 'all your friends.');
+INSERT INTO share_type(name, description) values('everyone', 'share to the world.');

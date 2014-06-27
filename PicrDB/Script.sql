@@ -182,10 +182,10 @@ CREATE TABLE IF NOT EXISTS poll_state (
 	vote_1		 INT NOT NULL,
 	vote_2		 INT NOT NULL,
 	close_on_vote	 INT,
-	close_on_time	DATETIME,
+	close_on_time	BIGINT,
 	share_type_id	 SMALLINT NOT NULL,
 	open_timestamp	DATETIME NOT NULL,
-	close_timestamp	DATETIME NOT NULL,
+	close_timestamp	DATETIME,
 	PRIMARY KEY (_id),
 	FOREIGN KEY (_id) REFERENCES poll(_id)
 ) ENGINE=InnoDB;
