@@ -12,7 +12,7 @@ module.exports = function RequestModel() {
     this.moduleName = 'Request';
 
     timeStamp = function() {
-        return getDateFormat()(new Date(), "mm-dd-yyyy hh:MM:ss");
+        return getDateFormat()(new Date(), 'mm-dd-yyyy hh:MM:ss');
     };
 
     this.callBackOne = function(req, res, callType) {
@@ -54,7 +54,7 @@ module.exports = function RequestModel() {
         gModular = extend(true, cb, require(GLOBAL.CONTROLLERS + call.mod + 'Controller'));
 
         if (!gModular) {
-            throw new Error("Cannot find " + call.mod + 'Controller.js');
+            throw new Error('Cannot find ' + call.mod + 'Controller.js');
         }
 
         gModular.callType = call.callType;
@@ -77,7 +77,7 @@ module.exports = function RequestModel() {
 
         } catch (err) {
             gModular.cleanUp();
-            throw new Error(err);
+            throw new Error('Cannot run results for ' + call.mod + 'Controller.js \n Error = ' + err);
         }
     };
 
@@ -140,7 +140,7 @@ module.exports = function RequestModel() {
 
         } catch (err) {
             gModular.cleanUp();
-            throw new Error(err);
+            throw new Error('Cannot run results for ' + call.mod + 'Controller.js \n Error = ' + err);
         }
     };
 
@@ -209,7 +209,7 @@ module.exports = function RequestModel() {
 
         } catch (err) {
             gModular.cleanUp();
-            throw new Error(err);
+            throw new Error('Cannot run results for ' + call.mod + 'Controller.js \n Error = ' + err);
         }
     };
 };

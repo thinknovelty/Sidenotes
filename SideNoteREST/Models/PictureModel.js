@@ -31,14 +31,16 @@ function PictureModel(user_id) {
                 if (!(i == imageArr.length)) {
                     query += ',';
                 }
-                require("fs").writeFile("out.png", imageArr[i], 'base64', function(writeError) {
-                    if(writeError){
+                console.log(name);
+                
+                // require("fs").writeFile("out.png", imageArr[i], 'base64', function(writeError) {
+                //     if(writeError){
 
 
-                        callback(true, writeError);
-                        return;
-                    }
-                });
+                //         callback(true, writeError);
+                //         return;
+                //     }
+                // });
             }
             //Writes to user_credentials Table
             picrConnection.query(queryStr, function(err, rows) {

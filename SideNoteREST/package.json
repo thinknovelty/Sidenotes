@@ -23,6 +23,7 @@
         "mysql": "*",
         "dateformat": "*",
         "events": "*",
-        "bcrypt-nodejs": "*"
+        "bcrypt-nodejs": "*",
+        "guid" : "*"
     }
 }

@@ -45,4 +45,5 @@ module.exports = function BaseController(moduleName) {
     this.cleanUp = function() {
         appLogger.info('Default from Base Controller');
     };
+
 };

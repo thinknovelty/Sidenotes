@@ -1,4 +1,3 @@
-
 //adds GLOBAL.settings if needed.
 
 //change to production when ready
@@ -67,7 +66,7 @@ if (!GLOBAL.bootstrapped) {
             picrConnection.query('SELECT setting_name, value FROM SETTINGS', function(err, rows) {
                 if (err || !(rows[0])) {
                     appLogger.error('SQL error couldn\'t get settings');
-                    if(err){
+                    if (err) {
                         appLogger.error(err);
                     }
                     picrConnection.end();
@@ -104,6 +103,15 @@ if (!GLOBAL.bootstrapped) {
         return App;
     };
 
+    GLOBAL.getGUID = function(guidStr) {
+        if (guidStr) {
+            var Guid = require('guid');
+            return new Guid(guidStr);
+        } else {
+            return new require('guid').create();
+        }
+    };
+
     GLOBAL.getMailer = function() {
         return require("nodemailer");
     };
@@ -120,7 +128,7 @@ if (!GLOBAL.bootstrapped) {
         return require(GLOBAL.LIB + 'Decrypter');
     };
 
-    GLOBAL.getUtil = function(){
+    GLOBAL.getUtil = function() {
         return require('util');
     };
 

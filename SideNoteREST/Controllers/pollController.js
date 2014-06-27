@@ -100,27 +100,32 @@ module.exports = {
 
         var data = {
             question: this.question,
-            picture_1: this.picture_1,
-            picture_2: this.picture_2,
+            picture_01: this.picture_01,
+            picture_02: this.picture_02,
             email: this.email,
             apikey: this.apikey,
             close_on_vote: this.close_on_vote,
             close_on_time: this.close_on_time
         };
 
-        var isvalid = validate(data);
+        var isvalid = this.validate(data);
+
+
         if (isvalid !== true) {
             callback([{
                 message: 'Failed poll create process.',
                 error: CODE_POLL_CREATE_ERROR,
                 errormsg: isvalid
             }]);
-        } else if (isvalid == true) {
+        } else {
+            
             var model = require(MODELS + this.moduleName + 'Model');
             var m = new model();
+
             m.init();
+
             m.create(data, function(didFail, err) {
-                if (didInsert) {
+                if (didFail) {
                     callback([{
                         message: 'Failed to create poll.',
                         success: 00,
@@ -153,23 +158,23 @@ module.exports = {
         var v = new validatorModel(data.email);
         v.init();
 
-        if (v.isQuestion(data.question) !== true) {
-            return v.isQuestion(data.question);
-        } else if (v.picture_01(data.picture_01) !== true) {
-            return v.picture_01(data.picture_01);
-        } else if (v.picture_02(data.picture_02) !== true) {
-            return v.picture_02(data.picture_02);
-        } else if (v.isEmail(data.email) !== true) {
-            return v.isEmail(data.email);
-        } else if (v.isEmailInSystem(data.email) !== true) {
-            return v.isEmailInSystem(data.email);
-        } else if (v.isVoteToClose(data.votes_to_close) !== true) {
-            return v.isVoteToClose(data.votes_to_close);
-        } else if (v.isTimeToClose(data.close_on_time) !== true) {
-            return v.isTimeToClose(data.close_on_time);
-        } else if (v.checkAPIKEY(apikey) !== true) {
-            return v.checkAPIKEY(apikey);
-        }
+        // if (v.isQuestion(data.question) !== true) {
+        //     return v.isQuestion(data.question);
+        // } else if (v.picture_01(data.picture_01) !== true) {
+        //     return v.picture_01(data.picture_01);
+        // } else if (v.picture_02(data.picture_02) !== true) {
+        //     return v.picture_02(data.picture_02);
+        // } else if (v.isEmail(data.email) !== true) {
+        //     return v.isEmail(data.email);
+        // } else if (v.isEmailInSystem(data.email) !== true) {
+        //     return v.isEmailInSystem(data.email);
+        // } else if (v.isVoteToClose(data.votes_to_close) !== true) {
+        //     return v.isVoteToClose(data.votes_to_close);
+        // } else if (v.isTimeToClose(data.close_on_time) !== true) {
+        //     return v.isTimeToClose(data.close_on_time);
+        // } else if (v.checkAPIKEY(apikey) !== true) {
+        //     return v.checkAPIKEY(apikey);
+        // }
 
         //if everything is good return clean.
         return true;
