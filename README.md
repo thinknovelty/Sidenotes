@@ -37,7 +37,9 @@ picr error codes:
 05 - 
 
 Current API calls:
-----------------------------------------------
+
+Register: Create
+
 localhost/register/ 					
 Calltype: POST
 POST Variables:
@@ -47,11 +49,24 @@ POST Variables:
 	last_name = Doe;
 	birthday = MM-DD-YYYY;
 	sex = 0;
+	apiKey = 23tfwr234f234424;
+
+returned:
+[
+    {
+        "message": "Successfully registered.",
+        "success": 1,
+        "time_stamp": "06-28-2014 08:59:32"
+    }
+]
+
 notes:
-------
--used to register a new patron.
--checks if a user is already registered.
+used to register a new patron.
+checks if a user is already registered.
 ------------------------------------------------
+
+Login: Submit
+
 localhost/login/ 						
 Calltype: POST
 POST Variables:
@@ -59,55 +74,94 @@ POST Variables:
 	password = 1234123;
 	apiKey = 23tfwr234f234424;
 
+returned:
+[
+    {
+        "message": "Login Successfully",
+        "success": 1,
+        "uuid": "7c8666d0-fedc-11e3-b4d3-bb6cfbffbccc",
+        "time_stamp": "06-28-2014 08:54:28"
+    }
+]
+
 notes:
-------
--used to log a patron into the system.
+used to log a patron into the system.
 -----------------------------------------------
+
+Verification: Submit 
+
 localhost/verification/ 				
 Calltype: PUT
 PUT Variables:
-	email = example@gmail.com;
-	password = 1234123;
-	registrationKey = 12321dqe1231dfqwe123fwe12345t;
+email = example@gmail.com;
+password = 1234123;
+registrationKey = 12321dqe1231dfqwe123fwe12345t;
+
+returned:
+[
+    {
+        "message": "Verification Successfully",
+        "success": 1,
+        "uuid": "61c33f20-fedd-11e3-b4d3-bb6cfbffbccc",
+        "time_stamp": "06-28-2014 09:00:53"
+    }
+]
 
 notes:
-------
--used to verfiy a new patron.
--checks if a user is already verified.
+used to verfiy a new patron.
+checks if a user is already verified.
 ------------------------------------------------
+
+Configuration: Settings 
+
 localhost/configuration/settings 		
 Calltype: PUT
 PUT Variables:
 <name_of_setting> & <value>
 
 notes:
-------
 -This will modifify only the settings which you provide in the call.
-------------------------------------------------
+
+
+
 localhost/configuration/settings 		
 Calltype: GET
 GET Variables:
 <name_of_setting> & <value>
 
 notes:
-------
 -This will modifify only the settings which you provide in the call.
 ------------------------------------------------
+
+Poll: Open
+
 localhost/poll 		
 Calltype: POST
 POST Variables:
-question : 'what should i wear today.'
-picture01 : <image>
-picture02 : <image>
-email: hubbertj@gmail.com
-apikey: adssaddsa
-votes_to_close: 5 <one or both>
-time_to_close: 5000 <in mins>
+	question : 'what should i wear today.'
+	picture01 : <image>
+	picture02 : <image>
+	email: hubbertj@gmail.com
+	votes_to_close: 5 <one or both>
+	time_to_close: 5000 <in mins>
+	uuid: 7c8666d0-fedc-11e3-b4d3-bb6cfbffbccc
+
+returned:
+[
+    {
+        "message": "Poll created successfully",
+        "success": 1,
+        "time_stamp": "06-28-2014 09:03:13"
+    }
+]
+
 
 notes:
-------
--Creating a new poll.
+Creating a new poll.
 ------------------------------------------------
+
+Poll: Close
+
 localhost/poll/close 		
 Calltype: PUT
 PUT Variables:
@@ -115,11 +169,14 @@ poll_id = 12341299
 email = hubbertj@gamil.com
 apikey = 21341243
 
+returned:
+
+
 notes:
-------
--This is manual close statment for a poll. Check if this has already been done. 
--poll_state close = true. 
--Check if they have been logined in.
+
+This is manual close statment for a poll. Check if this has already been done. 
+poll_state close = true. 
+Check if they have been logined in.
 -------------------------------------------------
 
 

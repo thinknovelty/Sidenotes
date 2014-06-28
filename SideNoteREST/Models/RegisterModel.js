@@ -339,23 +339,22 @@ function RegisterModel() {
                     }
 
                     picrConnection.end();
-                    if (callback) {
-                        callback(true);
-                    }
-
+                    
                     //TODO: this will login the user. I may need to make a global trigger for this process.
                     var loginModel = require(MODELS + 'Login' + 'Model');
                     var m = new loginModel();
                     m.init();
-                    m.create(email, false, function(bool, err) {
+                    m.create(email, false, function(bool, msg) {
                         if (bool) {
                             appLogger.info('Login process completed for ' + email);
+                            callback(true, msg);
                         } else {
-                            if (err) {
-                                appLogger.error('Login process failed for ' + email + '\n' + err);
+                            if (msg) {
+                                appLogger.error('Login process failed for ' + email + '\n' + msg);
                             } else {
                                 appLogger.error('Login process failed for ' + email);
                             }
+                            callback(true, null);
                         }
                     });
                 });

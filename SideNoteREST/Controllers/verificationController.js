@@ -110,6 +110,7 @@ module.exports = {
                             callback([{
                                 message: 'Verification Successfully',
                                 success: 1,
+                                uuid: err,
                                 error: ERROR_NO_ERROR
                             }]);
                         } else {

@@ -12,8 +12,9 @@
 //      picture02 : <image>
 //      email: hubbertj@gmail.com
 //      apikey: adssaddsa
-//      close_on_vote: 5 <one or both>
-//      close_on_time: 5000 <in mins>
+//      close_on_vote: 5 
+//      close_on_time: 5000
+//      share_type_id: 1
 
 //tabels:
 // poll, poll_state
@@ -33,6 +34,7 @@ module.exports = {
     apikey: null,
     close_on_vote: null,
     close_on_time: null,
+    uuid: null,
 
     init: function(req, res, call) {
         if (call.question) {
@@ -58,6 +60,9 @@ module.exports = {
         }
         if (call.close_on_time) {
             this.close_on_time = call.close_on_time;
+        }
+        if (call.uuid) {
+            this.uuid = call.uuid;
         }
     },
 
@@ -160,6 +165,7 @@ module.exports = {
         this.votes_to_close = null;
         this.close_on_time = null;
         this.share_type_id = null;
+        this.uuid = null;
     },
     //if fails should tell us why.
     validate: function(data) {

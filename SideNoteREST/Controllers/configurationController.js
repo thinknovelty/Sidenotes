@@ -17,7 +17,7 @@
 module.exports = {
     id: null,
     configuration: {},
-    apikey: null,
+    uuid: null,
 
     init: function(req, res, call) {
         // removes mod, id, callType for call obj
@@ -25,8 +25,8 @@ module.exports = {
             if (e === 'mod' || e === 'id' || e === 'callType') return true;
             this.configuration[e] = call[e];
         }, this);
-        if (call.apiKey) {
-            this.apikey = call.apiKey;
+        if (call.uuid) {
+            this.uuid = call.uuid;
         }
         if (call.id) {
             this.id = call.id;
@@ -56,7 +56,7 @@ module.exports = {
 
     putResults: function(callback) {
         var isValid = this.validate({
-            apikey: this.apikey
+            uuid: this.uuid
         });
         //error codes
         var CODE_CONFIGURATION_ERROR = this.CODE_CONFIGURATION_ERROR;
@@ -132,9 +132,6 @@ module.exports = {
     validate: function(data) {
         var validateModel = getValidator();
         var v = new validateModel();
-        if (v.checkAPIKEY(data.apikey) !== true) {
-            return v.checkAPIKEY(data.apikey);
-        }
         return true;
     }
 };
