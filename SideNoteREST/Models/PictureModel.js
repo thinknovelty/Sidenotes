@@ -27,7 +27,7 @@ function PictureModel(user_id) {
             var queryStr = 'INSERT INTO picture(name, timestamp) values';
             //loop so we can form the query and save the image in out dir
             for (var i = 0; i < imageArr.length; i++) {
-                var name = getGuid();
+                var name = getguid();
                 outArr.push(name);
                 queryStr += '(\'' + name + '\', now())';
                 if (!(i + 1 == imageArr.length)) {

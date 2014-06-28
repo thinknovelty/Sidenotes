@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS user_account (
 # the account.
 CREATE TABLE IF NOT EXISTS user_login (
 	_id		 BIGINT NOT NULL AUTO_INCREMENT,
+	uuid     VARCHAR(36) NOT NULL,
 	user_id		 BIGINT NOT NULL,
 	success		BOOLEAN NOT NULL,
 	timestamp	DATETIME,

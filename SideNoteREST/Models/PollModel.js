@@ -2,7 +2,7 @@
 // ----------------------------------------
 
 //tables:
-//settings
+//poll, poll_state
 // ----------------------------------------
 
 //if we need a event manager;
@@ -66,7 +66,6 @@ function PictureModel() {
                         } else if (rows.affectedRows > 0) {
                             appLogger.info('INSERT INTO poll ' + JSON.stringify(rows));
                         }
-                        //neeed to add poll_id to this second post var.
                         var secondPost = {
                             _id: rows.insertId,
                             closed: 0,

@@ -39,6 +39,7 @@ function LoginModel() {
             appLogger.error('email is required for loginModel create()');
             return;
         }
+        var uuid = getuuid().v1();
         var picrConnection = getPicrConnection();
         if (picrConnection) {
             picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
@@ -54,6 +55,7 @@ function LoginModel() {
 
                 var post = {
                     user_id: rows[0]._id,
+                    uuid: uuid,
                     success: 1,
                     timestamp: new Date()
                 }
@@ -76,7 +78,7 @@ function LoginModel() {
                     }
                     picrConnection.end();
                     if (callback) {
-                        callback(true);
+                        callback(true, post.uuid);
                     }
                     //if we failed we are going to read how many times they failed the login process.
                     if (didfailLogin) {

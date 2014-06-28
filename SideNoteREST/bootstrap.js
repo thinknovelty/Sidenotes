@@ -103,8 +103,12 @@ if (!GLOBAL.bootstrapped) {
         return App;
     };
 
-    GLOBAL.getGuid = function() {
+    GLOBAL.getguid = function() {
         return require('guid').create().toString().replace(/-/g, '');
+    };
+
+     GLOBAL.getuuid = function() {
+        return require('uuid');
     };
 
     GLOBAL.getMailer = function() {
