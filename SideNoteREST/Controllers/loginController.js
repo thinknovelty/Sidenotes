@@ -63,7 +63,7 @@ module.exports = {
             error: this.CODE_LOGIN_ERROR
         }]);
     },
-    
+
     deleteResults: function(callback) {
         callback([{
             message: 'call is not set up for a get delete.',
@@ -82,8 +82,12 @@ module.exports = {
         //error codes
         var CODE_LOGIN_ERROR = this.CODE_LOGIN_ERROR;
         var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
-
         var isValid = this.validate(data);
+
+        var model = require(MODELS + this.moduleName + 'Model');
+        var m = new model();
+        m.init();
+
         if (isValid !== true && data.email) {
             //true is set becuase we failed to vaildate. now we will record the failed attempt. We WILL GET THAT HACKER!!
             m.create(data.email, true, function(didLogin, err) {
@@ -102,6 +106,7 @@ module.exports = {
                         errormsg: isValid + '' + err,
                     }]);
                 }
+                m.cleanUp();
             });
         } else if (isValid !== true) {
             callback([{
@@ -111,10 +116,8 @@ module.exports = {
                 errormsg: isValid,
 
             }]);
+            m.cleanUp();
         } else if (isValid == true) {
-            var model = require(MODELS + this.moduleName + 'Model');
-            var m = new model();
-            m.init();
             m.create(data.email, false, function(didLogin, err) {
                 if (didLogin) {
                     callback([{
@@ -131,6 +134,7 @@ module.exports = {
                     }]);
                 }
             });
+            m.cleanUp();
         }
     },
 

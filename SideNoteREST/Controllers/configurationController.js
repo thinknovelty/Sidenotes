@@ -97,6 +97,7 @@ module.exports = {
                         errormsg: err,
                     }]);
                 }
+                c.cleanUp();
             });
         }
         // check id for other things you can config about the server.

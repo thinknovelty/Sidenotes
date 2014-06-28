@@ -63,6 +63,7 @@ function PictureModel(user_id) {
             picrConnection.query(queryStr, function(err, rows) {
                 if (err) {
                     appLogger.error('SQL couldn\'t INSERT INTO picture table\n' + err);
+                    
                     picrConnection.end();
                     callback(true, rows, err);
                     return;

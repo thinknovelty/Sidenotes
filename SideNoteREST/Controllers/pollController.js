@@ -96,11 +96,11 @@ module.exports = {
             error: this.CODE_POLL_CREATE_ERROR
         }]);
     },
-    calcCloseTime: function(close_on_time, date){
-        if(!close_on_time){
+    calcCloseTime: function(close_on_time, date) {
+        if (!close_on_time) {
             return null;
         }
-        return new Date(date.getTime() + close_on_time*60000);
+        return new Date(date.getTime() + close_on_time * 60000);
     },
     postResults: function(callback) {
         //      error codes
@@ -146,6 +146,7 @@ module.exports = {
                         error: ERROR_NO_ERROR,
                     }]);
                 }
+                m.cleanUp();
             });
         }
     },

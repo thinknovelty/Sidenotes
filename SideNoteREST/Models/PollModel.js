@@ -44,6 +44,7 @@ function PictureModel() {
                         appLogger.error('failed to save image to picture table.');
                         picrConnection.end();
                         callback(bool, err);
+                        p.cleanUp();
                         return;
                     }
                     data.picture_1_id = rows.insertId;
@@ -54,6 +55,7 @@ function PictureModel() {
                         picture_1_id: data.picture_1_id,
                         picture_2_id: data.picture_2_id
                     };
+                    p.cleanUp();
                     appLogger.info('INSERT INTO poll for' + ' ' + picrConnection.escape(data.email));
                     picrConnection.query('INSERT INTO poll SET ?', post, function(err, rows) {
                         if (err) {
@@ -80,7 +82,7 @@ function PictureModel() {
                         picrConnection.query('INSERT INTO poll_state SET ?', secondPost, function(err, rows) {
                             if (err) {
                                 appLogger.error('SQL couldn\'t INSERT INTO poll_state table\n' + err);
-                                eventManager.emit('err', user_id);
+                                eventManager.emit('err', secondPost._id);
                                 picrConnection.end();
                                 callback(true, err);
                                 return;
@@ -89,20 +91,44 @@ function PictureModel() {
                             }
                             picrConnection.end();
                             callback(false);
-
-
                         });
                     });
                 });
             });
         }
     };
-    this.delete = function(data, callback) {};
+
+    this.delete = function(_id) {
+        if (!_id) {
+            appLogger.error('_id is needed for DELETEING.');
+            return;
+        }
+        appLogger.warn('Atending to delete poll_id = ' + _id + ' from the poll table!');
+        var picrConnection = getPicrConnection();
+        if (picrConnection) {
+            picrConnection.query('DELETE FROM poll WHERE _id = ' + picrConnection.escape(_id), function(err, rows) {
+                if (err) {
+                    //their is a issue if we can not delete from this table.
+                    appLogger.error('SQL couldn\'t DELETE FROM poll table\n' + err);
+                } else if (rows.affectedRows > 0) {
+                    appLogger.info('DELETE FROM poll ' + JSON.stringify(rows));
+                }
+            });
+        }
+    };
+
     this.read = function(data, callback) {};
     this.update = function(data, callback) {};
-    this.removeListeners = function() {};
-    this.cleanUp = function() {};
-};
+    this.removeListeners = function() {
+        if (eventManager) {
+            eventManager.removeAllListeners(['err']);
+        }
+    };
 
+    this.cleanUp = function() {
+        this.removeListeners();
+    };
+
+};
 getUtil().inherits(PictureModel, BaseModel);
 module.exports = PictureModel;
