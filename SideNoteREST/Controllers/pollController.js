@@ -35,6 +35,7 @@ module.exports = {
     close_on_vote: null,
     close_on_time: null,
     uuid: null,
+    id: null,
 
     init: function(req, res, call) {
         if (call.question) {
@@ -64,6 +65,12 @@ module.exports = {
         if (call.uuid) {
             this.uuid = call.uuid;
         }
+        if (call.id) {
+            this.id = call.id;
+        }
+        if (call.poll_id) {
+            this.poll_id = parseInt(call.poll_id);
+        }
     },
 
     results: function(callback) {
@@ -79,10 +86,33 @@ module.exports = {
     },
 
     putResults: function(callback) {
+        //      error codes
+        var CODE_POLL_UPDATE_ERROR = this.CODE_POLL_UPDATE_ERROR;
+        var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
+        var data = {
+            email: this.email,
+            uuid: this.uuid,
+            id: this.id,
+            poll_id: this.poll_id
+        };
+        var isvalid = this.validate(data);
+        if (isvalid !== true) {
+            callback([{
+                message: 'Failed to close poll.',
+                error: CODE_POLL_UPDATE_ERROR,
+                errormsg: isvalid
+            }]);
+            return;
+        } else if (data.id && data.id === 'close') {
+            this.closePoll(data, function(arr) {
+                callback(arr);
+            });
+            return;
+        }
         callback([{
-            message: 'call is not set up for a get put.',
-            success: 0,
-            error: this.CODE_POLL_CREATE_ERROR
+            message: 'Failed to close poll.',
+            error: CODE_POLL_UPDATE_ERROR,
+            errormsg: 'ID required for PUT call.'
         }]);
     },
 
@@ -120,7 +150,9 @@ module.exports = {
             share_type_id: this.share_type_id,
             close_on_vote: this.close_on_vote,
             close_on_time: this.close_on_time,
-            close_timestamp: this.calcCloseTime(this.close_on_time, new Date())
+            close_timestamp: this.calcCloseTime(this.close_on_time, new Date()),
+            id: this.id,
+            uuid: this.uuid
         };
         var isvalid = this.validate(data);
         if (isvalid !== true) {
@@ -130,12 +162,9 @@ module.exports = {
                 errormsg: isvalid
             }]);
         } else {
-
             var model = require(MODELS + this.moduleName + 'Model');
             var m = new model();
-
             m.init();
-
             m.create(data, function(didFail, err) {
                 if (didFail) {
                     callback([{
@@ -156,6 +185,32 @@ module.exports = {
         }
     },
 
+    closePoll: function(data, callback) {
+        //      error codes
+        var CODE_POLL_UPDATE_ERROR = this.CODE_POLL_UPDATE_ERROR;
+        var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
+        var model = require(MODELS + this.moduleName + 'Model');
+        var m = new model();
+        m.init();
+        m.update(data, function(didFail, err) {
+            if (didFail) {
+                callback([{
+                    message: 'Failed to udpate poll.',
+                    success: 00,
+                    error: CODE_POLL_UPDATE_ERROR,
+                    errormsg: err
+                }]);
+            } else {
+                callback([{
+                    message: 'Poll update successfully',
+                    success: 01,
+                    error: ERROR_NO_ERROR,
+                }]);
+            }
+            m.cleanUp();
+        });
+    },
+
     cleanUp: function() {
         this.question = null;
         this.picture_01 = null;
@@ -166,12 +221,13 @@ module.exports = {
         this.close_on_time = null;
         this.share_type_id = null;
         this.uuid = null;
+        this.id = null;
     },
     //if fails should tell us why.
     validate: function(data) {
-        if (!data.close_on_vote && !data.close_on_time) {
-            return 'Close type is required.'
-        }
+        // if (!data.close_on_vote && !data.close_on_time) {
+        //     return 'Close type is required.'
+        // }
         var validatorModel = getValidator();
         var v = new validatorModel(data.email);
         v.init();

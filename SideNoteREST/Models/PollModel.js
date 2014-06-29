@@ -117,7 +117,32 @@ function PictureModel() {
     };
 
     this.read = function(data, callback) {};
-    this.update = function(data, callback) {};
+    this.update = function(data, callback) {
+        var picrConnection = getPicrConnection();
+        if (picrConnection) {
+            var queryStr = 'UPDATE POLL_STATE SET closed = 1 WHERE _id = ' + picrConnection.escape(data.poll_id);
+            appLogger.info(queryStr);
+            picrConnection.query(queryStr, function(err, rows) {
+                if (err) {
+                    appLogger.error('SQL couldn\'t UPDATE INTO POLL_STATE table\n' + err);
+                    picrConnection.end();
+                    callback(true, err);
+                    return;
+                } else if (!rows.affectedRows) {
+                    var msg = 'SQL couldn\'t find _id = ' + picrConnection.escape(data.poll_id) + ' in POLL_STATE table.';
+                    appLogger.error(msg);
+                    picrConnection.end();
+                    callback(true, msg);
+                    return;
+                }
+                appLogger.info('UPDATE POLL_STATE for _id = ' + picrConnection.escape(data.poll_id));
+                picrConnection.end();
+                callback(false);
+                return;
+            });
+        }
+    };
+
     this.removeListeners = function() {
         if (eventManager) {
             eventManager.removeAllListeners(['err']);

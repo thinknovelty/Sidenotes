@@ -9,6 +9,7 @@ module.exports = function BaseController(moduleName) {
     this.CODE_VERIFCATION_ERROR = 03; //- failed the verifcation process.
     this.CODE_CONFIGURATION_ERROR = 04; //- failed to save configurations.
     this.CODE_POLL_CREATE_ERROR = 05; //- failed to create a poll.
+    this.CODE_POLL_UPDATE_ERROR = 06; //- failed to update a poll.
 
 
     if (moduleName) {

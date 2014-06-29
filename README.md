@@ -8,7 +8,7 @@ node path_to_picr_server_dir/RestServer.js
 4. To test the server, open your broswer and do the test call which is build into the rest server.
 localhost/test 
 
-	-the server should respond back with your ip and a chessy message.
+	the server should respond back with your ip and a chessy message.
 
 Basic Files:
 ---------
@@ -34,7 +34,8 @@ picr error codes:
 02 - failed to register patron.
 03 - failed the verifcation process.
 04 - failed to save configurations.
-05 - 
+05 - failed to create a poll.
+06 - failed to update a poll.
 
 Current API calls:
 
@@ -43,13 +44,13 @@ Register: Create
 localhost/register/ 					
 Calltype: POST
 POST Variables:
-	email = example@gmail.com;
-	password = 1234123;
-	first_name = John;
-	last_name = Doe;
-	birthday = MM-DD-YYYY;
-	sex = 0;
-	apiKey = 23tfwr234f234424;
+email 		= example@gmail.com;
+password 	= 1234123;
+first_name 	= John;
+last_name 	= Doe;
+birthday 	= MM-DD-YYYY;
+sex 		= 0;
+apiKey 		= 23tfwr234f234424;
 
 returned:
 [
@@ -70,9 +71,9 @@ Login: Submit
 localhost/login/ 						
 Calltype: POST
 POST Variables:
-	email = example@gmail.com;
-	password = 1234123;
-	apiKey = 23tfwr234f234424;
+email 		= example@gmail.com;
+password 	= 1234123;
+apiKey 		= 23tfwr234f234424;
 
 returned:
 [
@@ -93,8 +94,8 @@ Verification: Submit
 localhost/verification/ 				
 Calltype: PUT
 PUT Variables:
-email = example@gmail.com;
-password = 1234123;
+email 			= example@gmail.com;
+password 		= 1234123;
 registrationKey = 12321dqe1231dfqwe123fwe12345t;
 
 returned:
@@ -117,20 +118,20 @@ Configuration: Settings
 localhost/configuration/settings 		
 Calltype: PUT
 PUT Variables:
-<name_of_setting> & <value>
+<name of setting> = <value of setting>
 
 notes:
--This will modifify only the settings which you provide in the call.
+This will modifify only the settings which you provide in the call.
 
 
 
 localhost/configuration/settings 		
 Calltype: GET
 GET Variables:
-<name_of_setting> & <value>
+<name of setting> = <value of setting>
 
 notes:
--This will modifify only the settings which you provide in the call.
+This will modifify only the settings which you provide in the call.
 ------------------------------------------------
 
 Poll: Open
@@ -138,13 +139,13 @@ Poll: Open
 localhost/poll 		
 Calltype: POST
 POST Variables:
-	question : 'what should i wear today.'
-	picture01 : <image>
-	picture02 : <image>
-	email: hubbertj@gmail.com
-	votes_to_close: 5 <one or both>
-	time_to_close: 5000 <in mins>
-	uuid: 7c8666d0-fedc-11e3-b4d3-bb6cfbffbccc
+	question 		= 'What should i wear today?'
+	picture01 		= <encoded in base64>
+	picture02 		= <encoded in base64>
+	email 			= hubbertj@gmail.com
+	votes_to_close 	= 5 <one or both>
+	time_to_close 	= 5000 <in mins>
+	uuid 			= 7c8666d0-fedc-11e3-b4d3-bb6cfbffbccc
 
 returned:
 [
@@ -165,12 +166,18 @@ Poll: Close
 localhost/poll/close 		
 Calltype: PUT
 PUT Variables:
-poll_id = 12341299
-email = hubbertj@gamil.com
-apikey = 21341243
+email 	= hubbertj@gamil.com
+poll_id = 1
+uuid 	= 7c8666d0-fedc-11e3-b4d3-bb6cfbffbccc
 
 returned:
-
+[
+    {
+        "message": "Poll update successfully",
+        "success": 1,
+        "time_stamp": "06-29-2014 12:11:05"
+    }
+]
 
 notes:
 
