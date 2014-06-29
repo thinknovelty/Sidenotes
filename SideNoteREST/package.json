@@ -25,6 +25,7 @@
         "dateformat": "*",
         "events": "*",
         "bcrypt-nodejs": "*",
-        "guid" : "*"
+        "guid" : "*",
+        "async" : "*"
     }
 }
