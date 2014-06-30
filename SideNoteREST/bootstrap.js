@@ -124,7 +124,7 @@ if (!GLOBAL.bootstrapped) {
     };
 
     GLOBAL.getDecrypter = function() {
-        return require(GLOBAL.LIB + 'Decrypter');
+        return require('bcrypt-nodejs');
     };
 
     GLOBAL.getUtil = function() {

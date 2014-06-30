@@ -144,7 +144,6 @@ module.exports = {
             var model = require(MODELS + this.moduleName + 'Model');
             var m = new model();
             m.init();
-
             // bundle the obj and adds salt and registrationKey;
             var userData = {
                 email: email,
@@ -156,6 +155,13 @@ module.exports = {
                 salt: this.generateKey(),
                 registrationKey: this.generateKey()
             };
+
+            //salt to password, we pick a random spot to insert into the password hash.
+            var hashpwd = getDecrypter().hashSync(userData.password);
+            var pos = Math.floor(Math.random() * (hashpwd.length + 1));
+            hashpwdSalted = hashpwd.substr(0, pos) + userData.salt + hashpwd.substr(pos);
+            userData.password = hashpwdSalted;
+
             m.isRegistered(userData.email, function(isReg) {
                 if (isReg) {
                     callback([{
