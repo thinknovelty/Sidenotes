@@ -7,6 +7,8 @@ module.exports = function ValidatorModel(email) {
     //settings;
     this.password_length = AppSettings.password_length;
     this.registration_api_key = AppSettings.registration_api_key;
+    this.session_timeout = AppSettings.session_timeout;
+
     this.email = null;
 
     if (email) {
@@ -120,6 +122,53 @@ module.exports = function ValidatorModel(email) {
             return 'Bad apikey';
         }
     };
+    //checks the uuid if its good and not expired.
+    this.isUUID = function(uuid, callback) {
+        var picrConnection = getPicrConnection();
+        if (picrConnection) {
+            appLogger.info('Checking for uuid = ' + picrConnection.escape(uuid));
+            var session_timeout = this.session_timeout;
+            picrConnection.query('SELECT * FROM user_login WHERE uuid =' + picrConnection.escape(uuid), function(err, rows) {
+                if (err) {
+                    appLogger.error('SQL error somthing is wrong with the database connection. ' + err);
+                    picrConnection.end();
+                    callback(true, err);
+                    return;
+                } else if (!rows[0]) {
+                    appLogger.error('SQL error couldn\'t find uuid in system.');
+                    picrConnection.end();
+                    callback(true, 'Bad uuid');
+                    return;
+                } else if (rows[0].isExpired) {
+                    picrConnection.end();
+                    callback(true, 'uuid session has expired.');
+                    return;
+                }
+                var mins = ((Math.floor(new Date() - new Date(rows[0].timestamp))) / 1000) / 60;
+                if (mins > session_timeout) {
+                    callback(true, 'uuid session has expired.');
+                    //marks the session expired.
+                    appLogger.info('Expiring uuid = ' + picrConnection.escape(uuid));
+                    picrConnection.query('UPDATE user_login set ? WHERE uuid =' + picrConnection.escape(uuid), {
+                        isExpired: 1
+                    }, function(err, rows) {
+                        if (err) {
+                            appLogger.error('Issue with trying to expire uuid ' + picrConnection.escape(uuid) + ' ' + err);
+                            picrConnection.end();
+                            return;
+                        }
+                        //nothing more to do so we return;
+                        picrConnection.end();
+                        return;
+                    });
+                } else {
+                    picrConnection.end();
+                    callback(false, 'uuid session has not expired.');
+                    return;
+                }
+            });
+        }
+    };
 
     this.isEmailInSystem = function(email, callback) {
         var picrConnection = getPicrConnection();
@@ -141,6 +190,23 @@ module.exports = function ValidatorModel(email) {
             });
         }
     };
+
+    this.isQuestion = function(question){
+        return true;
+    };
+
+    this.isPicture = function(picture){
+        return true;
+    };
+
+    this.isVoteToClose = function(close){
+        return true;
+    };
+
+    this.isTimeToClose = function(time){
+        return true;
+    };
+
 
     this.isRegistrationKey = function(key, callback) {
         if (this.email) {

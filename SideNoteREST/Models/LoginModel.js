@@ -1,4 +1,3 @@
-
 // LoginModel.js
 // ----------------------------------------
 //  CRUD
@@ -39,7 +38,6 @@ function LoginModel() {
             appLogger.error('email is required for loginModel create()');
             return;
         }
-        var uuid = getuuid().v1();
         var picrConnection = getPicrConnection();
         if (picrConnection) {
             picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
@@ -52,17 +50,18 @@ function LoginModel() {
                     return;
                 }
                 appLogger.info('FOUND _id for ' + email + ' = ' + rows[0]._id);
-
-                var post = {
-                    user_id: rows[0]._id,
-                    uuid: uuid,
-                    success: 1,
-                    timestamp: new Date()
-                }
-                //if we failed login me are going to mark it so.
+                var uuid = getuuid().v1();
+                var post = {};
                 if (didfailLogin) {
                     post.success = 0;
+                    post.uuid = null;
+                } else {
+                    post.success = 1;
+                    post.uuid = uuid;
                 }
+                post.user_id = rows[0]._id;
+                post.timestamp = new Date();
+                post.isExpired = 0;
 
                 //Writes to user_login table
                 picrConnection.query('INSERT INTO user_login SET ? ', post, function(err, rows) {
@@ -77,7 +76,9 @@ function LoginModel() {
                         appLogger.info('INSERT INTO user_login ' + JSON.stringify(rows));
                     }
                     picrConnection.end();
-                    if (callback) {
+                    if (didfailLogin && callback) {
+                        callback(true, null);
+                    } else {
                         callback(true, post.uuid);
                     }
                     //if we failed we are going to read how many times they failed the login process.
@@ -106,7 +107,7 @@ function LoginModel() {
         appLogger.info('Checking user = ' + user_id + ' for failed login attempts.');
     };
 
-    this.read = function(user_id, callback){
+    this.read = function(user_id, callback) {
         if (!user_id) {
             appLogger.error('user_id is required for loginModel read()');
             return;
@@ -120,8 +121,8 @@ function LoginModel() {
 
     };
 
-    this.removeListeners = function(){
-        if(eventManager){
+    this.removeListeners = function() {
+        if (eventManager) {
             eventManager.removeAllListeners(['readLoginAndLock']);
         }
     };

@@ -29,6 +29,7 @@ module.exports = {
     email: null,
     registrationKey: null,
     password: null,
+    uuid: null,
 
     init: function(req, res, call) {
         if (call.email) {

@@ -154,35 +154,36 @@ module.exports = {
             id: this.id,
             uuid: this.uuid
         };
-        var isvalid = this.validate(data);
-        if (isvalid !== true) {
-            callback([{
-                message: 'Failed poll create process.',
-                error: CODE_POLL_CREATE_ERROR,
-                errormsg: isvalid
-            }]);
-        } else {
-            var model = require(MODELS + this.moduleName + 'Model');
-            var m = new model();
-            m.init();
-            m.create(data, function(didFail, err) {
-                if (didFail) {
-                    callback([{
-                        message: 'Failed to create poll.',
-                        success: 00,
-                        error: CODE_POLL_CREATE_ERROR,
-                        errormsg: err
-                    }]);
-                } else {
-                    callback([{
-                        message: 'Poll created successfully',
-                        success: 01,
-                        error: ERROR_NO_ERROR,
-                    }]);
-                }
-                m.cleanUp();
-            });
-        }
+        this.validate(isvalid, function() {
+            if (isvalid !== true) {
+                callback([{
+                    message: 'Failed poll create process.',
+                    error: CODE_POLL_CREATE_ERROR,
+                    errormsg: isvalid
+                }]);
+            } else {
+                var model = require(MODELS + this.moduleName + 'Model');
+                var m = new model();
+                m.init();
+                m.create(data, function(didFail, err) {
+                    if (didFail) {
+                        callback([{
+                            message: 'Failed to create poll.',
+                            success: 00,
+                            error: CODE_POLL_CREATE_ERROR,
+                            errormsg: err
+                        }]);
+                    } else {
+                        callback([{
+                            message: 'Poll created successfully',
+                            success: 01,
+                            error: ERROR_NO_ERROR,
+                        }]);
+                    }
+                    m.cleanUp();
+                });
+            }
+        });
     },
 
     closePoll: function(data, callback) {
@@ -223,31 +224,36 @@ module.exports = {
         this.uuid = null;
         this.id = null;
     },
-    //if fails should tell us why.
-    validate: function(data) {
+    //if fails should tell us why. TODO: add check for share_id
+    validate: function(data, callback) {
         var validatorModel = getValidator();
         var v = new validatorModel(data.email);
-        v.init();
-
-        // if (v.isQuestion(data.question) !== true) {
-        //     return v.isQuestion(data.question);
-        // } else if (v.picture_01(data.picture_01) !== true) {
-        //     return v.picture_01(data.picture_01);
-        // } else if (v.picture_02(data.picture_02) !== true) {
-        //     return v.picture_02(data.picture_02);
-        // } else if (v.isEmail(data.email) !== true) {
-        //     return v.isEmail(data.email);
-        // } else if (v.isEmailInSystem(data.email) !== true) {
-        //     return v.isEmailInSystem(data.email);
-        // } else if (v.isVoteToClose(data.votes_to_close) !== true) {
-        //     return v.isVoteToClose(data.votes_to_close);
-        // } else if (v.isTimeToClose(data.close_on_time) !== true) {
-        //     return v.isTimeToClose(data.close_on_time);
-        // } else if (v.checkAPIKEY(apikey) !== true) {
-        //     return v.checkAPIKEY(apikey);
-        // }
-
-        //if everything is good return clean.
-        return true;
-    }
+        if (v.isEmail(data.email) !== true) {
+            callback(v.isEmail(data.email));
+        } else if (v.isPicture(data.picture_01) !== true) {
+            callback('Error: Issue with picture_01');
+        } else if (v.isPicture(data.picture_02) !== true) {
+            callback('Error: Issue with picture_02');
+        } else if (v.isEmail(data.email) !== true) {
+            callback(v.isEmail(data.email));
+        } else if (v.isVoteToClose(data.votes_to_close) !== true) {
+            callback(v.isVoteToClose(data.votes_to_close));
+        } else if (v.isTimeToClose(data.close_on_time) !== true) {
+            callback(v.isTimeToClose(data.close_on_time));
+        } else {
+            v.isEmailInSystem(data.email, function(didfail, err) {
+                if (didfail) {
+                    callback(err);
+                } else {
+                    v.isUUID(data.uuid, function(didfail, err) {
+                        if (didfail) {
+                            callback(err);
+                        } else {
+                            callback(true);
+                        }
+                    });
+                }
+            });
+        }
+    },
 };
