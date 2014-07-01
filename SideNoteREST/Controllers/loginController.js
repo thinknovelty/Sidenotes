@@ -82,61 +82,60 @@ module.exports = {
         //error codes
         var CODE_LOGIN_ERROR = this.CODE_LOGIN_ERROR;
         var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
-        var isValid = this.validate(data);
-
         var model = require(MODELS + this.moduleName + 'Model');
         var m = new model();
         m.init();
+        this.validate(data, function(isValid) {
+            if (isValid !== true && data.email) {
+                //true is set becuase we failed to vaildate. now we will record the failed attempt. We WILL GET THAT HACKER!!
+                m.create(data.email, true, function(didLogin, err) {
+                    if (didLogin) {
+                        callback([{
+                            message: 'Login failed login attempt has been recorded.',
+                            success: 00,
+                            error: CODE_LOGIN_ERROR,
+                            errormsg: isValid,
+                        }]);
+                    } else {
+                        callback([{
+                            message: 'Login failed login attempt has not been recorded.',
+                            success: 00,
+                            error: CODE_LOGIN_ERROR,
+                            errormsg: isValid,
+                        }]);
+                    }
+                    m.cleanUp();
+                });
+            } else if (isValid !== true) {
+                callback([{
+                    message: 'Login failed attempt please check errormsg for details.',
+                    success: 00,
+                    error: CODE_LOGIN_ERROR,
+                    errormsg: isValid,
 
-        if (isValid !== true && data.email) {
-            //true is set becuase we failed to vaildate. now we will record the failed attempt. We WILL GET THAT HACKER!!
-            m.create(data.email, true, function(didLogin, err) {
-                if (didLogin) {
-                    callback([{
-                        message: 'Login failed login attempt has been recorded.',
-                        success: 00,
-                        error: CODE_LOGIN_ERROR,
-                        errormsg: isValid + '' + err,
-                    }]);
-                } else {
-                    callback([{
-                        message: 'Login failed login attempt has not been recorded.',
-                        success: 00,
-                        error: CODE_LOGIN_ERROR,
-                        errormsg: isValid + '' + err,
-                    }]);
-                }
+                }]);
                 m.cleanUp();
-            });
-        } else if (isValid !== true) {
-            callback([{
-                message: 'Login failed attempt please check errormsg for details.',
-                success: 00,
-                error: CODE_LOGIN_ERROR,
-                errormsg: isValid,
-
-            }]);
-            m.cleanUp();
-        } else if (isValid == true) {
-            m.create(data.email, false, function(didLogin, err) {
-                if (didLogin) {
-                    callback([{
-                        message: 'Login Successfully',
-                        success: 1,
-                        uuid: err,
-                        error: ERROR_NO_ERROR,
-                    }]);
-                } else {
-                    callback([{
-                        message: 'Login failed due to DB issue.',
-                        success: 0,
-                        error: CODE_LOGIN_ERROR,
-                        errormsg: err,
-                    }]);
-                }
-            });
-            m.cleanUp();
-        }
+            } else if (isValid == true) {
+                m.create(data.email, false, function(didLogin, msg) {
+                    if (didLogin) {
+                        callback([{
+                            message: 'Login Successfully',
+                            success: 1,
+                            uuid: msg,
+                            error: ERROR_NO_ERROR,
+                        }]);
+                    } else {
+                        callback([{
+                            message: 'Login failed due to DB issue.',
+                            success: 0,
+                            error: CODE_LOGIN_ERROR,
+                            errormsg: msg,
+                        }]);
+                    }
+                });
+                m.cleanUp();
+            }
+        });
     },
 
     cleanUp: function() {
@@ -145,20 +144,27 @@ module.exports = {
         this.password = null;
     },
     //if fails should tell us why.
-    validate: function(data) {
+    validate: function(data, callback) {
         var validatorModel = getValidator();
         var v = new validatorModel(data.email);
         v.init();
-        if (v.isEmailInSystem(data.email) !== true) {
-            return v.isEmailInSystem(data.email);
-        } else if (v.isPassword(data.password) !== true) {
-            return v.isPassword(data.password);
-        } else if (v.checkAPIKEY(data.apiKey) !== true) {
-            return v.checkAPIKEY(data.apiKey);
+        if (v.checkAPIKEY(data.apiKey) !== true) {
+            callback(v.checkAPIKEY(data.apiKey));
+            return;
         }
-
-        //if everything is good return clean.
-        return true;
+        v.isEmailInSystem(data.email, function(didFail, err) {
+            if (didFail) {
+                callback(err);
+            } else {
+                v.isPassword(data.password, function(didFail, err) {
+                    if (didFail) {
+                        callback(err);
+                    } else {
+                        callback(true);
+                    }
+                });
+            }
+        })
     },
 
     loginInProcess: function(email, didfailLogin) {

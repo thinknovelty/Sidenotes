@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS settings (
 	is_active		CHAR(1) NOT NULL,
 	modified		DATETIME NOT NULL,
 	modified_by 	VARCHAR(35) NOT NULL,
-	PRIMARY KEY (_setting_id)
+	PRIMARY KEY (_setting_id),
+	CONSTRAINT settings UNIQUE (setting_name)
 ) ENGINE=InnoDB;
 
 # This table stores user credentials
@@ -118,7 +119,8 @@ CREATE TABLE IF NOT EXISTS user_login (
 	success		BOOLEAN NOT NULL,
 	timestamp	DATETIME,
 	PRIMARY KEY (_id),
-	FOREIGN KEY (user_id) REFERENCES user(_id)
+	FOREIGN KEY (user_id) REFERENCES user(_id),
+	CONSTRAINT user_login UNIQUE (uuid, user_id)
 ) ENGINE=InnoDB;
 
 # This table stores a user's friend list.

@@ -23,74 +23,43 @@
 //USER, USER_CREDENTIALS, USER_ACCOUNT, USER_VERIFICATION
 // ------------------------------------------------------------
 
-//defaults
-var first_name = null;
-var last_name = null;
-var apikey = null;
-var email = null;
-var password = null;
-var birthday = null;
-var sex = null;
-
-//if fails should tell us why.
-var validate = function() {
-
-    var validatorModel = getValidator();
-    var v = new validatorModel();
-
-    if (v.checkAPIKEY(apikey) !== true) {
-        return v.checkAPIKEY(apikey);
-    } else if (v.isEmail(email) !== true) {
-        return v.isEmail(email);
-    } else if (v.isPassword(password) !== true) {
-        return v.isPassword(password);
-    } else if (v.isFirstname(first_name) !== true) {
-        return v.isFirstname(first_name);
-    } else if (v.isLastname(last_name) !== true) {
-        return v.isLastname(last_name);
-    } else if (v.isDateofbirth(birthday) !== true) {
-        return v.isDateofbirth(birthday);
-    } else if (v.isSex(sex) !== true) {
-        return v.isSex(sex);
-    }
-
-    //TODO: check if email,username, are not used in DB
-    return true;
-};
-
-
 module.exports = {
-
+    first_name: null,
+    last_name: null,
+    apikey: null,
+    email: null,
+    password: null,
+    birthday: null,
+    sex: null,
     init: function(req, res, call) {
         if (call.apikey) {
-            apikey = call.apikey;
+            this.apikey = call.apikey;
         }
         if (call.email) {
-            email = call.email;
+            this.email = call.email;
         }
         if (call.password) {
-            password = call.password;
+            this.password = call.password;
         }
         if (call.first_name) {
-            first_name = call.first_name;
+            this.first_name = call.first_name;
         }
         //this get turned into a date obj 
         if (call.birthday) {
             try {
-                birthday = new Date(call.birthday);
+                this.birthday = new Date(call.birthday);
             } catch (err) {
                 appLogger.error('Error in controller init() ' + err);
             }
         }
         if (call.last_name) {
-            last_name = call.last_name;
+            this.last_name = call.last_name;
         }
         //1 = male , 0 = female
         if (call.sex) {
-            sex = Boolean(call.sex);
+            this.sex = Boolean(call.sex);
         }
     },
-
     results: function(callback) {
         if (this.callType === 'GET') {
             this.getResults(callback)
@@ -132,12 +101,12 @@ module.exports = {
         var CODE_REGISTER_ERROR = this.CODE_REGISTER_ERROR;
         var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
 
-        var isvalid = validate();
+        var isvalid = this.validate();
         if (isvalid !== true) {
             callback([{
-                message: 'Failed registion process.',
+                message: 'Failed registration process.',
                 error: CODE_REGISTER_ERROR,
-                errormsg: validate()
+                errormsg: isvalid
             }]);
         } else if (isvalid == true) {
 
@@ -146,12 +115,12 @@ module.exports = {
             m.init();
             // bundle the obj and adds salt and registrationKey;
             var userData = {
-                email: email,
-                first_name: first_name,
-                last_name: last_name,
-                birthday: birthday,
-                password: password,
-                sex: sex,
+                email: this.email,
+                first_name: this.first_name,
+                last_name: this.last_name,
+                birthday: this.birthday,
+                password: this.password,
+                sex: this.sex,
                 salt: this.generateKey(),
                 registrationKey: this.generateKey()
             };
@@ -194,11 +163,34 @@ module.exports = {
     },
 
     cleanUp: function() {
-        apikey = null;
-        email = null;
-        password = null;
-        first_name = null;
-        last_name = null;
-        birthday = null;
+        this.apikey = null;
+        this.email = null;
+        this.password = null;
+        this.first_name = null;
+        this.last_name = null;
+        this.birthday = null;
+    },
+    //if fails should tell us why.
+    validate: function() {
+        var validatorModel = getValidator();
+        var v = new validatorModel();
+
+        if (v.checkAPIKEY(this.apikey) !== true) {
+            return v.checkAPIKEY(this.apikey);
+        } else if (v.isEmail(this.email) !== true) {
+            return v.isEmail(this.email);
+        } else if (v.isPassword(this.password) !== true) {
+            return v.isPassword(this.password);
+        } else if (v.isFirstname(this.first_name) !== true) {
+            return v.isFirstname(this.first_name);
+        } else if (v.isLastname(this.last_name) !== true) {
+            return v.isLastname(this.last_name);
+        } else if (v.isDateofbirth(this.birthday) !== true) {
+            return v.isDateofbirth(this.birthday);
+        } else if (v.isSex(this.sex) !== true) {
+            return v.isSex(this.sex);
+        }
+        //TODO: check if email,username, are not used in DB
+        return true;
     }
 };

@@ -23,6 +23,10 @@ INSERT INTO settings(setting_name, value, is_default, is_active, modified, modif
 ('session_timeout', '600', '600', 1,now(),user());
 INSERT INTO settings(setting_name, value, is_default, is_active, modified, modified_by) values
 ('server_port', '80', '80', 1,now(),user());
+INSERT INTO settings(setting_name, value, is_default, is_active, modified, modified_by) values
+('registration_api_key', '3df78668-e1e7-4467-848f-91ecd5022b07', 0, 1, now(), user());
+INSERT INTO settings(setting_name, value, is_default, is_active, modified, modified_by) values
+('password_length', '8', 0, 1, now(), user());
 
 INSERT INTO share_type(name, description) values('family', 'all your family.');
 INSERT INTO share_type(name, description) values('friends', 'all your friends.');

@@ -25,24 +25,6 @@
 // Usage: 
 //this is the controller used for managering a user who activates his or her account.
 
-//if fails should tell us why.
-var validate = function(data) {
-    var validatorModel = getValidator();
-    var v = new validatorModel(data.email);
-    if (v.isEmail(data.email) !== true) {
-        return v.isEmail(data.email);
-    } else if (v.isEmailInSystem(data.email) !== true) {
-        return v.isEmailInSystem(data.email);
-    } else if (v.isRegistrationKey(data.registrationKey) !== true) {
-        return v.isRegistrationKey(data.registrationKey);
-    } else if (v.isPassword(data.password) !== true) {
-        return v.isPassword(data.password);
-    }
-
-    //if everything is good return clean.
-    return true;
-};
-
 module.exports = {
     email: null,
     registrationKey: null,
@@ -84,48 +66,48 @@ module.exports = {
         var ERROR_NO_ERROR = this.ERROR_NO_ERROR;
 
         //check for valid data.
-        var isvalid = validate(data);
-
-        if (isvalid !== true) {
-            callback([{
-                message: 'Verification failed please check errormsg for details.',
-                success: 0,
-                error: CODE_VERIFCATION_ERROR,
-                errormsg: validate(data)
-            }]);
-        } else if (isvalid === true) {
-            var model = require(MODELS + 'Register' + 'Model');
-            var m = new model();
-            m.isVerified(data.email, function(isVerified, err) {
-                if (isVerified) {
-                    callback([{
-                        message: 'Verification process failed',
-                        success: 00,
-                        error: CODE_VERIFCATION_ERROR,
-                        errormsg: err
-                    }]);
-                } else {
-                    m.update(data.email, function(bool, err) {
-                        if (bool) {
-                            callback([{
-                                message: 'Verification Successfully',
-                                success: 1,
-                                uuid: err,
-                                error: ERROR_NO_ERROR
-                            }]);
-                        } else {
-                            callback([{
-                                message: 'Verification failed due to DB issue.',
-                                success: 0,
-                                error: CODE_VERIFCATION_ERROR,
-                                errormsg: err
-                            }]);
-                        }
-                        m.cleanUp();
-                    });
-                }
-            });
-        }
+        this.validate(data, function(isvalid) {
+            if (isvalid !== true) {
+                callback([{
+                    message: 'Verification failed please check errormsg for details.',
+                    success: 0,
+                    error: CODE_VERIFCATION_ERROR,
+                    errormsg: isvalid
+                }]);
+            } else if (isvalid === true) {
+                var model = require(MODELS + 'Register' + 'Model');
+                var m = new model();
+                m.isVerified(data.email, function(isVerified, err) {
+                    if (isVerified) {
+                        callback([{
+                            message: 'Verification process failed',
+                            success: 00,
+                            error: CODE_VERIFCATION_ERROR,
+                            errormsg: err
+                        }]);
+                    } else {
+                        m.update(data.email, function(bool, err) {
+                            if (bool) {
+                                callback([{
+                                    message: 'Verification Successfully',
+                                    success: 1,
+                                    uuid: err,
+                                    error: ERROR_NO_ERROR
+                                }]);
+                            } else {
+                                callback([{
+                                    message: 'Verification failed due to DB issue.',
+                                    success: 0,
+                                    error: CODE_VERIFCATION_ERROR,
+                                    errormsg: err
+                                }]);
+                            }
+                            m.cleanUp();
+                        });
+                    }
+                });
+            }
+        });
     },
 
     getResults: function(callback) {
@@ -155,5 +137,33 @@ module.exports = {
     cleanUp: function() {
         this.email = null;
         this.registerKey = null;
+    },
+    //if fails should tell us why.
+    validate: function(data, callback) {
+        var validatorModel = getValidator();
+        var v = new validatorModel(data.email);
+        if (v.isEmail(data.email) !== true) {
+            callback(v.isEmail(data.email));
+            return;
+        }
+        v.isEmailInSystem(data.email, function(didfail, err) {
+            if (didfail) {
+                callback(err);
+            } else {
+                v.isPassword(data.password, function(didfail, err) {
+                    if (didfail) {
+                        callback(err);
+                    } else {
+                        v.isRegistrationKey(data.registrationKey, function(didfail, err) {
+                            if (didfail) {
+                                callback(err);
+                            } else {
+                                callback(true);
+                            }
+                        });
+                    }
+                });
+            }
+        });
     }
 };

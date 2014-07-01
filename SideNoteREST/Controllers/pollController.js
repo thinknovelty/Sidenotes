@@ -225,9 +225,6 @@ module.exports = {
     },
     //if fails should tell us why.
     validate: function(data) {
-        // if (!data.close_on_vote && !data.close_on_time) {
-        //     return 'Close type is required.'
-        // }
         var validatorModel = getValidator();
         var v = new validatorModel(data.email);
         v.init();
