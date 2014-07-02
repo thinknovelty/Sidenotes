@@ -130,33 +130,33 @@ module.exports = function ValidatorModel(email) {
     };
 
     this.isQuestion = function(question) {
-        if(!question){
+        if (!question) {
             return 'Question (question) is a required paramerter.';
         }
         return true;
     };
 
     this.isPicture = function(picture) {
-         if(!picture){
+        if (!picture) {
             return 'Picture (either picture_01 or picture_02) is a required paramerter.';
         }
         return true;
     };
 
     this.isVoteToClose = function(close) {
-         if(!close){
+        if (!close) {
             return 'Close vote (close_on_vote) is a required paramerter.';
         }
         return true;
     };
 
     this.isTimeToClose = function(time) {
-        if(!time){
+        if (!time) {
             return 'Close time (close_on_time) is a required paramerter.';
         }
         return true;
     };
-        //checks the uuid if its good and not expired.
+    //checks the uuid if its good and not expired.
     this.isUUID = function(uuid, callback) {
         var picrConnection = getPicrConnection();
         if (picrConnection) {
@@ -197,9 +197,17 @@ module.exports = function ValidatorModel(email) {
                         return;
                     });
                 } else {
-                    picrConnection.end();
-                    callback(false, 'uuid session has not expired.');
-                    return;
+                    //no callback if it fails we don't care.
+                    picrConnection.query('UPDATE user_login set ? WHERE uuid =' + picrConnection.escape(uuid), {
+                        timestamp: new Date()
+                    }, function(err, rows) {
+                        if (err) {
+                            appLogger.error('Failed to update timestamp for ' + uuid + '. ' + err);
+                        }
+                        picrConnection.end();
+                        callback(false, 'uuid session has not expired.');
+                        return;
+                    });
                 }
             });
         }
@@ -226,7 +234,7 @@ module.exports = function ValidatorModel(email) {
         }
     };
 
-    this.isShardID = function(sID, callback){
+    this.isShardID = function(sID, callback) {
         var picrConnection = getPicrConnection();
         if (picrConnection) {
             appLogger.info('Checking for database for shard type = ' + sID);

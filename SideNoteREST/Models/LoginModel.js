@@ -106,12 +106,32 @@ function LoginModel() {
         }
         appLogger.info('Checking user = ' + user_id + ' for failed login attempts.');
     };
-
-    this.read = function(user_id, callback) {
-        if (!user_id) {
-            appLogger.error('user_id is required for loginModel read()');
+    //reads if the user is locked or not.
+    this.read = function(email, callback) {
+        if (!email) {
+            appLogger.error('email is required for loginModel read()');
             return;
         }
+        var picrConnection = getPicrConnection();
+        if (picrConnection) {
+            picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
+                if (err || !(rows[0])) {
+                    appLogger.error('SQL error couldn\'t get _id for ' + email);
+                    picrConnection.end();
+                    if (callback) {
+                        callback(false, err);
+                    }
+                    return;
+                }
+
+
+
+
+            picrConnection.query('SELECT * FROM user_account WHERE _id =' + picrConnection.escape(user_id), function(err, rows) {
+            });
+
+        }
+
 
 
 

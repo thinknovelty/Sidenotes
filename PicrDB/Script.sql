@@ -124,6 +124,18 @@ CREATE TABLE IF NOT EXISTS user_login (
 	CONSTRAINT user_login UNIQUE (uuid, user_id)
 ) ENGINE=InnoDB;
 
+#table which is used to manage a user session.
+CREATE TABLE IF NOT EXISTS user_session (
+	_id		 BIGINT NOT NULL AUTO_INCREMENT,
+	uuid     VARCHAR(36),
+	user_id		 BIGINT NOT NULL,
+	timestamp	DATETIME NOT NULL,
+	PRIMARY KEY (_id),
+	FOREIGN KEY (user_id) REFERENCES user(_id),
+	FOREIGN KEY (uuid) REFERENCES user_login(uuid),
+	CONSTRAINT user_login UNIQUE (uuid)
+) ENGINE=InnoDB;
+
 # This table stores a user's friend list.
 CREATE TABLE IF NOT EXISTS user_friend (
 	_id		 BIGINT NOT NULL AUTO_INCREMENT,
