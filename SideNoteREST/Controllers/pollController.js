@@ -95,25 +95,26 @@ module.exports = {
             id: this.id,
             poll_id: this.poll_id
         };
-        var isvalid = this.validate(data);
-        if (isvalid !== true) {
+        this.validate(data, false, function(isvalid) {
+            if (isvalid !== true) {
+                callback([{
+                    message: 'Failed to close poll.',
+                    error: CODE_POLL_UPDATE_ERROR,
+                    errormsg: isvalid
+                }]);
+                return;
+            } else if (data.id && data.id === 'close') {
+                this.closePoll(data, function(arr) {
+                    callback(arr);
+                });
+                return;
+            }
             callback([{
                 message: 'Failed to close poll.',
                 error: CODE_POLL_UPDATE_ERROR,
-                errormsg: isvalid
+                errormsg: 'ID required for PUT call.'
             }]);
-            return;
-        } else if (data.id && data.id === 'close') {
-            this.closePoll(data, function(arr) {
-                callback(arr);
-            });
-            return;
-        }
-        callback([{
-            message: 'Failed to close poll.',
-            error: CODE_POLL_UPDATE_ERROR,
-            errormsg: 'ID required for PUT call.'
-        }]);
+        });
     },
 
     getResults: function(callback) {
@@ -154,17 +155,18 @@ module.exports = {
             id: this.id,
             uuid: this.uuid
         };
-        this.validate(isvalid, function() {
+        var model = require(MODELS + this.moduleName + 'Model');
+        var m = new model();
+        m.init();
+        this.validate(data, true, function(isvalid) {
             if (isvalid !== true) {
                 callback([{
                     message: 'Failed poll create process.',
                     error: CODE_POLL_CREATE_ERROR,
                     errormsg: isvalid
                 }]);
+                m.cleanUp();
             } else {
-                var model = require(MODELS + this.moduleName + 'Model');
-                var m = new model();
-                m.init();
                 m.create(data, function(didFail, err) {
                     if (didFail) {
                         callback([{
@@ -225,21 +227,43 @@ module.exports = {
         this.id = null;
     },
     //if fails should tell us why. TODO: add check for share_id
-    validate: function(data, callback) {
+    validate: function(data, isNew, callback) {
         var validatorModel = getValidator();
         var v = new validatorModel(data.email);
-        if (v.isEmail(data.email) !== true) {
-            callback(v.isEmail(data.email));
-        } else if (v.isPicture(data.picture_01) !== true) {
-            callback('Error: Issue with picture_01');
-        } else if (v.isPicture(data.picture_02) !== true) {
-            callback('Error: Issue with picture_02');
-        } else if (v.isEmail(data.email) !== true) {
-            callback(v.isEmail(data.email));
-        } else if (v.isVoteToClose(data.votes_to_close) !== true) {
-            callback(v.isVoteToClose(data.votes_to_close));
-        } else if (v.isTimeToClose(data.close_on_time) !== true) {
-            callback(v.isTimeToClose(data.close_on_time));
+        if (isNew) {
+            if (v.isEmail(data.email) !== true) {
+                callback(v.isEmail(data.email));
+            } else if (v.isPicture(data.picture_01) !== true) {
+                callback('Error: Issue with picture_01');
+            } else if (v.isPicture(data.picture_02) !== true) {
+                callback('Error: Issue with picture_02');
+            } else if (v.isEmail(data.email) !== true) {
+                callback(v.isEmail(data.email));
+            } else if (v.isVoteToClose(data.close_on_vote) !== true) {
+                callback(v.isVoteToClose(data.close_on_vote));
+            } else if (v.isTimeToClose(data.close_on_time) !== true) {
+                callback(v.isTimeToClose(data.close_on_time));
+            } else {
+                v.isEmailInSystem(data.email, function(didfail, err) {
+                    if (didfail) {
+                        callback(err);
+                    } else {
+                        v.isUUID(data.uuid, function(didfail, err) {
+                            if (didfail) {
+                                callback(err);
+                            } else {
+                                v.isShardID(data.share_type_id, function(didfail, err) {
+                                    if (didfail) {
+                                        callback(err);
+                                    } else {
+                                        callback(true);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
         } else {
             v.isEmailInSystem(data.email, function(didfail, err) {
                 if (didfail) {

@@ -55,9 +55,15 @@ module.exports = function ValidatorModel(email) {
                         callback(true, 'SQL couldn\'t find password for ' + email);
                         return;
                     }
-                    if (getDecrypter().compareSync(password, rows[0].password.replace(rows[0].salt, ''))) {
-                        callback(false, 'Password is correct.');
-                    } else {
+                    try {
+                        if (getDecrypter().compareSync(password, rows[0].password.replace(rows[0].salt, ''))) {
+                            callback(false, 'Password is correct.');
+                        } else {
+                            callback(true, 'Password is incorrect.');
+                        }
+
+                    } catch (err) {
+                        appLogger.error('Issue with Decrypting password. ' + err);
                         callback(true, 'Password is incorrect.');
                     }
                     return;
@@ -122,7 +128,35 @@ module.exports = function ValidatorModel(email) {
             return 'Bad apikey';
         }
     };
-    //checks the uuid if its good and not expired.
+
+    this.isQuestion = function(question) {
+        if(!question){
+            return 'Question (question) is a required paramerter.';
+        }
+        return true;
+    };
+
+    this.isPicture = function(picture) {
+         if(!picture){
+            return 'Picture (either picture_01 or picture_02) is a required paramerter.';
+        }
+        return true;
+    };
+
+    this.isVoteToClose = function(close) {
+         if(!close){
+            return 'Close vote (close_on_vote) is a required paramerter.';
+        }
+        return true;
+    };
+
+    this.isTimeToClose = function(time) {
+        if(!time){
+            return 'Close time (close_on_time) is a required paramerter.';
+        }
+        return true;
+    };
+        //checks the uuid if its good and not expired.
     this.isUUID = function(uuid, callback) {
         var picrConnection = getPicrConnection();
         if (picrConnection) {
@@ -130,7 +164,7 @@ module.exports = function ValidatorModel(email) {
             var session_timeout = this.session_timeout;
             picrConnection.query('SELECT * FROM user_login WHERE uuid =' + picrConnection.escape(uuid), function(err, rows) {
                 if (err) {
-                    appLogger.error('SQL error somthing is wrong with the database connection. ' + err);
+                    appLogger.error('SQL couldn\'t SELECT INTO user_login ' + err);
                     picrConnection.end();
                     callback(true, err);
                     return;
@@ -153,6 +187,7 @@ module.exports = function ValidatorModel(email) {
                         isExpired: 1
                     }, function(err, rows) {
                         if (err) {
+                            appLogger.error('SQL couldn\'t UPDATE user_login ' + err);
                             appLogger.error('Issue with trying to expire uuid ' + picrConnection.escape(uuid) + ' ' + err);
                             picrConnection.end();
                             return;
@@ -176,7 +211,7 @@ module.exports = function ValidatorModel(email) {
             appLogger.info('Checking for email = ' + email);
             picrConnection.query('SELECT email FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
                 if (err) {
-                    appLogger.error('SQL error somthing is wrong with the database connection. ' + err);
+                    appLogger.error('SQL couldn\'t SELECT INTO user_credentials ' + err);
                     picrConnection.end();
                     callback(true, err);
                     return;
@@ -191,22 +226,26 @@ module.exports = function ValidatorModel(email) {
         }
     };
 
-    this.isQuestion = function(question){
-        return true;
+    this.isShardID = function(sID, callback){
+        var picrConnection = getPicrConnection();
+        if (picrConnection) {
+            appLogger.info('Checking for database for shard type = ' + sID);
+            picrConnection.query('SELECT * FROM share_type WHERE _id =' + picrConnection.escape(sID), function(err, rows) {
+                if (err) {
+                    appLogger.error('SQL couldn\'t SELECT INTO share_type ' + err);
+                    picrConnection.end();
+                    callback(true, err);
+                    return;
+                } else if (!rows[0]) {
+                    appLogger.error('Couldn\'t find share_type in database.');
+                    picrConnection.end();
+                    callback(true, 'share_type_id not found in the database.');
+                    return;
+                }
+                callback(false, 'share_type_id found in the system.');
+            });
+        }
     };
-
-    this.isPicture = function(picture){
-        return true;
-    };
-
-    this.isVoteToClose = function(close){
-        return true;
-    };
-
-    this.isTimeToClose = function(time){
-        return true;
-    };
-
 
     this.isRegistrationKey = function(key, callback) {
         if (this.email) {
@@ -215,10 +254,9 @@ module.exports = function ValidatorModel(email) {
                 var email = this.email;
                 picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
                     if (err) {
-                        var str = 'SQL error couldn\'t get _id for ' + email + ' ' + err;
-                        appLogger.error(str);
+                        appLogger.error('SQL couldn\'t SELECT INTO user_credentials ' + err);
                         picrConnection.end();
-                        callback(true, str);
+                        callback(true, 'SQL error couldn\'t get _id for ' + email + ' ' + err);
                         return;
                     } else if (!rows[0]._id) {
                         appLogger.error('SQL error couldn\'t find _id for ' + email);
@@ -230,10 +268,9 @@ module.exports = function ValidatorModel(email) {
                     appLogger.info('FOUND _id for ' + email + ' = ' + rows[0]._id);
                     picrConnection.query('SELECT code FROM user_verification WHERE _id =' + rows[0]._id, function(err, rows) {
                         if (err) {
-                            var str = 'SQL error couldn\'t get code for ' + email + ' from user_verification ' + err;
-                            appLogger.error(str);
+                            appLogger.error('SQL couldn\'t SELECT INTO user_verification ' + err);
                             picrConnection.end();
-                            callback(true, str);
+                            callback(true, 'SQL error couldn\'t get code for ' + email + ' from user_verification ' + err);
                             return;
                         } else if (!rows[0].code) {
                             appLogger.error('SQL error couldn\'t find _id for ' + email);
@@ -242,11 +279,17 @@ module.exports = function ValidatorModel(email) {
                             return;
                         }
                         appLogger.info('FOUND code for ' + email + ' = ' + rows[0].code);
-                        if (key === rows[0].code) {
-                            callback(false, 'Registration Key is correct.');
-                        } else {
+                        try {
+                            if (key === rows[0].code) {
+                                callback(false, 'Registration Key is correct.');
+                            } else {
+                                callback(true, 'Registration Key is incorrect.');
+                            }
+                        } catch (err) {
+                            appLogger.error('Issue with checking registration Key. ' + err);
                             callback(true, 'Registration Key is incorrect.');
                         }
+                        return;
                     });
                 });
             } else {
@@ -255,6 +298,7 @@ module.exports = function ValidatorModel(email) {
             }
         } else {
             callback(true, 'A email is needed to verify Registration Key.');
+            return;
         }
     }
 };
