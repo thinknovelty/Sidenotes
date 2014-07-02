@@ -40,31 +40,20 @@ function LoginModel() {
         }
         var picrConnection = getPicrConnection();
         if (picrConnection) {
-            picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
-                if (err || !(rows[0])) {
-                    appLogger.error('SQL error couldn\'t get _id for ' + email);
-                    picrConnection.end();
-                    if (callback) {
-                        callback(false, err);
-                    }
-                    return;
-                }
-                appLogger.info('FOUND _id for ' + email + ' = ' + rows[0]._id);
-                var uuid = getuuid().v1();
-                var post = {};
-                if (didfailLogin) {
-                    post.success = 0;
-                    post.uuid = null;
-                } else {
-                    post.success = 1;
-                    post.uuid = uuid;
-                }
-                post.user_id = rows[0]._id;
-                post.timestamp = new Date();
-                post.isExpired = 0;
-
-                //Writes to user_login table
-                picrConnection.query('INSERT INTO user_login SET ? ', post, function(err, rows) {
+            var uuid = getuuid().v1();
+            var post = {};
+            if (didfailLogin) {
+                post.success = 0;
+                post.uuid = null;
+            } else {
+                post.success = 1;
+                post.uuid = uuid;
+            }
+            post.timestamp = new Date();
+            post.isExpired = 0;
+            picrConnection.query('INSERT INTO user_login(uuid,user_id,success,timestamp) SELECT ' + picrConnection.escape(post.uuid) + ', user_credentials._id , ' +
+                picrConnection.escape(post.success) + ', ' + picrConnection.escape(post.timestamp) + '  FROM user_credentials WHERE email = ' + picrConnection.escape(email),
+                function(err, rows) {
                     if (err) {
                         appLogger.error('SQL couldn\'t INSERT INTO user_login table\n' + err);
                         picrConnection.end();
@@ -83,10 +72,9 @@ function LoginModel() {
                     }
                     //if we failed we are going to read how many times they failed the login process.
                     if (didfailLogin) {
-                        eventManager.emit('readLoginAndLock', post.user_id);
+                        eventManager.emit('readLoginAndLock', rows[0]._id);
                     }
                 });
-            });
         } else {
             appLogger.error('Issue getting DB object.');
         }
@@ -113,24 +101,6 @@ function LoginModel() {
             return;
         }
         var picrConnection = getPicrConnection();
-        if (picrConnection) {
-            picrConnection.query('SELECT _id FROM user_credentials WHERE email =' + picrConnection.escape(email), function(err, rows) {
-                if (err || !(rows[0])) {
-                    appLogger.error('SQL error couldn\'t get _id for ' + email);
-                    picrConnection.end();
-                    if (callback) {
-                        callback(false, err);
-                    }
-                    return;
-                }
-
-
-
-
-            picrConnection.query('SELECT * FROM user_account WHERE _id =' + picrConnection.escape(user_id), function(err, rows) {
-            });
-
-        }
 
 
 
