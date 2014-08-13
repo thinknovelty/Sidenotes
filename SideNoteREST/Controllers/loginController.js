@@ -10,6 +10,7 @@
 // email = example@gmail.com
 // password = 1234123
 // apiKey = 23tfwr234f234424
+// mac = 00:00:00:00:00:00
 
 
 
@@ -148,10 +149,6 @@ module.exports = {
         var validatorModel = getValidator();
         var v = new validatorModel(data.email);
         v.init();
-        if (v.checkAPIKEY(data.apiKey) !== true) {
-            callback(v.checkAPIKEY(data.apiKey));
-            return;
-        }
         v.isEmailInSystem(data.email, function(didFail, err) {
             if (didFail) {
                 callback(err);
@@ -160,11 +157,17 @@ module.exports = {
                     if (didFail) {
                         callback(err);
                     } else {
-                        callback(true);
+                        v.isMac(data.mac, function(didFail, err) {
+                            if (didFail) {
+                                callback(err);
+                            } else {
+                                callback(true);
+                            }
+                        });
                     }
                 });
             }
-        })
+        });
     },
 
     loginInProcess: function(email, didfailLogin) {

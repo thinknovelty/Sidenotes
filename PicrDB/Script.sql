@@ -129,6 +129,7 @@ CREATE TABLE IF NOT EXISTS user_session (
 	_id		 BIGINT NOT NULL AUTO_INCREMENT,
 	uuid     VARCHAR(36),
 	user_id		 BIGINT NOT NULL,
+	mac_address  CHAR(12) NOT NUll,
 	timestamp	DATETIME NOT NULL,
 	PRIMARY KEY (_id),
 	FOREIGN KEY (user_id) REFERENCES user(_id),

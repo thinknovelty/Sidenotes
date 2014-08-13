@@ -37,6 +37,15 @@ module.exports = function ValidatorModel(email) {
         return true;
     };
 
+    this.isMac = function(mac, callback) {
+        var regex = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+        if (regex.test(mac)) {
+            callback(false, 'Mac is correct.');
+        } else {
+            callback(true, 'Error - Issue with mac address.');
+        }
+    };
+
     // Validate password string
     this.isPassword = function(password, callback) {
         if (this.email) {
