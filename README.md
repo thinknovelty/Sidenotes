@@ -8,7 +8,7 @@ node path_to_picr_server_dir/RestServer.js
 4. To test the server, open your broswer and do the test call which is build into the rest server.
 localhost/test 
 
-	the server should respond back with your ip and a chessy message.
+    the server should respond back with your ip and a chessy message.
 
 Basic Files:
 ---------
@@ -41,16 +41,16 @@ Current API calls:
 
 Register: Create
 
-localhost/register/ 					
+localhost/register/                     
 Calltype: POST
 POST Variables:
-email 		= example@gmail.com;
-password 	= 1234123;
-first_name 	= John;
-last_name 	= Doe;
-birthday 	= MM-DD-YYYY;
-sex 		= 0;
-apiKey 		= 23tfwr234f234424;
+email       = example@gmail.com;
+password    = 1234123;
+first_name  = John;
+last_name   = Doe;
+birthday    = MM-DD-YYYY;
+sex         = 0;
+apiKey      = 23tfwr234f234424;
 
 returned:
 [
@@ -68,12 +68,12 @@ checks if a user is already registered.
 
 Login: Submit
 
-localhost/login/ 						
+localhost/login/                        
 Calltype: POST
 POST Variables:
-email 		= example@gmail.com;
-password 	= 1234123;
-apiKey 		= 23tfwr234f234424;
+email       = example@gmail.com;
+password    = 1234123;
+apiKey      = 23tfwr234f234424;
 
 returned:
 [
@@ -91,11 +91,11 @@ used to log a patron into the system.
 
 Verification: Submit 
 
-localhost/verification/ 				
+localhost/verification/                 
 Calltype: PUT
 PUT Variables:
-email 			= example@gmail.com;
-password 		= 1234123;
+email           = example@gmail.com;
+password        = 1234123;
 registrationKey = 12321dqe1231dfqwe123fwe12345t;
 
 returned:
@@ -115,7 +115,7 @@ checks if a user is already verified.
 
 Configuration: Settings 
 
-localhost/configuration/settings 		
+localhost/configuration/settings        
 Calltype: PUT
 PUT Variables:
 <name of setting> = <value of setting>
@@ -125,7 +125,7 @@ This will modifify only the settings which you provide in the call.
 
 
 
-localhost/configuration/settings 		
+localhost/configuration/settings        
 Calltype: GET
 GET Variables:
 <name of setting> = <value of setting>
@@ -136,16 +136,16 @@ This will modifify only the settings which you provide in the call.
 
 Poll: Open
 
-localhost/poll 		
+localhost/poll      
 Calltype: POST
 POST Variables:
-	question 		= 'What should i wear today?'
-	picture01 		= <encoded in base64>
-	picture02 		= <encoded in base64>
-	email 			= hubbertj@gmail.com
-	votes_to_close 	= 5 <one or both>
-	time_to_close 	= 5000 <in mins>
-	uuid 			= 7c8666d0-fedc-11e3-b4d3-bb6cfbffbccc
+    question        = 'What should i wear today?'
+    picture01       = <encoded in base64>
+    picture02       = <encoded in base64>
+    email           = hubbertj@gmail.com
+    votes_to_close  = 5 <one or both>
+    time_to_close   = 5000 <in mins>
+    uuid            = 7c8666d0-fedc-11e3-b4d3-bb6cfbffbccc
 
 returned:
 [
@@ -163,12 +163,12 @@ Creating a new poll.
 
 Poll: Close
 
-localhost/poll/close 		
+localhost/poll/close        
 Calltype: PUT
 PUT Variables:
-email 	= hubbertj@gamil.com
+email   = hubbertj@gamil.com
 poll_id = 1
-uuid 	= 7c8666d0-fedc-11e3-b4d3-bb6cfbffbccc
+uuid    = 7c8666d0-fedc-11e3-b4d3-bb6cfbffbccc
 
 returned:
 [
