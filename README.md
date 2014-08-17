@@ -10,6 +10,8 @@ localhost/test
 
     the server should respond back with your ip and a chessy message.
 
+5. Test 
+
 Basic Files:
 ---------
 bootstrap.js - Runs before all others files, creates Globel variables which can be used throughout the program.
