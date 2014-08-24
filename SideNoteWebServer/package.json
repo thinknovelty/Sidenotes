@@ -1,0 +1,17 @@
+{
+	"name": "Mobile_UI_Architect",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node app"
+	},
+	"dependencies": {
+		"lodash"      : "*",
+		"moment"      : "*",
+		"handlebars"  : "*",
+		"consolidate" : "*",
+		"express"     : "*",
+		"restler"     : "*",
+		"winston"     : "*"
+	}
+}
