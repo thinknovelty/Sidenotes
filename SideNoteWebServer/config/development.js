@@ -20,7 +20,7 @@ module.exports = {
 	mobile : {
 
 		enableServer : true,
-		serverRoot : '/www_mobile',
+		serverRoot : '/www',
 		port    : 3000,
 		useSass : false,
 		sassProps : {

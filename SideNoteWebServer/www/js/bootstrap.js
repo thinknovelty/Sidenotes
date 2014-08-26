@@ -1,0 +1,1 @@
+console.log("this bootstrap my app and setup all framwork needed to create this app");
