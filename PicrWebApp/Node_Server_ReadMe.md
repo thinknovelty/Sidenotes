@@ -17,3 +17,15 @@ Project Folder Structure
 /node_modules - Is the libary container for node.js
 /lib - 			Holds the logging object.
 /config - 		Is the location of the config file.
+
+
+Project Technologies
+--------------------
+Backbone.js version 1.1.2 Note: Depends on underscore.js to run.
+Underscore.js version 1.7.0
+Knockout.js version 1.4.3
+JQuery 		version 3.2.0
+Requirejs 	version 2.1.14
+JQuery mobile version 1.4.3 TODO: This maybe removed so becasue JQuery maybe all we need.
+
+
