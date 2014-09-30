@@ -185,7 +185,7 @@ notes:
 
 This is manual close statment for a poll. Check if this has already been done. 
 poll_state close = true. 
-Check if they have been logined in.
+Check if they have been logged in.
 -------------------------------------------------
 
 
