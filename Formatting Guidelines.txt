@@ -1,0 +1,93 @@
+DIRECTORY NAMES
+
+	Directory names will be all lowercase words with underscores between each word
+	Ex:	/build_android/
+		/build_ios/
+		/controller/
+		/lib/
+		/user/
+
+
+FILE NAMES & CLASS NAMES
+
+	File and class names will follow the standard camel case using capital letters for each word in the name.
+	Ex:	"MyObjectController.js"
+
+
+METHOD NAMES
+
+	Method names will follow camel case using camel case for each word following the first word.
+	Ex:	var getRandomNumber = function() { ... };
+
+
+LOCAL VARIABLES NAMES
+
+	Local variable names will be prefixed with the letter 'm' followed by capital camel case.
+	Ex:	var mRandomNumber = 0;
+	Local variables will always be initialized with a default value.
+
+	Constant variable names will all be capital letters with underscores separating words in the name.
+	Ex:	var DB_ADMIN_LOGIN_NAME = 'DATABASEADMIN';
+
+
+PARAMETER NAMES
+
+	Parameter names will be prefixed with the letter 'p' followed by capital camel case. This prevents confusing between local variable and parameter names.
+	Ex:	var getRandomNumber = function(pLow, pHigh) {
+			...
+		};
+
+
+SCOPE BRACKETS
+
+	The scope { bracket will be the last character on the line and the } bracket will be on a line on its own.
+	Ex:	if(value === 'test1') {
+			console.log('Test1');
+		}
+		else if(value === 'test2) {
+			console.log('Test2');
+		}
+		else {
+			console.log('None');
+		}
+
+
+COMMENTS
+
+	If there are a series of comments, comments will be surrounded by /* and */.
+	Ex:	/*	This is a series of comments.
+			These comments explain either a part of the following code or the reasoning for the approach.
+		*/
+
+	Methods must be prefixed with comments explaining the methods purpose, what it is returning, and parameter explanation using the /* */ comments.
+	Ex:	/*
+	Description:	Extension of JQuery extend method to merges objects.
+					http://api.jquery.com/jquery.extend/
+
+			Parameters :	bool - Whether or not merge is recursive (optional)
+
+					obj  - Object to merge
+
+					obj  - Object to merge
+
+		*/
+		GLOBAL.extend = function() {
+			...
+		}
+
+	Double line comments, //, that explain a piece of code must have a space between the '//' and the comment itself.
+	Ex:	// Check to see if there was an error
+
+	Double line comments, //, that comment out a piece of code will have no space between the '//' and the code.
+	Ex:	//var appMode = 'production';
+
+	Incomplete code or areas of concern must be commented with '// TODO: ' followed by an explanation of what is needed.
+	Ex:	// TODO: Need to finish image upload here.
+		// TODO: TEST CASE - DON'T LEAVE THIS IN HERE
+
+	Beginning of files should have an explanation of the file.
+	/*	This controller is to be used when a user is logging into the system.
+		Route: /login/
+		POST is the only applicable verb since the user shouldn't be requesting, changing, or deleting.
+		This is a validating controller only.
+	*/
