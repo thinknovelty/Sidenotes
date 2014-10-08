@@ -1,249 +1,251 @@
-Create Database picr_01;
+-- CREATE USER 'admin'@'localhost' IDENTIFIED BY 'password';
 
-USE picr_01;
+-- GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
 
+DROP DATABASE IF EXISTS picr_development;
 
-################################################
-## USER TABLES
-################################################
+CREATE DATABASE picr_development;
 
-# This table will be used to store all pictures
-# Including the avatar and poll pictures
-# This table must be created prior to the user table
+USE picr_development;
+
+-- Stores all pictures
+-- Pictures will be stored in multiple directories: original, scaled
 CREATE TABLE IF NOT EXISTS picture (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
+	_id			INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	name		VARCHAR(255),
-	timestamp	DATETIME NOT NULL,
-	PRIMARY KEY (_id)
+    created_on	DATETIME NOT NULL,
+    PRIMARY KEY(_id)
 ) ENGINE=InnoDB;
 
-# This table stores all user related info
-# This table must be
+-- Primary user table for basic user information
 CREATE TABLE IF NOT EXISTS user (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	first_name	VARCHAR(35) NOT NULL,
-	last_name	VARCHAR(35) NOT NULL,
-	sex		CHAR(1) NOT NULL,
-	birthday	DATE NOT NULL,
-	avatar_id	 BIGINT NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (avatar_id) REFERENCES picture(_id)
+	_id				INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    first_name		VARCHAR(35) NOT NULL,
+    last_name		VARCHAR(35) NOT NULL,
+    sex				CHAR(1) NOT NULL,
+    birthday		DATE NOT NULL,
+    PRIMARY KEY(_id)
 ) ENGINE=InnoDB;
 
-
-# This table stores basic poll information
-CREATE TABLE IF NOT EXISTS poll (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	user_id		 BIGINT NOT NULL,
-	question	VARCHAR(35),
-	picture_1_id	 BIGINT NOT NULL,
-	picture_2_id	 BIGINT NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (user_id) REFERENCES user(_id),
-	FOREIGN KEY (picture_1_id) REFERENCES picture(_id),
-	FOREIGN KEY (picture_2_id) REFERENCES picture(_id)
+-- Role types will be defined for each employee roles such as 'administrator'
+CREATE TABLE IF NOT EXISTS role_type (
+	_id					SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name				VARCHAR(35) NOT NULL,
+    description			VARCHAR(35) NOT NULL,
+    created_on			DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    CONSTRAINT u_role UNIQUE(name)
 ) ENGINE=InnoDB;
 
-# A table for the server settings and maybe other settings
-CREATE TABLE IF NOT EXISTS settings (
-	_setting_id		BIGINT NOT NULL AUTO_INCREMENT,
-	setting_name	VARCHAR(35) NOT NULL,
-	value			VARCHAR(35) NOT NULL,
-	is_default		VARCHAR(35) NOT NULL,
-	is_active		CHAR(1) NOT NULL,
-	modified		DATETIME NOT NULL,
-	modified_by 	VARCHAR(35) NOT NULL,
-	PRIMARY KEY (_setting_id),
-	CONSTRAINT settings UNIQUE (setting_name)
+-- Roles will only be defined for employees.
+-- Regular users will not have a record in this table.
+CREATE TABLE IF NOT EXISTS user_role (
+	_id				INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id			INT UNSIGNED NOT NULL,
+    role_type_id	SMALLINT UNSIGNED NOT NULL,
+    created_on		DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(user_id) REFERENCES user(_id),
+    FOREIGN KEY(role_type_id) REFERENCES role_type(_id),
+    CONSTRAINT u_user_role UNIQUE(user_id, role_type_id)
 ) ENGINE=InnoDB;
 
-# This table stores user credentials
-# The salt value is used to has the members password
-# The salt value is created when the member registers
-# or changes their password.
-# We take the passed in password, add the salt to it, hash it
-# then verify the hashed password that was passed in matches
-# the one in the table.
+-- Stores user credentials for logging in.
 CREATE TABLE IF NOT EXISTS user_credentials (
-	_id		 BIGINT NOT NULL,
-	email		VARCHAR(254) NOT NULL,
-	password	VARCHAR(254) NOT NULL,
-	salt		VARCHAR(32) NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (_id) REFERENCES user(_id),
-	CONSTRAINT user_credentials UNIQUE (email)
+	_id				INT UNSIGNED NOT NULL,
+    email			VARCHAR(254) NOT NULL,
+    password		VARCHAR(254) NOT NULL,
+    salt			VARCHAR(32) NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(_id) REFERENCES user(_id),
+    CONSTRAINT u_user_credentials UNIQUE (email)
 ) ENGINE=InnoDB;
 
-# This table stores whether or not the user verified
-# Their e-mail after registration
-# If the user tries to verify their e-mail after a
-# certain amount of days after the verification e-mail
-# is sent out, the verification becomes invalidated and
-# a new code should be created and sent out with a new
-# timestamp
+-- This is used purely for verifying initial registration.
+-- User will register with an e-mail and password.
+-- A link will be sent to the user's e-mail address that contains
+-- the verification code. The user must login using the right e-mail
+-- and password to complete the verification.
+-- A new verification should be sent if the user requests it.
+-- If the user is unable to verify within a certain amount of days,
+-- an e-mail will be sent out that the user must register again.
+-- Upon registration, this record will be deleted.
 CREATE TABLE IF NOT EXISTS user_verification (
-	_id		 BIGINT NOT NULL,
-	code		VARCHAR(32) NOT NULL,
-	verified	BOOLEAN NOT NULL,
-	timestamp	DATETIME NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (_id) REFERENCES user(_id)
+	_id				INT UNSIGNED NOT NULL,
+    code			VARCHAR(32) NOT NULL,
+    verified		BOOL NOT NULL,
+    created_on		DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(_id) REFERENCES user(_id),
+    CONSTRAINT u_user_verification UNIQUE (_id)
 ) ENGINE=InnoDB;
 
-# This table stores user account properties.
-# The locked flag is when someone fails to login after
-# 3-5 attempts. When this flag is set, an e-mail should
-# be sent out with directions on how to reset their password.
-# The closed flag is set when a user decides to close their
-# account.
+-- Stores user account state information
 CREATE TABLE IF NOT EXISTS user_account (
-	_id			 BIGINT NOT NULL,
-	locked			BOOLEAN NOT NULL,
-	closed			BOOLEAN NOT NULL,
-	created_timestamp	DATETIME NOT NULL,
-	locked_timestamp	DATETIME,
-	closed_timestamp	DATETIME,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (_id) REFERENCES user(_id)
+	_id			INT UNSIGNED NOT NULL,
+    locked		BOOL NOT NULL,
+    closed		BOOL NOT NULL,
+    verified	BOOL NOT NULL,
+    locked_on	DATETIME,
+    closed_on	DATETIME,
+    verified_on	DATETIME,
+    created_on	DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(_id) REFERENCES user(_id)
 ) ENGINE=InnoDB;
 
-# This table stores a users login attempts
-# To determine if they have unsuccessfully logged in 3-5 times
-# select the login attemps since their last successful
-# login and count them. If the number is > 3-5 then lock
-# the account.
-CREATE TABLE IF NOT EXISTS user_login (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	uuid     VARCHAR(36),
-	user_id		 BIGINT NOT NULL,
-	success		BOOLEAN NOT NULL,
-	isExpired	BOOLEAN NOT NULL,
-	timestamp	DATETIME,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (user_id) REFERENCES user(_id),
-	CONSTRAINT user_login UNIQUE (uuid, user_id)
+-- Stores all login attempts, pass or fail.
+-- This table will also help to determine if the
+-- user should be locked out for a duration of
+-- time due to too many failed login attempts.
+-- Should prompt a user to reset their password.
+CREATE TABLE IF NOT EXISTS user_login_attempts (
+	_id		INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id	INT UNSIGNED NOT NULL,
+    success	BOOL NOT NULL,
+    created_on	DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(user_id) REFERENCES user(_id)
 ) ENGINE=InnoDB;
 
-#table which is used to manage a user session.
+-- This table tracks user sessions.
+-- Initially this will only track single sessions
+-- based on a user_id. Later this will track
+-- user sessions based on the device and user_id
 CREATE TABLE IF NOT EXISTS user_session (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	uuid     VARCHAR(36),
-	user_id		 BIGINT NOT NULL,
-	mac_address  CHAR(12) NOT NUll,
-	timestamp	DATETIME NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (user_id) REFERENCES user(_id),
-	FOREIGN KEY (uuid) REFERENCES user_login(uuid),
-	CONSTRAINT user_login UNIQUE (uuid)
+	_id			INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id		INT UNSIGNED NOT NULL,
+    uuid		VARCHAR(36) NOT NULL,
+    created_on	DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(user_id) REFERENCES user(_id),
+    CONSTRAINT u_user_session UNIQUE (uuid)
 ) ENGINE=InnoDB;
 
-# This table stores a user's friend list.
-CREATE TABLE IF NOT EXISTS user_friend (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	user_id		 BIGINT NOT NULL,
-	friend_id	 BIGINT NOT NULL,
-	timestamp	DATETIME NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (user_id) REFERENCES user(_id),
-	FOREIGN KEY (friend_id) REFERENCES user(_id),
-	CONSTRAINT uc_user_friend UNIQUE (user_id, friend_id)
+-- Different user connections such as friends, brother, sister, etc...
+CREATE TABLE IF NOT EXISTS connection_type (
+	_id			SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name		VARCHAR(35) NOT NULL,
+    description	VARCHAR(35) NOT NULL,
+	PRIMARY KEY(_id),
+    CONSTRAINT u_connection_type UNIQUE(name)
 ) ENGINE=InnoDB;
 
-# THis table stores the type of friends
-CREATE TABLE IF NOT EXISTS friend_type (
-	_id		 SMALLINT NOT NULL AUTO_INCREMENT,
-	type		VARCHAR(15),
-	description	VARCHAR(50),
-	PRIMARY KEY (_id)
+-- Links the user to their connection and specifies the connection type
+CREATE TABLE IF NOT EXISTS user_connection (
+	_id			INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id		INT UNSIGNED NOT NULL,
+    conn_id		INT UNSIGNED NOT NULL,
+    created_on	DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(user_id) REFERENCES user(_id),
+    FOREIGN KEY(conn_id) REFERENCES user(_id),
+    CONSTRAINT u_user_conn UNIQUE (user_id, conn_id)
 ) ENGINE=InnoDB;
 
-# This table stores what kind of friend a user is.
-# This is a one to many table (one user_friend, many user_friend_types)
-CREATE TABLE IF NOT EXISTS user_friend_type (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	user_friend_id	 BIGINT NOT NULL,
-	friend_type	 SMALLINT NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (user_friend_id) REFERENCES user_friend(_id),
-	CONSTRAINT uc_user_friend_type UNIQUE (user_friend_id, friend_type)
+-- A user can have multiple connection types for a single connection
+-- For example: A connection can be both a friend and a coworker
+CREATE TABLE IF NOT EXISTS user_connection_type (
+	_id				INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_conn_id	INT UNSIGNED NOT NULL,
+    conn_type		SMALLINT UNSIGNED NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(user_conn_id) REFERENCES user_connection(_id),
+    CONSTRAINT u_user_conn_type UNIQUE(user_conn_id, conn_type)
 ) ENGINE=InnoDB;
 
-# This table stores the user's vote history
-# vote will be 1 or 2 for which picture they voted for
-CREATE TABLE IF NOT EXISTS user_vote_history (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	user_id		 BIGINT NOT NULL,
-	poll_id		 BIGINT NOT NULL,
-	vote		 TINYINT NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (user_id) REFERENCES user(_id),
-	FOREIGN KEY (poll_id) REFERENCES poll(_id),
-	CONSTRAINT uc_user_vote_history UNIQUE (user_id, poll_id)
+-- Stores the history of picks a user has participated in and
+-- what they picked.
+CREATE TABLE IF NOT EXISTS user_pick_history (
+	_id			INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id		INT UNSIGNED NOT NULL,
+    pick_id		INT UNSIGNED NOT NULL,
+    picture_id	INT UNSIGNED NOT NULL,
+    created_on	DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(user_id) REFERENCES user(_id),
+    FOREIGN KEY(picture_id) REFERENCES picture(_id),
+    CONSTRAINT u_user_pick_history UNIQUE(user_id, pick_id)
 ) ENGINE=InnoDB;
 
-
-################################################
-## POLL TABLES
-################################################
-
-# This table stores poll state.
-# vote_# are how many votes per picture
-# close_on_vote tells you how many votes are needed to close. If it's
-# null then it's not used.
-# close_on_time tells you when it will close. If it's null then it's
-# not used.
-# share_type determines who or how the poll is shared
-CREATE TABLE IF NOT EXISTS poll_state (
-	_id		 BIGINT NOT NULL,
-	closed		BOOLEAN NOT NULL,
-	vote_1		 INT NOT NULL,
-	vote_2		 INT NOT NULL,
-	close_on_vote	 INT,
-	close_on_time	BIGINT,
-	share_type_id	 SMALLINT NOT NULL,
-	open_timestamp	DATETIME NOT NULL,
-	close_timestamp	DATETIME,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (_id) REFERENCES poll(_id)
+-- The pick created by a user
+CREATE TABLE IF NOT EXISTS pick (
+	_id				INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id			INT UNSIGNED NOT NULL,
+	question		VARCHAR(35),
+    picture_1_id	INT UNSIGNED NOT NULL,
+    picture_2_id	INT UNSIGNED NOT NULL,
+    created_on		DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(user_id) REFERENCES user(_id),
+    FOREIGN KEY(picture_1_id) REFERENCES picture(_id),
+    FOREIGN KEY(picture_2_id) REFERENCES picture(_id)
 ) ENGINE=InnoDB;
 
-# This table stores the different share types
-CREATE TABLE IF NOT EXISTS share_type (
-	_id		 SMALLINT NOT NULL AUTO_INCREMENT,
-	name		VARCHAR(15) NOT NULL,
-	description	VARCHAR(50) NOT NULL,
-	PRIMARY KEY (_id)
+-- The share type is who the pick will be shared to.
+CREATE TABLE IF NOT EXISTS pick_share_type (
+	_id			SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name		VARCHAR(35),
+    description	VARCHAR(35),
+    created_on	DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    CONSTRAINT u_pick_share_type UNIQUE(name)
 ) ENGINE=InnoDB;
 
-# This table stores which user is following which poll
-CREATE TABLE IF NOT EXISTS poll_follow (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	user_id		 BIGINT NOT NULL,
-	poll_id		 BIGINT NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (user_id) REFERENCES user(_id),
-	FOREIGN KEY (poll_id) REFERENCES poll(_id),
-	CONSTRAINT uc_poll_follow UNIQUE (user_id, poll_id)
+-- This is the state of the pick.
+CREATE TABLE IF NOT EXISTS pick_state (
+	_id				INT UNSIGNED NOT NULL,
+    closed			BOOL NOT NULL,
+    pick_1			MEDIUMINT UNSIGNED NOT NULL,
+    pick_2			MEDIUMINT UNSIGNED NOT NULL,
+    close_on_pick	MEDIUMINT UNSIGNED,
+    close_on_time	DATETIME,
+    share_type_id	SMALLINT UNSIGNED NOT NULL,
+    open_on			DATETIME NOT NULL,
+    close_on		DATETIME,
+    created_on		DATETIME NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(_id) REFERENCES pick(_id),
+    CONSTRAINT u_pick_state UNIQUE(_id)
 ) ENGINE=InnoDB;
 
-# This table stores 'tags' (like hash tags) that can be used to
-# find the poll. Also can be used to specify the category the poll
-# goes in.
+-- This stores the list of users following a particular pick.
+CREATE TABLE IF NOT EXISTS pick_follow (
+	_id		INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id	INT UNSIGNED NOT NULL,
+    pick_id	INT UNSIGNED NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(user_id) REFERENCES user(_id),
+    FOREIGN KEY(pick_id) REFERENCES pick(_id),
+    CONSTRAINT u_pick_follow UNIQUE(user_id, pick_id)
+) ENGINE=InnoDB;
+
+-- These tags will act as "hashtags" for the application and
+-- can and will correspond with real hashtags.
 CREATE TABLE IF NOT EXISTS tag (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	name		VARCHAR(15),
-	PRIMARY KEY (_id),
-	CONSTRAINT uc_tag UNIQUE (name)
+	_id		INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name	VARCHAR(140), -- HASHTAG MAX SIZE
+    PRIMARY KEY(_id),
+    CONSTRAINT u_tag UNIQUE(name)
 ) ENGINE=InnoDB;
 
-# This table correlates polls with tags.
-# There can be one poll with many tags or one poll with one tag.
-CREATE TABLE IF NOT EXISTS poll_tag (
-	_id		 BIGINT NOT NULL AUTO_INCREMENT,
-	poll_id		 BIGINT NOT NULL,
-	tag_id		 BIGINT NOT NULL,
-	PRIMARY KEY (_id),
-	FOREIGN KEY (poll_id) REFERENCES poll(_id),
-	FOREIGN KEY (tag_id) REFERENCES tag(_id),
-	CONSTRAINT uc_poll_tag UNIQUE (poll_id, tag_id)
+-- This will connect picks and tags
+CREATE TABLE IF NOT EXISTS pick_tag (
+	_id	INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    tag_id	INT UNSIGNED NOT NULL,
+    pick_id	INT UNSIGNED NOT NULL,
+    PRIMARY KEY(_id),
+    FOREIGN KEY(tag_id) REFERENCES tag(_id),
+    FOREIGN KEY(pick_id) REFERENCES pick(_id),
+    CONSTRAINT u_pick_tag UNIQUE(tag_id, pick_id)
+) ENGINE=InnoDB;
+
+-- Settings used for the backend application
+CREATE TABLE IF NOT EXISTS settings (
+	_id				INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name			VARCHAR(35) NOT NULL,
+    value			VARCHAR(35) NOT NULL,
+    active			BOOL,
+    created_on		DATETIME NOT NULL,
+    PRIMARY KEY(_id)
 ) ENGINE=InnoDB;
